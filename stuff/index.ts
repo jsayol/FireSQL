@@ -3,12 +3,12 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyC0fega_fYa7UvmoADJ0Q4WEwxOqbZ9q_0',
-  authDomain: 'slq-firestore-test.firebaseapp.com',
-  databaseURL: 'https://slq-firestore-test.firebaseio.com',
-  projectId: 'slq-firestore-test',
-  storageBucket: '',
-  messagingSenderId: '444676513608'
+  apiKey: 'AIzaSyBvghzVWT1--IYJXd7oE5ahKyr9IQbe5U4',
+  authDomain: 'firestore-sql-test.firebaseapp.com',
+  databaseURL: 'https://firestore-sql-test.firebaseio.com',
+  projectId: 'firestore-sql-test',
+  storageBucket: 'firestore-sql-test.appspot.com',
+  messagingSenderId: '661325537272'
 });
 
 const db = firebase.firestore();
@@ -39,7 +39,20 @@ const sqlQueries = [
   // "SELECT * FROM cities WHERE population BETWEEN 700000 AND 2000000",
   // "SELECT * FROM cities WHERE country = 'USA' UNION SELECT * FROM cities WHERE country = 'Japan'",
   // "SELECT * FROM cities WHERE country = 'Japan' OR country = 'USA' LIMIT 3",
-  "SELECT name AS city, population AS people FROM cities WHERE country = 'USA'",
+  // "SELECT name AS city, population AS people FROM cities WHERE country = 'USA'"
+
+  // "SELECT * FROM restaurants",
+  // "SELECT * FROM restaurants WHERE city='Chicago'",
+  // "SELECT * FROM restaurants WHERE category='Indian' AND price < 50",
+  // "SELECT * FROM restaurants WHERE name LIKE 'Best%'",
+  // "SELECT * FROM restaurants WHERE name LIKE 'Best%' OR city='Los Angeles'",
+  // "SELECT * FROM restaurants WHERE city IN ('Raleigh', 'Nashvile', 'Denver')",
+  // "SELECT * FROM restaurants WHERE city != 'Oklahoma'",
+  // "SELECT * FROM restaurants WHERE favorite",
+  // "SELECT * FROM restaurants WHERE favorite=true",
+  // "SELECT * FROM restaurants WHERE favorite IS NULL",
+  // "SELECT * FROM restaurants WHERE city='Memphis' AND (price < 40 OR avgRating > 8) ORDER BY price DESC, avgRating",
+  "SELECT * FROM restaurants WHERE price BETWEEN 25 AND 150 ORDER BY city, price LIMIT 10",
 ];
 
 const queries = sqlQueries.map(async sql => {

@@ -1,24 +1,15 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import FirestoreSQL from '../src/firestore-sql';
 
-class FirestoreSQL {
-  constructor(fs: firebase.firestore.Firestore) {
-      // nothing
-  }
-  query(sql: string): any[] {
-    return [];
-  }
-}
+firebase.initializeApp({
+  /* ... */
+});
 
-
-
-
-firebase.initializeApp({/* ... */});
-
-const sqlFirestore = new FirestoreSQL(firebase.firestore());
+const firestoreSQL = new FirestoreSQL(firebase.firestore());
 
 async function getData() {
-  const someCities = await sqlFirestore.query(`
+  const someCities = await firestoreSQL.query(`
     SELECT name, country, population
     FROM cities
     WHERE country = 'USA' AND population > 700000
@@ -30,9 +21,5 @@ async function getData() {
     );
   }
 }
-
-
-
-
 
 getData();
