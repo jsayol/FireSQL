@@ -2,6 +2,7 @@ import { ASTObject } from 'node-sqlparser';
 import { assert, contains } from '../utils';
 import { applyWhere } from './where';
 import { applyOrderBy, applyOrderByLocally } from './orderby';
+import { applyLimit, applyLimitLocally } from './limit';
 
 export async function executeSelect(
   ref: firebase.firestore.Firestore | firebase.firestore.DocumentReference,
@@ -48,7 +49,10 @@ export async function executeSelect(
   }
 
   if (ast.limit) {
-    throw new Error('LIMIT not supported yet');
+    // First we apply the limit to each query we may have
+    // and later we'll apply it again locally to the
+    // merged set of documents, in case we end up with too many.
+    queries = applyLimit(queries, ast.limit);
   }
 
   let results: firebase.firestore.DocumentData[] = [];
@@ -78,6 +82,12 @@ export async function executeSelect(
     // We merged more than one query into a single set of documents
     // so we need to order the documents again, this time client-side.
     results = applyOrderByLocally(results, ast.orderby);
+  }
+
+  if (ast.limit && queries.length > 1) {
+    // We merged more than one query into a single set of documents
+    // so we need to apply the limit again, this time client-side.
+    results = applyLimitLocally(results, ast.limit);
   }
 
   if (ast._next) {

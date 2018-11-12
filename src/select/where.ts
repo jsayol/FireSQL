@@ -1,4 +1,4 @@
-import { assert, prefixSuccessor } from '../utils';
+import { assert, prefixSuccessor, ASTValue, astValueToNative } from '../utils';
 
 export function applyWhere(
   queries: firebase.firestore.Query[],
@@ -24,7 +24,7 @@ export function applyWhere(
       );
 
       const newQueries: firebase.firestore.Query[] = [];
-      astWhere.right.value.forEach((valueObj: ASTWhereValue) => {
+      astWhere.right.value.forEach((valueObj: ASTValue) => {
         newQueries.push(
           ...applyCondition(queries, astWhere.left.column, '=', valueObj)
         );
@@ -117,32 +117,11 @@ export function applyWhere(
   return queries;
 }
 
-function astValueToNative(
-  astValue: ASTWhereValue
-): boolean | string | number | null {
-  let value: boolean | string | number | null;
-
-  switch (astValue.type) {
-    case 'bool':
-    case 'null':
-    case 'string':
-      value = astValue.value;
-      break;
-    case 'number':
-      value = Number(astValue.value);
-      break;
-    default:
-      throw new Error('Unsupported value type in WHERE clause.');
-  }
-
-  return value;
-}
-
 function applyCondition(
   queries: firebase.firestore.Query[],
   field: string,
   astOperator: string,
-  astValue: ASTWhereValue
+  astValue: ASTValue
 ): firebase.firestore.Query[] {
   let value = astValueToNative(astValue);
 
@@ -189,19 +168,14 @@ function whereFilterOp(op: string): firebase.firestore.WhereFilterOp {
   return newOp;
 }
 
-interface ASTWhereValue {
-  type: string;
-  value: any;
-}
-
 interface WhereLikeResult {
-  beginsWith?: ASTWhereValue;
-  endsWith?: ASTWhereValue;
-  contains?: ASTWhereValue;
-  equals?: ASTWhereValue;
+  beginsWith?: ASTValue;
+  endsWith?: ASTValue;
+  contains?: ASTValue;
+  equals?: ASTValue;
 }
 
-function stringASTWhereValue(str: string): ASTWhereValue {
+function stringASTWhereValue(str: string): ASTValue {
   return {
     type: 'string',
     value: str

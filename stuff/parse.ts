@@ -10,10 +10,9 @@ import { parse } from 'node-sqlparser';
 //     WHERE C.country = 'USA'
 // `);
 const ast = parse(`
-SELECT name, phone FROM Customers
-UNION SELECT name, item FROM Orders
-ORDER BY name
-`);
+SELECT *
+FROM cities
+LIMIT 10, 5`);
 console.log(out(ast));
 
 function out(data: any) {

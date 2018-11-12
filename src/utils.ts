@@ -8,6 +8,31 @@ export function contains(obj: object, prop: string): boolean {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
+export interface ASTValue {
+  type: string;
+  value: any;
+}
+
+export function astValueToNative(
+  astValue: ASTValue
+): boolean | string | number | null {
+  let value: boolean | string | number | null;
+
+  switch (astValue.type) {
+    case 'bool':
+    case 'null':
+    case 'string':
+      value = astValue.value;
+      break;
+    case 'number':
+      value = Number(astValue.value);
+      break;
+    default:
+      throw new Error('Unsupported value type in WHERE clause.');
+  }
+
+  return value;
+}
 /**
  * Adapted from: https://github.com/firebase/firebase-ios-sdk/blob/14dd9dc2704038c3bf702426439683cee4dc941a/Firestore/core/src/firebase/firestore/util/string_util.cc#L23-L40
  */
