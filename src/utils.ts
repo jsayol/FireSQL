@@ -1,0 +1,33 @@
+export function assert(condition: boolean, message: string) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+export function contains(obj: object, prop: string): boolean {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+/**
+ * Adapted from: https://github.com/firebase/firebase-ios-sdk/blob/14dd9dc2704038c3bf702426439683cee4dc941a/Firestore/core/src/firebase/firestore/util/string_util.cc#L23-L40
+ */
+export function prefixSuccessor(prefix: string): string {
+  // We can increment the last character in the string and be done
+  // unless that character is 255 (0xff), in which case we have to erase the
+  // last character and increment the previous character, unless that
+  // is 255, etc. If the string is empty or consists entirely of
+  // 255's, we just return the empty string.
+  let limit = prefix;
+  while (limit.length > 0) {
+    const index = limit.length - 1;
+    if (limit[index] === '\xff') {
+      limit = limit.slice(0, -1);
+    } else {
+      limit =
+        limit.substr(0, index) +
+        String.fromCharCode(limit.charCodeAt(index) + 1);
+      break;
+    }
+  }
+  return limit;
+}

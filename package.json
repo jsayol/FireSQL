@@ -1,11 +1,11 @@
 {
-  "name": "sql-firestore",
+  "name": "firestore-sql",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/sql-firestore.umd.js",
-  "module": "dist/sql-firestore.es5.js",
-  "typings": "dist/types/sql-firestore.d.ts",
+  "main": "dist/firestore-sql.umd.js",
+  "module": "dist/firestore-sql.es5.js",
+  "typings": "dist/types/firestore-sql.d.ts",
   "files": [
     "dist"
   ],

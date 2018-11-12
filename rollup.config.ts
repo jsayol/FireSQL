@@ -7,7 +7,7 @@ import json from 'rollup-plugin-json'
 
 const pkg = require('./package.json')
 
-const libraryName = 'sql-firestore'
+const libraryName = 'firestore-sql'
 
 export default {
   input: `src/${libraryName}.ts`,

@@ -1,100 +1,17 @@
-// Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
-// import "core-js/fn/array.find"
-// ...
+import { assert, prefixSuccessor } from '../utils';
 
-import { parse as parseSQL, ASTObject } from 'node-sqlparser';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-
-export default class SQLFirestore {
-  constructor(
-    private db:
-      | firebase.firestore.Firestore
-      | firebase.firestore.DocumentReference
-  ) {}
-
-  query(sql: string, asList?: boolean): Promise<any>;
-  query<T>(sql: string, asList?: boolean): Promise<T>;
-  async query<T>(sql: string, asList = true): Promise<T | any> {
-    const ast: ASTObject = parseSQL(sql);
-    // console.log(JSON.stringify(ast, null, 2));
-
-    if (ast.type === 'select') {
-      if (typeof ast.columns === 'string') {
-        // if (ast.columns === '*') {
-        // } else {
-        //   throw new Error('WTF?');
-        // }
-      } else {
-        // TODO
-      }
-
-      assert(
-        ast.from.length === 1,
-        'Only one collection at a time (no JOINs yet).'
-      );
-
-      const colName = ast.from[0].table;
-      let collection = this.db.collection(colName);
-      let queries: firebase.firestore.Query[] = [collection];
-
-      if (ast.where) {
-        queries = applyCondition(queries, ast.where);
-      }
-
-      if (ast.orderby) {
-        throw new Error('ORDER BY not supported yet');
-      }
-
-      if (ast.groupby) {
-        throw new Error('GROUP BY not supported yet');
-      }
-
-      if (ast.limit) {
-        throw new Error('LIMIT not supported yet');
-      }
-
-      let results: firebase.firestore.DocumentData[] = [];
-      const seenDocs: { [id: string]: true } = {};
-
-      await Promise.all(
-        queries.map(async query => {
-          const snapshot = await query.get();
-          const numDocs = snapshot.docs.length;
-
-          for (let i = 0; i < numDocs; i++) {
-            const doc = snapshot.docs[i];
-            if (!contains(seenDocs, doc.ref.path)) {
-              results.push(doc.data());
-              seenDocs[doc.ref.path] = true;
-            }
-          }
-        })
-      );
-
-      return results;
-    } else {
-      throw new Error('Only SELECT statements are supported.');
-    }
-  }
-
-  private parse_(sql: string): ASTObject {
-    return parseSQL(sql);
-  }
-}
-
-function applyCondition(
+export function applyWhere(
   queries: firebase.firestore.Query[],
   astWhere: { [k: string]: any }
 ): firebase.firestore.Query[] {
   if (astWhere.type === 'binary_expr') {
     if (astWhere.operator === 'AND') {
-      queries = applyCondition(queries, astWhere.left);
-      queries = applyCondition(queries, astWhere.right);
+      queries = applyWhere(queries, astWhere.left);
+      queries = applyWhere(queries, astWhere.right);
     } else if (astWhere.operator === 'OR') {
       queries = [
-        ...applyCondition(queries, astWhere.left),
-        ...applyCondition(queries, astWhere.right)
+        ...applyWhere(queries, astWhere.left),
+        ...applyWhere(queries, astWhere.right)
       ];
     } else if (astWhere.operator === 'IN') {
       assert(
@@ -109,7 +26,7 @@ function applyCondition(
       const newQueries: firebase.firestore.Query[] = [];
       astWhere.right.value.forEach((valueObj: ASTWhereValue) => {
         newQueries.push(
-          ...applyWhereToQueries(queries, astWhere.left.column, '=', valueObj)
+          ...applyCondition(queries, astWhere.left.column, '=', valueObj)
         );
       });
       queries = newQueries;
@@ -126,7 +43,7 @@ function applyCondition(
       const whereLike = parseWhereLike(astWhere.right.value);
 
       if (whereLike.equals !== void 0) {
-        queries = applyWhereToQueries(
+        queries = applyCondition(
           queries,
           astWhere.left.column,
           '=',
@@ -134,13 +51,13 @@ function applyCondition(
         );
       } else if (whereLike.beginsWith !== void 0) {
         const successorStr = prefixSuccessor(whereLike.beginsWith.value);
-        queries = applyWhereToQueries(
+        queries = applyCondition(
           queries,
           astWhere.left.column,
           '>=',
           whereLike.beginsWith
         );
-        queries = applyWhereToQueries(
+        queries = applyCondition(
           queries,
           astWhere.left.column,
           '<',
@@ -157,7 +74,7 @@ function applyCondition(
         'Unsupported WHERE type on left side.'
       );
 
-      queries = applyWhereToQueries(
+      queries = applyCondition(
         queries,
         astWhere.left.column,
         astWhere.operator,
@@ -177,7 +94,7 @@ function applyCondition(
   return queries;
 }
 
-function applyWhereToQueries(
+function applyCondition(
   queries: firebase.firestore.Query[],
   field: string,
   astOperator: string,
@@ -203,8 +120,8 @@ function applyWhereToQueries(
     // split this query in two, one with the < operator and
     // another one with the > operator.
     return [
-      ...applyWhereToQueries(queries, field, '<', astValue),
-      ...applyWhereToQueries(queries, field, '>', astValue)
+      ...applyCondition(queries, field, '<', astValue),
+      ...applyCondition(queries, field, '>', astValue)
     ];
   } else {
     const operator = whereFilterOp(astOperator);
@@ -240,10 +157,6 @@ function whereFilterOp(op: string): firebase.firestore.WhereFilterOp {
   }
 
   return newOp;
-}
-
-function contains(obj: object, prop: string): boolean {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
 interface ASTWhereValue {
@@ -282,35 +195,4 @@ function parseWhereLike(str: string): WhereLikeResult {
   }
 
   return result;
-}
-
-function assert(condition: boolean, message: string) {
-  if (!condition) {
-    throw new Error(message);
-  }
-}
-
-/**
- * Adapted from: https://github.com/firebase/firebase-ios-sdk/blob/14dd9dc2704038c3bf702426439683cee4dc941a/Firestore/core/src/firebase/firestore/util/string_util.cc#L23-L40
- * @param prefix
- */
-function prefixSuccessor(prefix: string): string {
-  // We can increment the last character in the string and be done
-  // unless that character is 255 (0xff), in which case we have to erase the
-  // last character and increment the previous character, unless that
-  // is 255, etc. If the string is empty or consists entirely of
-  // 255's, we just return the empty string.
-  let limit = prefix;
-  while (limit.length > 0) {
-    const index = limit.length - 1;
-    if (limit[index] === '\xff') {
-      limit = limit.slice(0, -1);
-    } else {
-      limit =
-        limit.substr(0, index) +
-        String.fromCharCode(limit.charCodeAt(index) + 1);
-      break;
-    }
-  }
-  return limit;
 }

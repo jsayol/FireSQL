@@ -1,4 +1,4 @@
-import SQLFirestore from '../src/sql-firestore';
+import FirestoreSQL from '../src/firestore-sql';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
@@ -19,7 +19,7 @@ db.settings({ timestampsInSnapshots: true });
 //   capital: true, population: 3100000,
 //   regions: ["no_idea"] });
 
-const sqlFirestore = new SQLFirestore(db);
+const sqlFirestore = new FirestoreSQL(db);
 
 const sqlQueries = [
   // 'SELECT * FROM cities',

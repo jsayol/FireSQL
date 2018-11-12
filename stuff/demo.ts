@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
-class SQLFirestore {
+class FirestoreSQL {
   constructor(fs: firebase.firestore.Firestore) {
       // nothing
   }
@@ -15,7 +15,7 @@ class SQLFirestore {
 
 firebase.initializeApp({/* ... */});
 
-const sqlFirestore = new SQLFirestore(firebase.firestore());
+const sqlFirestore = new FirestoreSQL(firebase.firestore());
 
 async function getData() {
   const someCities = await sqlFirestore.query(`
