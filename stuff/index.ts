@@ -15,10 +15,11 @@ const db = firebase.firestore();
 db.settings({ timestampsInSnapshots: true });
 
 const sqlQueries = [
-  // 'SELECT * FROM cities'
-  // "SELECT * FROM cities WHERE state = 'CA'"
-  "SELECT name FROM cities WHERE country = 'USA' AND population > 700000"
-  // "SELECT name, capital FROM cities WHERE country LIKE 'Chi%'"
+  // 'SELECT * FROM cities',
+  // "SELECT * FROM cities WHERE state = 'CA'",
+  "SELECT name FROM cities WHERE country = 'USA' AND population > 700000",
+  // "SELECT name FROM cities WHERE country = 'USA' OR population > 700000"
+  // "SELECT name, capital FROM cities WHERE country LIKE 'Chi%'",
 ];
 
 sqlQueries.forEach(async sql => {
@@ -40,7 +41,8 @@ sqlQueries.forEach(async sql => {
     }
 
     const colName = ast.from[0].table;
-    let query = db.collection(colName) as firebase.firestore.Query;
+    let collection = db.collection(colName) as firebase.firestore.Query;
+    let queries: firebase.firestore.Query[] = [];
 
     if (ast.where) {
       if (ast.where.type !== 'binary_expr') {
@@ -52,10 +54,10 @@ sqlQueries.forEach(async sql => {
       }
 
       if (ast.where.operator === 'AND') {
-        query = applyWhere(query, ast.where.left);
-        query = applyWhere(query, ast.where.right);
+        queries = applyWhere([collection], ast.where.left);
+        queries = applyWhere(queries, ast.where.right);
       } else {
-        query = applyWhere(query, ast.where);
+        queries = applyWhere([collection], ast.where);
       }
     }
 
@@ -71,10 +73,15 @@ sqlQueries.forEach(async sql => {
       throw new Error('LIMIT not supported yet');
     }
 
-    const snapshot = await query.get();
+    let results: firebase.firestore.DocumentData[] = [];
+
+    await Promise.all(queries.map(async query => {
+      const snapshot = await query.get();
+      results = [...results, ...snapshot.docs.map(doc => doc.data())];
+    }));
 
     console.log(sql);
-    console.log(snapshot.docs.map(doc => doc.data()));
+    console.log(results);
     console.log('\n');
   } else {
     throw new Error('Only SELECT statements are supported.');
@@ -102,9 +109,9 @@ function whereOperatorConversion(op: string): firebase.firestore.WhereFilterOp {
 }
 
 function applyWhere(
-  query: firebase.firestore.Query,
+  queries: firebase.firestore.Query[],
   astWhere: { [k: string]: any }
-): firebase.firestore.Query {
+): firebase.firestore.Query[] {
   if (astWhere.left.type !== 'column_ref') {
     throw new Error('Unsupported WHERE type on left side.');
   }
@@ -126,7 +133,9 @@ function applyWhere(
   console.log(
     `.where(${astWhere.left.column}, ${operator}, ${astWhere.right.value})`
   );
-  query = query.where(astWhere.left.column, operator, value);
+  queries = queries.map(query =>
+    query.where(astWhere.left.column, operator, value)
+  );
 
-  return query;
+  return queries;
 }
