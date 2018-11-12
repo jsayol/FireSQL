@@ -1,6 +1,7 @@
 import { ASTObject } from 'node-sqlparser';
 import { assert, contains } from '../utils';
 import { applyWhere } from './where';
+import { applyOrderBy, applyOrderByLocally } from './orderby';
 
 export async function executeSelect(
   ref: firebase.firestore.Firestore | firebase.firestore.DocumentReference,
@@ -31,7 +32,7 @@ export async function executeSelect(
   }
 
   if (ast.orderby) {
-    throw new Error('ORDER BY not supported yet');
+    queries = applyOrderBy(queries, ast.orderby);
   }
 
   if (ast.groupby) {
@@ -45,20 +46,31 @@ export async function executeSelect(
   let results: firebase.firestore.DocumentData[] = [];
   const seenDocs: { [id: string]: true } = {};
 
-  await Promise.all(
-    queries.map(async query => {
-      const snapshot = await query.get();
-      const numDocs = snapshot.docs.length;
+  try {
+    await Promise.all(
+      queries.map(async query => {
+        const snapshot = await query.get();
+        const numDocs = snapshot.docs.length;
 
-      for (let i = 0; i < numDocs; i++) {
-        const doc = snapshot.docs[i];
-        if (!contains(seenDocs, doc.ref.path)) {
-          results.push(doc.data());
-          seenDocs[doc.ref.path] = true;
+        for (let i = 0; i < numDocs; i++) {
+          const doc = snapshot.docs[i];
+          if (!contains(seenDocs, doc.ref.path)) {
+            results.push(doc.data());
+            seenDocs[doc.ref.path] = true;
+          }
         }
-      }
-    })
-  );
+      })
+    );
+  } catch (err) {
+    // TODO: handle error?
+    throw err;
+  }
+
+  if (ast.orderby && queries.length > 1) {
+    // We merged more than one query into a single set of documents
+    // so we need to order the documents again, this time client-side.
+    results = applyOrderByLocally(results, ast.orderby);
+  }
 
   return results;
 }

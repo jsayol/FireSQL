@@ -18,7 +18,6 @@ export default class FirestoreSQL {
   query<T>(sql: string, asList?: boolean): Promise<T>;
   async query<T>(sql: string, asList = true): Promise<T | any> {
     const ast: ASTObject = parseSQL(sql);
-    // console.log(JSON.stringify(ast, null, 2));
 
     if (ast.type === 'select') {
       return executeSelect(this.ref, ast);

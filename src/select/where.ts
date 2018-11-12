@@ -125,7 +125,6 @@ function applyCondition(
     ];
   } else {
     const operator = whereFilterOp(astOperator);
-    console.log(`.where(${field},${operator},${value})`);
     return queries.map(query => query.where(field, operator, value));
   }
 }
