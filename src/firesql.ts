@@ -7,7 +7,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { executeSelect } from './select';
 
-export default class FirestoreSQL {
+export class FirestoreSQL {
   constructor(
     private ref:
       | firebase.firestore.Firestore
@@ -15,8 +15,8 @@ export default class FirestoreSQL {
   ) {}
 
   query(sql: string, asList?: boolean): Promise<any>;
-  query<T>(sql: string, asList?: boolean): Promise<T>;
-  async query<T>(sql: string, asList = true): Promise<T | any> {
+  query<T>(sql: string, asList?: boolean): Promise<T[]>;
+  async query<T>(sql: string, asList = true): Promise<T[] | any[]> {
     const ast: ASTObject = parseSQL(sql);
 
     if (ast.type === 'select') {

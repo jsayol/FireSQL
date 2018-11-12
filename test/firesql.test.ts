@@ -1,4 +1,4 @@
-import FirestoreSQL from '../src/firestore-sql';
+import { FirestoreSQL } from '../src/firesql';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 

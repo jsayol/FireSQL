@@ -1,4 +1,4 @@
-import FirestoreSQL from '../src/firestore-sql';
+import { FirestoreSQL } from '../src/firesql';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
@@ -41,18 +41,19 @@ const sqlQueries = [
   // "SELECT * FROM cities WHERE country = 'Japan' OR country = 'USA' LIMIT 3",
   // "SELECT name AS city, population AS people FROM cities WHERE country = 'USA'"
 
-  // "SELECT * FROM restaurants",
+  'SELECT * FROM restaurants',
   // "SELECT * FROM restaurants WHERE city='Chicago'",
   // "SELECT * FROM restaurants WHERE category='Indian' AND price < 50",
   // "SELECT * FROM restaurants WHERE name LIKE 'Best%'",
   // "SELECT * FROM restaurants WHERE name LIKE 'Best%' OR city='Los Angeles'",
   // "SELECT * FROM restaurants WHERE city IN ('Raleigh', 'Nashvile', 'Denver')",
   // "SELECT * FROM restaurants WHERE city != 'Oklahoma'",
-  // "SELECT * FROM restaurants WHERE favorite",
-  // "SELECT * FROM restaurants WHERE favorite=true",
-  // "SELECT * FROM restaurants WHERE favorite IS NULL",
+  // 'SELECT * FROM restaurants WHERE favorite',
+  // 'SELECT * FROM restaurants WHERE favorite=true',
+  // 'SELECT * FROM restaurants WHERE favorite IS NULL',
   // "SELECT * FROM restaurants WHERE city='Memphis' AND (price < 40 OR avgRating > 8) ORDER BY price DESC, avgRating",
-  "SELECT * FROM restaurants WHERE price BETWEEN 25 AND 150 ORDER BY city, price LIMIT 10",
+  // 'SELECT * FROM restaurants WHERE price BETWEEN 25 AND 150 ORDER BY city, price LIMIT 10',
+  // "SELECT * FROM restaurants WHERE city='Chicago' UNION SELECT * FROM restaurants WHERE price > 200"
 ];
 
 const queries = sqlQueries.map(async sql => {

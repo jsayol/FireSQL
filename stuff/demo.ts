@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import FirestoreSQL from '../src/firestore-sql';
+import { FirestoreSQL } from '../src/firesql';
 
 firebase.initializeApp({
   /* ... */
