@@ -19,11 +19,16 @@ const sqlFirestore = new SQLFirestore(db);
 const sqlQueries = [
   // 'SELECT * FROM cities',
   // "SELECT * FROM cities WHERE state = 'CA'",
-  // "SELECT * FROM cities WHERE country = 'USA' AND population > 700000"
-  // "SELECT * FROM cities WHERE country = 'USA' OR country = 'China'"
-  // "SELECT * FROM cities WHERE country = 'Japan' OR population < 1000000"
-  "SELECT * FROM cities WHERE country = 'Japan' OR population > 1000000"
+  // "SELECT * FROM cities WHERE country = 'USA' AND population > 700000",
+  // "SELECT * FROM cities WHERE country = 'USA' OR country = 'China'",
+  // "SELECT * FROM cities WHERE country = 'Japan' OR population < 1000000",
+  // "SELECT * FROM cities WHERE country = 'Japan' OR population > 1000000",
   // "SELECT name, capital FROM cities WHERE country LIKE 'Chi%'",
+  // "SELECT * FROM cities WHERE country = 'USA' AND (capital IS true OR population > 1000000)"
+  // "SELECT * FROM cities WHERE country = 'USA' AND capital",
+  // "SELECT * FROM cities WHERE country IN ('USA', 'Japan')",
+  // "SELECT * FROM cities WHERE country IN ('USA', 'Japan') AND capital IS TRUE",
+  "SELECT * FROM cities WHERE country != 'USA'",
 ];
 
 const queries = sqlQueries.map(async sql => {
