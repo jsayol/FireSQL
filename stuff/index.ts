@@ -35,7 +35,8 @@ const sqlQueries = [
   // "SELECT * FROM cities WHERE country != 'USA'",
   // "SELECT * FROM cities WHERE name LIKE 'Sa%'",
   // "SELECT * FROM cities WHERE state IS NULL",
-  "SELECT * FROM cities WHERE country = 'USA' OR country = 'Spain' ORDER BY population",
+  "SELECT * FROM cities WHERE country = 'USA' OR country = 'Spain' ORDER BY population DESC, name",
+  // "SELECT * FROM cities WHERE population BETWEEN 700000 AND 2000000",
 ];
 
 const queries = sqlQueries.map(async sql => {

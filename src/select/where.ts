@@ -68,6 +68,29 @@ export function applyWhere(
           'Only terms in the form of "value%" (string begins with value) and "value" (string equals value) are supported with LIKE in WHERE clause.'
         );
       }
+    } else if (astWhere.operator === 'BETWEEN') {
+      assert(
+        astWhere.left.type === 'column_ref',
+        'Unsupported WHERE type on left side.'
+      );
+      assert(
+        astWhere.right.type === 'expr_list' &&
+          astWhere.right.value.length === 2,
+        'BETWEEN needs 2 values in WHERE clause.'
+      );
+
+      queries = applyCondition(
+        queries,
+        astWhere.left.column,
+        '>=',
+        astWhere.right.value[0]
+      );
+      queries = applyCondition(
+        queries,
+        astWhere.left.column,
+        '<=',
+        astWhere.right.value[1]
+      );
     } else {
       assert(
         astWhere.left.type === 'column_ref',
@@ -94,12 +117,9 @@ export function applyWhere(
   return queries;
 }
 
-function applyCondition(
-  queries: firebase.firestore.Query[],
-  field: string,
-  astOperator: string,
+function astValueToNative(
   astValue: ASTWhereValue
-): firebase.firestore.Query[] {
+): boolean | string | number | null {
   let value: boolean | string | number | null;
 
   switch (astValue.type) {
@@ -114,6 +134,17 @@ function applyCondition(
     default:
       throw new Error('Unsupported value type in WHERE clause.');
   }
+
+  return value;
+}
+
+function applyCondition(
+  queries: firebase.firestore.Query[],
+  field: string,
+  astOperator: string,
+  astValue: ASTWhereValue
+): firebase.firestore.Query[] {
+  let value = astValueToNative(astValue);
 
   if (astOperator === '!=' || astOperator === '<>') {
     // The != operator is not supported in Firestore so we

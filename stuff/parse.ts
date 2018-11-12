@@ -12,8 +12,7 @@ import { parse } from 'node-sqlparser';
 const ast = parse(`
     SELECT *
     FROM cities
-    WHERE country = 'USA'
-    ORDER BY name, population DESC
+    WHERE population BETWEEN 700000 AND 2000000
 `);
 console.log(out(ast));
 
