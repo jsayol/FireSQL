@@ -3,24 +3,24 @@
 declare module 'node-sqlparser' {
   export class SyntaxError extends Error {
     constructor(
-      message: 'string',
-      expected: 'string',
-      found: 'string',
+      message: string,
+      expected: string,
+      found: string,
       offset: number,
       line: number,
       column: number
     );
     name: 'SyntaxError';
-    message: 'string';
-    expected: 'string';
-    found: 'string';
-    offset: 'number';
-    line: 'number';
-    column: 'number';
+    message: string;
+    expected: string;
+    found: string;
+    offset: number;
+    line: number;
+    column: number;
   }
 
   export interface ASTObject {
-    type: 'string';
+    type: string;
     // TODO: fill interface with actual types
     [k: string]: any;
   }
