@@ -59,6 +59,13 @@ async function getData() {
 }
 ```
 
+## Limitations
+
+- Only `SELECT` for now. I might add `INSERT`, `UPDATE`, and `DELETE` in the future.
+- No support for `JOIN`s yet.
+- `LIMIT` doesn't accept an `OFFSET`, only a single number.
+- No support for aggregate functions (`SUM`, `AVG`, `MIN`, `MAX`, etc.)
+
 ## Examples of supported queries:
 
 ```sql
@@ -123,14 +130,15 @@ WHERE favorite IS NULL
 ```sql
 SELECT *
 FROM restaurants
-WHERE city = 'Memphis' AND ( price < 40 OR avgrating > 8 )
-ORDER BY price DESC, avgrating
+WHERE city = 'Memphis' AND ( price < 40 OR avgRating > 8 )
+ORDER BY price DESC, avgRating
 ```
 
 ```sql
 SELECT *
 FROM restaurants
-WHERE price BETWEEN 25 AND 150 ORDER BY city, price
+WHERE price BETWEEN 25 AND 150
+ORDER BY city, price
 LIMIT 10
 ```
 
@@ -143,10 +151,3 @@ SELECT *
 FROM restaurants
 WHERE price > 200
 ```
-
-## Limitations
-
-- Only `SELECT` for now. I might add `INSERT`, `UPDATE`, and `DELETE` in the future.
-- No support for `JOIN`s yet.
-- `LIMIT` doesn't accept an `OFFSET`, only a single number.
-- No support for aggregate functions (`SUM`, `AVG`, `MIN`, `MAX`, etc.)
