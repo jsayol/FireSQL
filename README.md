@@ -9,7 +9,7 @@ or
 ## Usage
 
 ```ts
-// If you want to query the root of the database
+// If you want to query the collections at the root of the database
 const firestoreSQL = new FirestoreSQL(firebase.firestore());
 
 firestoreSQL.query('SELECT ...').then(documents => {
@@ -47,6 +47,8 @@ async function getData() {
     SELECT name AS city, country, population AS people
     FROM cities
     WHERE country = 'USA' AND population > 700000
+    ORDER BY country, population DESC
+    LIMIT 10
   `);
 
   for (const city of someCities) {
