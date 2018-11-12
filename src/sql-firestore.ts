@@ -29,9 +29,10 @@ export default class SQLFirestore {
         // TODO
       }
 
-      if (ast.from.length > 1) {
-        throw new Error('Only one collection at a time (no JOINs yet).');
-      }
+      assert(
+        ast.from.length === 1,
+        'Only one collection at a time (no JOINs yet).'
+      );
 
       const colName = ast.from[0].table;
       let collection = this.db.collection(colName);
@@ -96,12 +97,14 @@ function applyCondition(
         ...applyCondition(queries, astWhere.right)
       ];
     } else if (astWhere.operator === 'IN') {
-      if (astWhere.left.type !== 'column_ref') {
-        throw new Error('Unsupported WHERE type on left side.');
-      }
-      if (astWhere.right.type !== 'expr_list') {
-        throw new Error('Unsupported WHERE type on right side.');
-      }
+      assert(
+        astWhere.left.type === 'column_ref',
+        'Unsupported WHERE type on left side.'
+      );
+      assert(
+        astWhere.right.type === 'expr_list',
+        'Unsupported WHERE type on right side.'
+      );
 
       const newQueries: firebase.firestore.Query[] = [];
       astWhere.right.value.forEach((valueObj: ASTWhereValue) => {
@@ -110,10 +113,49 @@ function applyCondition(
         );
       });
       queries = newQueries;
-    } else {
-      if (astWhere.left.type !== 'column_ref') {
-        throw new Error('Unsupported WHERE type on left side.');
+    } else if (astWhere.operator === 'LIKE') {
+      assert(
+        astWhere.left.type === 'column_ref',
+        'Unsupported WHERE type on left side.'
+      );
+      assert(
+        astWhere.right.type === 'string',
+        'Only strings are supported with LIKE in WHERE clause.'
+      );
+
+      const whereLike = parseWhereLike(astWhere.right.value);
+
+      if (whereLike.equals !== void 0) {
+        queries = applyWhereToQueries(
+          queries,
+          astWhere.left.column,
+          '=',
+          whereLike.equals
+        );
+      } else if (whereLike.beginsWith !== void 0) {
+        const successorStr = prefixSuccessor(whereLike.beginsWith.value);
+        queries = applyWhereToQueries(
+          queries,
+          astWhere.left.column,
+          '>=',
+          whereLike.beginsWith
+        );
+        queries = applyWhereToQueries(
+          queries,
+          astWhere.left.column,
+          '<',
+          stringASTWhereValue(successorStr)
+        );
+      } else {
+        throw new Error(
+          'Only terms in the form of "value%" (string begins with value) and "value" (string equals value) are supported with LIKE in WHERE clause.'
+        );
       }
+    } else {
+      assert(
+        astWhere.left.type === 'column_ref',
+        'Unsupported WHERE type on left side.'
+      );
 
       queries = applyWhereToQueries(
         queries,
@@ -166,6 +208,7 @@ function applyWhereToQueries(
     ];
   } else {
     const operator = whereFilterOp(astOperator);
+    console.log(`.where(${field},${operator},${value})`);
     return queries.map(query => query.where(field, operator, value));
   }
 }
@@ -206,4 +249,68 @@ function contains(obj: object, prop: string): boolean {
 interface ASTWhereValue {
   type: string;
   value: any;
+}
+
+interface WhereLikeResult {
+  beginsWith?: ASTWhereValue;
+  endsWith?: ASTWhereValue;
+  contains?: ASTWhereValue;
+  equals?: ASTWhereValue;
+}
+
+function stringASTWhereValue(str: string): ASTWhereValue {
+  return {
+    type: 'string',
+    value: str
+  };
+}
+
+function parseWhereLike(str: string): WhereLikeResult {
+  const result: WhereLikeResult = {};
+  const strLength = str.length;
+
+  if (str[0] === '%') {
+    if (str[strLength - 1] === '%') {
+      result.contains = stringASTWhereValue(str.substr(1, strLength - 2));
+    } else {
+      result.endsWith = stringASTWhereValue(str.substring(1));
+    }
+  } else if (str[strLength - 1] === '%') {
+    result.beginsWith = stringASTWhereValue(str.substr(0, strLength - 2));
+  } else {
+    result.equals = stringASTWhereValue(str);
+  }
+
+  return result;
+}
+
+function assert(condition: boolean, message: string) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+/**
+ * Adapted from: https://github.com/firebase/firebase-ios-sdk/blob/14dd9dc2704038c3bf702426439683cee4dc941a/Firestore/core/src/firebase/firestore/util/string_util.cc#L23-L40
+ * @param prefix
+ */
+function prefixSuccessor(prefix: string): string {
+  // We can increment the last character in the string and be done
+  // unless that character is 255 (0xff), in which case we have to erase the
+  // last character and increment the previous character, unless that
+  // is 255, etc. If the string is empty or consists entirely of
+  // 255's, we just return the empty string.
+  let limit = prefix;
+  while (limit.length > 0) {
+    const index = limit.length - 1;
+    if (limit[index] === '\xff') {
+      limit = limit.slice(0, -1);
+    } else {
+      limit =
+        limit.substr(0, index) +
+        String.fromCharCode(limit.charCodeAt(index) + 1);
+      break;
+    }
+  }
+  return limit;
 }
