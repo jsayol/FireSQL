@@ -1,5 +1,5 @@
 import { ASTObject } from 'node-sqlparser';
-import { assert, contains } from '../utils';
+import { assert, contains, ASTValue, safeGet } from '../utils';
 import { applyWhere } from './where';
 import { applyOrderBy, applyOrderByLocally } from './orderby';
 import { applyLimit, applyLimitLocally } from './limit';
@@ -16,9 +16,9 @@ export async function executeSelect(
     const columnsOK = ast.columns.every(astColumn => {
       return astColumn.expr.type === 'column_ref';
     });
-    assert(!columnsOK, 'Only field names are supported in SELECT statements.');
+    assert(columnsOK, 'Only field names are supported in SELECT statements.');
 
-    // TODO: support aggregate functions (SUM, AVG, COUNT?)
+    // TODO: support aggregate functions (MIN, MAX, SUM, AVG, COUNT, ...)
     // TODO: take aliases into account
 
     selectFields = ast.columns;
@@ -90,6 +90,22 @@ export async function executeSelect(
     results = applyLimitLocally(results, ast.limit);
   }
 
+  if (selectFields !== null) {
+    // Only include the requested fields from the documents
+    results = results.map(doc => {
+      return selectFields!.reduce(
+        (newDoc: firebase.firestore.DocumentData, column: ASTSelectColumn) => {
+          const fieldName = column.expr.column as string;
+          const fieldAlias =
+            column.as !== null && column.as.length > 0 ? column.as : fieldName;
+          newDoc[fieldAlias] = safeGet(doc, fieldName);
+          return newDoc;
+        },
+        {}
+      );
+    });
+  }
+
   if (ast._next) {
     assert(
       ast._next.type === 'select',
@@ -105,4 +121,18 @@ export async function executeSelect(
   }
 
   return results;
+}
+
+interface ASTSelectColumn {
+  expr: ASTSelectColumnExpr;
+  as: string;
+}
+
+interface ASTSelectColumnExpr {
+  type: 'string';
+  table?: string;
+  column?: string;
+  operator?: string;
+  left?: ASTValue;
+  right?: ASTValue | ASTSelectColumnExpr;
 }

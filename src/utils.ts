@@ -8,6 +8,10 @@ export function contains(obj: object, prop: string): boolean {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
+export function safeGet(obj: any, prop: string): any {
+  if (contains(obj, prop)) return obj[prop];
+}
+
 export interface ASTValue {
   type: string;
   value: any;

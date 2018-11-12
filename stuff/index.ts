@@ -38,7 +38,8 @@ const sqlQueries = [
   // "SELECT * FROM cities WHERE country = 'USA' OR country = 'Spain' ORDER BY population DESC, name",
   // "SELECT * FROM cities WHERE population BETWEEN 700000 AND 2000000",
   // "SELECT * FROM cities WHERE country = 'USA' UNION SELECT * FROM cities WHERE country = 'Japan'",
-  "SELECT * FROM cities WHERE country = 'Japan' OR country = 'USA' LIMIT 3",
+  // "SELECT * FROM cities WHERE country = 'Japan' OR country = 'USA' LIMIT 3",
+  "SELECT name AS city, population AS people FROM cities WHERE country = 'USA'",
 ];
 
 const queries = sqlQueries.map(async sql => {
