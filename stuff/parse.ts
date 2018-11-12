@@ -10,11 +10,12 @@ import { parse } from 'node-sqlparser';
 //     WHERE C.country = 'USA'
 // `);
 const ast = parse(`
-    SELECT *
-    FROM cities
-    WHERE population BETWEEN 700000 AND 2000000
+SELECT name, phone FROM Customers
+UNION SELECT name, item FROM Orders
+ORDER BY name
 `);
 console.log(out(ast));
 
-
-function out(data: any) { return JSON.stringify(data, null, 2); }
+function out(data: any) {
+  return JSON.stringify(data, null, 2);
+}
