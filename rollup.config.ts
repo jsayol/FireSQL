@@ -10,7 +10,8 @@ const pkg = require('./package.json');
 const libraryName = 'firesql';
 
 export default {
-  input: `src/${libraryName}.ts`,
+  // input: `src/${libraryName}.ts`,
+  input: `src/index.ts`,
   output: [
     {
       file: pkg.main,
@@ -22,12 +23,10 @@ export default {
   ],
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
   external: [
-    'firebase',
+    ...Object.keys(pkg.peerDependencies || {}),
     'firebase/app',
     'firebase/firestore',
-    'rxjs',
     'rxjs/operators',
-    'rxfire',
     'rxfire/firestore'
   ],
   watch: {

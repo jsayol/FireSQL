@@ -2,11 +2,11 @@ import { parse as parseSQL, ASTObject } from 'node-sqlparser';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { collectionData } from 'rxfire/firestore';
-import { FirestoreSQL, DocumentData } from './firesql';
-import { generateQueries, processDocuments } from './select';
-import { assert } from './utils';
+import { FirestoreSQL, DocumentData } from '../firesql';
+import { generateQueries, processDocuments } from '../select';
+import { assert } from '../utils';
 
-declare module './firesql' {
+declare module '../firesql' {
   interface FirestoreSQL {
     rxQuery(sql: string): Observable<DocumentData[]>;
     rxQuery<T>(sql: string): Observable<T[]>;

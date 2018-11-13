@@ -82,7 +82,7 @@ firebase.initializeApp({ /* ... */ });
 
 const firestoreSQL = new FirestoreSQL(firebase.firestore());
 
-const observable = firestoreSQL.query(`
+const observable = firestoreSQL.rxQuery(`
   SELECT name AS city, country, population AS people
   FROM cities
   WHERE country = 'USA' AND population > 700000

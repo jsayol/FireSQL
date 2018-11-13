@@ -5,7 +5,7 @@
   "keywords": [],
   "main": "dist/firesql.umd.js",
   "module": "dist/firesql.es5.js",
-  "typings": "dist/types/src/firesql.d.ts",
+  "typings": "dist/types/index.d.ts",
   "files": [
     "dist"
   ],
@@ -88,7 +88,6 @@
     "coveralls": "^3.0.2",
     "cross-env": "^5.2.0",
     "cz-conventional-changelog": "^2.1.0",
-    "firebase": "^5.5.8",
     "husky": "^1.0.1",
     "jest": "^23.6.0",
     "jest-config": "^23.6.0",
@@ -117,6 +116,7 @@
     "node-sqlparser": "^1.0.4"
   },
   "peerDependencies": {
+    "firebase": "^5.5.8",
     "rxfire": "^3.0.10",
     "rxjs": "^6.3.3"
   }
