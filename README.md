@@ -1,3 +1,5 @@
+**DISCLAIMER: This is a work in progress!** You're more than welcome to try it out and play with it, but please don't use it in production code for now. Things might break :)
+
 # Installation
 
 Just add `firesql` and `firebase` to your project:
@@ -96,14 +98,14 @@ observable.subscribe(cities => {
 });
 ```
 
-## Limitations
+# Limitations
 
 - Only `SELECT` for now. I might add `INSERT`, `UPDATE`, and `DELETE` in the future.
 - No support for `JOIN`s yet.
 - `LIMIT` doesn't accept an `OFFSET`, only a single number.
 - No support for aggregate functions (`SUM`, `AVG`, `MIN`, `MAX`, etc.)
 
-## Examples of supported queries:
+# Examples of supported queries:
 
 ```sql
 SELECT *
