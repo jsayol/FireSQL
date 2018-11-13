@@ -1,38 +1,47 @@
-## Installation
+# Installation
 
-`yarn add firebase firesql`
+Just add `firesql` and `firebase` to your project:
 
-or
+`yarn add firesql firebase`
 
-`npm install firebase firesql`
+or `npm install firesql firebase`
 
-## Usage
+If you want to receive realtime updates when querying, then you will also need to install `rxjs` and `rxfire`:
+
+`yarn add firesql firebase rxjs rxfire`
+
+or `npm install firesql firebase rxjs rxfire`
+
+# Usage
 
 ```ts
-// If you want to query the collections at the root of the database
-const firestoreSQL = new FirestoreSQL(firebase.firestore());
+// You can either query the collections at the root of the database...
+const dbRef = firebase.firestore();
 
+// ... or the subcollections of some document
+const docRef = firebase.firestore().doc('someDoc');
+
+// And then just pass that reference to FirestoreSQL
+const firestoreSQL = new FirestoreSQL(dbRef);
+
+// Use `.query()` to get a one-time result
 firestoreSQL.query('SELECT ...').then(documents => {
   documents.forEach(doc => {
     /* Do something with the document */
   });
 });
-```
 
-or
-
-```ts
-// If you want to query the subcollections of a document
-const docWithSubcollections = firebase.firestore().doc('someDoc');
-const firestoreSQL = new FirestoreSQL(docWithSubcollections);
-
-firestoreSQL.query('SELECT ...').then(result => {
-  /* ... */
+// Use `.rxQuery()` to get an observable for realtime results.
+// Don't forget to import "firesql/rx" first (see example below).
+firestoreSQL.rxQuery('SELECT ...').subscribe(documents => {
+  /* Got an update with the documents! */
 });
+
 ```
 
 # Example
 
+## One-time result (Promise)
 ```ts
 import { FirestoreSQL } from 'firesql';
 import firebase from 'firebase/app';
@@ -43,20 +52,48 @@ firebase.initializeApp({ /* ... */ });
 const firestoreSQL = new FirestoreSQL(firebase.firestore());
 
 async function getData() {
-  const someCities = await firestoreSQL.query(`
+  const cities = await firestoreSQL.query(`
     SELECT name AS city, country, population AS people
     FROM cities
     WHERE country = 'USA' AND population > 700000
     ORDER BY country, population DESC
     LIMIT 10
   `);
+  printCities(cities);
+}
 
+function printCities(cities) {
   for (const city of someCities) {
     console.log(
       `${city.city} in ${city.country} has ${city.people} people`
     );
   }
 }
+```
+
+## Realtime updates (Observable)
+```ts
+import { FirestoreSQL } from 'firesql';
+import 'firesql/rx'; // <-- Important! Don't forget
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+
+firebase.initializeApp({ /* ... */ });
+
+const firestoreSQL = new FirestoreSQL(firebase.firestore());
+
+const observable = firestoreSQL.query(`
+  SELECT name AS city, country, population AS people
+  FROM cities
+  WHERE country = 'USA' AND population > 700000
+  ORDER BY country, population DESC
+  LIMIT 10
+`);
+
+observable.subscribe(cities => {
+  console.log(`Got an update! There are ${cities.length} cities`);
+  printCities(cities);
+});
 ```
 
 ## Limitations

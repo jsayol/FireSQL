@@ -15,5 +15,5 @@
     "declarationDir": "dist/types",
     "outDir": "dist/lib"
   },
-  "include": ["src", "test/firesql.test.ts"]
+  "include": ["src"]
 }

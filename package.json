@@ -115,5 +115,9 @@
   },
   "dependencies": {
     "node-sqlparser": "^1.0.4"
+  },
+  "peerDependencies": {
+    "rxfire": "^3.0.10",
+    "rxjs": "^6.3.3"
   }
 }
