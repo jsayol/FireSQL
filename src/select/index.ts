@@ -36,7 +36,20 @@ export async function executeSelect(
   let collection = ref.collection(colName);
   let queries: firebase.firestore.Query[] = [collection];
 
-  if (ast.where) {
+/*
+ * We'd need this if we end up implementing JOINs, but for now
+ * it's unnecessary since we're only querying a single collection
+ 
+  // Keep track of aliased "tables" (collections)
+  const aliasedCollections: { [k: string]: string } = {};
+  if (ast.from[0].as.length > 0) {
+    aliasedCollections[ast.from[0].as] = colName;
+  } else {
+    aliasedCollections[colName] = colName;
+  }
+ */
+ 
+ if (ast.where) {
     queries = applyWhere(queries, ast.where);
   }
 
