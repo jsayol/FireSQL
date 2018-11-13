@@ -63,7 +63,7 @@ async function getData() {
 }
 
 function printCities(cities) {
-  for (const city of someCities) {
+  for (const city of cities) {
     console.log(
       `${city.city} in ${city.country} has ${city.people} people`
     );

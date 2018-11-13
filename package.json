@@ -7,7 +7,6 @@
   "module": "dist/firesql.es5.js",
   "typings": "dist/types/index.d.ts",
   "files": [
-    "dist"
   ],
   "author": "Josep Sayol <josep.sayol@gmail.com>",
   "repository": {
