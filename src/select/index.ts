@@ -8,21 +8,7 @@ export async function select(
   ref: firebase.firestore.Firestore | firebase.firestore.DocumentReference,
   ast: ASTObject
 ): Promise<firebase.firestore.DocumentData[]> {
-  let queries = generateQueries(ref, ast);
-
-  if (ast._next) {
-    assert(
-      ast._next.type === 'select',
-      ' UNION statements are only supported between SELECTs.'
-    );
-    // This is the UNION of 2 SELECTs, so lets process the second
-    // one and merge their queries
-    queries = queries.concat(generateQueries(ref, ast._next));
-
-    // FIXME: The SQL parser incorrectly attributes ORDER BY to the second
-    // SELECT only, instead of to the whole UNION. Find a workaround.
-  }
-
+  const queries = generateQueries(ref, ast);
   const documents = await executeQueries(queries);
   return processDocuments(ast, queries, documents);
 }
@@ -70,6 +56,19 @@ export function generateQueries(
     // and later we'll apply it again locally to the
     // merged set of documents, in case we end up with too many.
     queries = applyLimit(queries, ast.limit);
+  }
+
+  if (ast._next) {
+    assert(
+      ast._next.type === 'select',
+      ' UNION statements are only supported between SELECTs.'
+    );
+    // This is the UNION of 2 SELECTs, so lets process the second
+    // one and merge their queries
+    queries = queries.concat(generateQueries(ref, ast._next));
+
+    // FIXME: The SQL parser incorrectly attributes ORDER BY to the second
+    // SELECT only, instead of to the whole UNION. Find a workaround.
   }
 
   return queries;
