@@ -29,7 +29,7 @@ fs.copySync(
 );
 
 const newPkg = {
-  name: pkg.name,
+  name: 'firesql',
   version: pkg.version,
   description: pkg.description,
   keywords: pkg.keywords,

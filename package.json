@@ -1,13 +1,11 @@
 {
-  "name": "firesql",
-  "version": "1.0.0-alpha.4",
+  "name": "firesql-src",
+  "version": "1.0.0-alpha.5",
   "description": "Query Cloud Firestore for Firebase using SQL",
   "keywords": [],
   "main": "dist/firesql.umd.js",
   "module": "dist/firesql.es5.js",
   "typings": "dist/types/index.d.ts",
-  "files": [
-  ],
   "author": "Josep Sayol <josep.sayol@gmail.com>",
   "repository": {
     "type": "git",
@@ -27,7 +25,8 @@
     "test:prod": "yarn run lint && yarn run test -- --coverage --no-cache",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "prepare-release": "yarn run build && rimraf release && ts-node tools/prepare-release.ts"
+    "prepare-release": "yarn run build && rimraf release && ts-node tools/prepare-release.ts",
+    "npm:publish": "cd release && npm publish"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
