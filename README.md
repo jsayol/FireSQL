@@ -108,7 +108,7 @@ observable.subscribe(cities => {
 
 # Nested objects
 You can access nested objects by using backticks around the field path. For example, if you have a collection "*products*" with documents like this:
-```json
+```js
 {
   productName: "Firebase Hot Sauce",
   details: {
