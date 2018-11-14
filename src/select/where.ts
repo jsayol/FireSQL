@@ -1,4 +1,5 @@
-import { assert, prefixSuccessor, ASTValue, astValueToNative } from '../utils';
+import { ASTValue, ASTValueString } from 'node-sqlparser';
+import { assert, prefixSuccessor, astValueToNative } from '../utils';
 
 export function applyWhere(
   queries: firebase.firestore.Query[],
@@ -123,7 +124,6 @@ function applyCondition(
   astOperator: string,
   astValue: ASTValue
 ): firebase.firestore.Query[] {
-  let value = astValueToNative(astValue);
 
   if (astOperator === '!=' || astOperator === '<>') {
     // The != operator is not supported in Firestore so we
@@ -134,6 +134,7 @@ function applyCondition(
       ...applyCondition(queries, field, '>', astValue)
     ];
   } else {
+    const value = astValueToNative(astValue);
     const operator = whereFilterOp(astOperator);
     return queries.map(query => query.where(field, operator, value));
   }
@@ -169,13 +170,13 @@ function whereFilterOp(op: string): firebase.firestore.WhereFilterOp {
 }
 
 interface WhereLikeResult {
-  beginsWith?: ASTValue;
-  endsWith?: ASTValue;
-  contains?: ASTValue;
-  equals?: ASTValue;
+  beginsWith?: ASTValueString;
+  endsWith?: ASTValueString;
+  contains?: ASTValueString;
+  equals?: ASTValueString;
 }
 
-function stringASTWhereValue(str: string): ASTValue {
+function stringASTWhereValue(str: string): ASTValueString {
   return {
     type: 'string',
     value: str

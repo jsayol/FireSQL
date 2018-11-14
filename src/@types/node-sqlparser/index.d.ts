@@ -19,11 +19,95 @@ declare module 'node-sqlparser' {
     column: number;
   }
 
-  export interface ASTObject {
-    type: string;
-    // TODO: fill interface with actual types
-    [k: string]: any;
+  export interface ASTValueBool {
+    type: 'bool';
+    value: boolean;
   }
+
+  export interface ASTValueNumber {
+    type: 'number';
+    value: number | string; // Sometimes the number is in a string *shrug*
+  }
+
+  export interface ASTValueString {
+    type: 'string';
+    value: string;
+  }
+
+  export interface ASTValueNull {
+    type: 'null';
+    value: null;
+  }
+
+  export type ASTValue =
+    | ASTValueBool
+    | ASTValueNumber
+    | ASTValueString
+    | ASTValueNull;
+
+  export interface ASTBinaryExpression {
+    type: 'binary_expr';
+    operator:
+      | '='
+      | '<'
+      | '<='
+      | '>'
+      | '>='
+      | 'IS'
+      | 'IN'
+      | 'AND'
+      | 'OR'
+      | 'NOT'
+      | 'LIKE'
+      | 'BETWEEN'
+      | 'CONTAINS'
+      | 'NOT CONTAINS';
+    left: ASTExpression;
+    right: ASTExpression;
+  }
+
+  type ASTExpression = (ASTBinaryExpression | ASTColumnRef | ASTValue) & {
+    paren: void | true;
+  };
+
+  export interface ASTSelect {
+    type: 'select';
+    distinct: 'DISTINCT' | null;
+    columns: ASTSelectColumn[];
+    from: ASTSelectFrom[];
+    where: ASTExpression;
+    groupby: ASTGroupBy[];
+    orderby: ASTOrderBy[];
+    limit: ASTValue[];
+    params: any[];
+    _next: ASTObject;
+  }
+
+  export interface ASTSelectColumn {
+    expr: ASTExpression;
+    as: string | null;
+  }
+
+  export interface ASTColumnRef {
+    type: 'column_ref';
+    table: string;
+    column: string;
+  }
+
+  export interface ASTSelectFrom {
+    db: string;
+    table: string;
+    as: string | null;
+  }
+
+  export type ASTGroupBy = ASTColumnRef;
+
+  export interface ASTOrderBy {
+    expr: ASTExpression;
+    type: 'ASC' | 'DESC';
+  }
+
+  export type ASTObject = ASTSelect; // TODO: add INSERT, DELETE, etc.
 
   export default class AST {
     ast: ASTObject;

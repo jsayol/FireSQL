@@ -1,3 +1,11 @@
+import {
+  ASTValue,
+  ASTValueBool,
+  ASTValueNumber,
+  ASTValueString,
+  ASTValueNull
+} from 'node-sqlparser';
+
 export function assert(condition: boolean, message: string) {
   if (!condition) {
     throw new Error(message);
@@ -25,11 +33,6 @@ export function deepGet(obj: any, path: string): any {
   });
 
   return value;
-}
-
-export interface ASTValue {
-  type: string;
-  value: any;
 }
 
 export function astValueToNative(

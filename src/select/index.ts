@@ -1,6 +1,12 @@
-import { ASTObject } from 'node-sqlparser';
-import { assert, contains, ASTValue, safeGet, deepGet } from '../utils';
+import {
+  ASTObject,
+  ASTSelectColumn,
+  ASTExpression,
+  ASTColumnRef
+} from 'node-sqlparser';
+import { assert, contains, deepGet } from '../utils';
 import { applyWhere } from './where';
+import { applyGroupByLocally } from './groupby';
 import { applyOrderBy, applyOrderByLocally } from './orderby';
 import { applyLimit, applyLimitLocally } from './limit';
 
@@ -47,9 +53,9 @@ export function generateQueries(
     queries = applyOrderBy(queries, ast.orderby);
   }
 
-  if (ast.groupby) {
-    throw new Error('GROUP BY not supported yet');
-  }
+  // if (ast.groupby) {
+  //   throw new Error('GROUP BY not supported yet');
+  // }
 
   if (ast.limit) {
     // First we apply the limit to each query we may have
@@ -108,6 +114,11 @@ export function processDocuments(
   queries: firebase.firestore.Query[],
   documents: firebase.firestore.DocumentData[]
 ): firebase.firestore.DocumentData[] {
+  if (ast.groupby) {
+    const groupedDocs = applyGroupByLocally(documents, ast.groupby);
+    // TODO: finish this
+  }
+
   if (ast.orderby && queries.length > 1) {
     // We merged more than one query into a single set of documents
     // so we need to order the documents again, this time client-side.
@@ -123,18 +134,17 @@ export function processDocuments(
   if (typeof ast.columns === 'string' && ast.columns === '*') {
     // Return all fields from the documents
   } else if (Array.isArray(ast.columns)) {
+    // TODO: support aggregate functions (MIN, MAX, SUM, AVG, COUNT, ...)
     const columnsOK = ast.columns.every(astColumn => {
       return astColumn.expr.type === 'column_ref';
     });
     assert(columnsOK, 'Only field names are supported in SELECT statements.');
 
-    // TODO: support aggregate functions (MIN, MAX, SUM, AVG, COUNT, ...)
-
     // Only include the requested fields from the documents
     documents = documents.map(doc => {
       return ast.columns.reduce(
         (newDoc: firebase.firestore.DocumentData, column: ASTSelectColumn) => {
-          const fieldName = column.expr.column as string;
+          const fieldName = (column.expr as ASTColumnRef).column;
           const fieldAlias =
             column.as !== null && column.as.length > 0 ? column.as : fieldName;
           newDoc[fieldAlias] = deepGet(doc, fieldName);
@@ -149,18 +159,4 @@ export function processDocuments(
   }
 
   return documents;
-}
-
-interface ASTSelectColumn {
-  expr: ASTSelectColumnExpr;
-  as: string;
-}
-
-interface ASTSelectColumnExpr {
-  type: 'string';
-  table?: string;
-  column?: string;
-  operator?: string;
-  left?: ASTValue;
-  right?: ASTValue | ASTSelectColumnExpr;
 }
