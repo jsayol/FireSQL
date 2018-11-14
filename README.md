@@ -104,6 +104,8 @@ observable.subscribe(cities => {
 - No support for `JOIN`s yet.
 - `LIMIT` doesn't accept an `OFFSET`, only a single number.
 - No support for aggregate functions (`SUM`, `AVG`, `MIN`, `MAX`, etc.)
+- No support for negating conditions with `NOT`
+- Limited `LIKE`. Allows for searches in the form of `WHERE field LIKE 'value%'`, to look for fields that begin with the given value; and `WHERE field LIKE 'value'`, which is functionally equivalent to `WHERE field = 'value'`.
 
 # Examples of supported queries:
 
