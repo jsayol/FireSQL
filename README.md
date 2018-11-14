@@ -99,13 +99,35 @@ observable.subscribe(cities => {
 ```
 
 # Limitations
-
-- Only `SELECT` for now. I might add `INSERT`, `UPDATE`, and `DELETE` in the future.
-- No support for `JOIN`s yet.
+- Only `SELECT` queries for now. Support for `INSERT`, `UPDATE`, and `DELETE` might come in the future.
+- No support for `JOIN`s.
 - `LIMIT` doesn't accept an `OFFSET`, only a single number.
 - No support for aggregate functions (`SUM`, `AVG`, `MIN`, `MAX`, etc.)
-- No support for negating conditions with `NOT`
+- No support for negating conditions with `NOT`.
 - Limited `LIKE`. Allows for searches in the form of `WHERE field LIKE 'value%'`, to look for fields that begin with the given value; and `WHERE field LIKE 'value'`, which is functionally equivalent to `WHERE field = 'value'`.
+
+# Nested objects
+You can access nested objects by using backticks around the field path. For example, if you have a collection "*products*" with documents like this:
+```json
+{
+  productName: "Firebase Hot Sauce",
+  details: {
+    available: true,
+    stock: 42
+  }
+}
+```
+You could do the following queries:
+```sql
+SELECT *
+FROM products
+WHERE `details.stock` > 10
+```
+```sql
+SELECT productName, `details.stock` AS productStock
+FROM products
+WHERE `details.available` = true
+```
 
 # Examples of supported queries:
 

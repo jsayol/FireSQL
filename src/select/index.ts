@@ -1,5 +1,5 @@
 import { ASTObject } from 'node-sqlparser';
-import { assert, contains, ASTValue, safeGet } from '../utils';
+import { assert, contains, ASTValue, safeGet, deepGet } from '../utils';
 import { applyWhere } from './where';
 import { applyOrderBy, applyOrderByLocally } from './orderby';
 import { applyLimit, applyLimitLocally } from './limit';
@@ -120,10 +120,8 @@ export function processDocuments(
     documents = applyLimitLocally(documents, ast.limit);
   }
 
-  let selectFields: any[] | null;
   if (typeof ast.columns === 'string' && ast.columns === '*') {
     // Return all fields from the documents
-    selectFields = null;
   } else if (Array.isArray(ast.columns)) {
     const columnsOK = ast.columns.every(astColumn => {
       return astColumn.expr.type === 'column_ref';
@@ -131,28 +129,23 @@ export function processDocuments(
     assert(columnsOK, 'Only field names are supported in SELECT statements.');
 
     // TODO: support aggregate functions (MIN, MAX, SUM, AVG, COUNT, ...)
-    // TODO: take aliases into account
 
-    selectFields = ast.columns;
-  } else {
-    // We should never reach here
-    throw new Error('Internal error (ast.columns).');
-  }
-
-  if (selectFields !== null) {
     // Only include the requested fields from the documents
     documents = documents.map(doc => {
-      return selectFields!.reduce(
+      return ast.columns.reduce(
         (newDoc: firebase.firestore.DocumentData, column: ASTSelectColumn) => {
           const fieldName = column.expr.column as string;
           const fieldAlias =
             column.as !== null && column.as.length > 0 ? column.as : fieldName;
-          newDoc[fieldAlias] = safeGet(doc, fieldName);
+          newDoc[fieldAlias] = deepGet(doc, fieldName);
           return newDoc;
         },
         {}
       );
     });
+  } else {
+    // We should never reach here
+    throw new Error('Internal error (ast.columns).');
   }
 
   return documents;

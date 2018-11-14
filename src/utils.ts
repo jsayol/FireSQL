@@ -12,6 +12,21 @@ export function safeGet(obj: any, prop: string): any {
   if (contains(obj, prop)) return obj[prop];
 }
 
+export function deepGet(obj: any, path: string): any {
+  let value = obj;
+  const props = path.split('.');
+
+  props.some(prop => {
+    value = safeGet(value, prop);
+
+    // By using "some" instead of "forEach", we can return
+    // true whenever we want to break out of the loop.
+    return typeof value === void 0;
+  });
+
+  return value;
+}
+
 export interface ASTValue {
   type: string;
   value: any;
