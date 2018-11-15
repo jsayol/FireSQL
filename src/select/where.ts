@@ -125,10 +125,24 @@ function applyCondition(
   astValue: ASTValue
 ): firebase.firestore.Query[] {
 
+  /*
+   TODO: Several things:
+    - If we're applying a range condition to a query (<, <=, >, >=)
+      we need to make sure that any other range condition on that same
+      query is only applied to the same field. Firestore doesn't
+      allow range conditions on several fields in the same query.
+    - If we apply a range condition, the first .orderBy() needs to
+      be on that same field. We could either apply an orderBy straight
+      away as soon as we apply a range condition, or we can wait and
+      only apply it if the user has requested an ORDER BY.
+  */
+
   if (astOperator === '!=' || astOperator === '<>') {
     // The != operator is not supported in Firestore so we
     // split this query in two, one with the < operator and
     // another one with the > operator.
+    // TODO: if one of the operands is a boolean, then just
+    // perform a == operation with the negation of the value.
     return [
       ...applyCondition(queries, field, '<', astValue),
       ...applyCondition(queries, field, '>', astValue)
