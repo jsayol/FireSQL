@@ -96,16 +96,14 @@ firebase.initializeApp({ /* ... */ });
 const firestoreSQL = new FirestoreSQL(firebase.firestore());
 
 const cities$ = firestoreSQL.rxQuery(`
-  SELECT name AS city, country, population AS people
-  FROM cities
-  WHERE country = 'USA' AND population > 700000
-  ORDER BY country, population DESC
-  LIMIT 10
+  SELECT city, category, AVG(price) AS avgPrice
+  FROM restaurants
+  WHERE category IN ("Mexican", "Indian", "Brunch")
+  GROUP BY city, category
 `);
 
-cities$.subscribe(cities => {
-  console.log(`Got an update! There are ${cities.length} cities`);
-  doSomething(cities);
+cities$.subscribe(results => {
+  /* REALTIME AGGREGATED DATA! */
 });
 ```
 
@@ -114,7 +112,8 @@ cities$.subscribe(cities => {
 - Only `SELECT` queries for now. Support for `INSERT`, `UPDATE`, and `DELETE` might come in the future.
 - No support for `JOIN`s.
 - `LIMIT` doesn't accept an `OFFSET`, only a single number.
-- No support for aggregate functions (`SUM`, `AVG`, `MIN`, `MAX`, etc.)
+- No support for aggregate function `COUNT`.
+- - If using `GROUP BY`, it cannot be combined with `ORDER BY` nor `LIMIT`.
 - No support for negating conditions with `NOT`.
 - Limited `LIKE`. Allows for searches in the form of `WHERE field LIKE 'value%'`, to look for fields that begin with the given value; and `WHERE field LIKE 'value'`, which is functionally equivalent to `WHERE field = 'value'`.
 
@@ -254,6 +253,19 @@ WHERE favorite -- Equivalent to the previous one
 SELECT *
 FROM restaurants
 WHERE favorite IS NULL
+```
+
+```sql
+SELECT AVG(price) AS averagePriceInChicago
+FROM restaurants
+WHERE city = 'Chicago'
+```
+
+```sql
+SELECT city, MIN(price), AVG(price), MAX(price)
+FROM restaurants
+WHERE category = 'Indian'
+GROUP BY city
 ```
 
 ```sql
