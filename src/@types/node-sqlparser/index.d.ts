@@ -19,33 +19,33 @@ declare module 'node-sqlparser' {
     column: number;
   }
 
-  export interface ASTValueBool {
+  export interface SQL_ValueBool {
     type: 'bool';
     value: boolean;
   }
 
-  export interface ASTValueNumber {
+  export interface SQL_ValueNumber {
     type: 'number';
     value: number | string; // Sometimes the number is in a string *shrug*
   }
 
-  export interface ASTValueString {
+  export interface SQL_ValueString {
     type: 'string';
     value: string;
   }
 
-  export interface ASTValueNull {
+  export interface SQL_ValueNull {
     type: 'null';
     value: null;
   }
 
-  export type ASTValue =
-    | ASTValueBool
-    | ASTValueNumber
-    | ASTValueString
-    | ASTValueNull;
+  export type SQL_Value =
+    | SQL_ValueBool
+    | SQL_ValueNumber
+    | SQL_ValueString
+    | SQL_ValueNull;
 
-  export interface ASTBinaryExpression {
+  export interface SQL_BinaryExpression {
     type: 'binary_expr';
     operator:
       | '='
@@ -62,59 +62,71 @@ declare module 'node-sqlparser' {
       | 'BETWEEN'
       | 'CONTAINS'
       | 'NOT CONTAINS';
-    left: ASTExpression;
-    right: ASTExpression;
+    left: SQL_Expression;
+    right: SQL_Expression;
   }
 
-  type ASTExpression = (ASTBinaryExpression | ASTColumnRef | ASTValue) & {
+  type SQL_Expression = (
+    | SQL_BinaryExpression
+    | SQL_ColumnRef
+    | SQL_Value
+    | SQL_AggrFunction) & {
     paren: void | true;
   };
 
-  export interface ASTSelect {
+  export interface SQL_Select {
     type: 'select';
     distinct: 'DISTINCT' | null;
-    columns: ASTSelectColumn[];
-    from: ASTSelectFrom[];
-    where: ASTExpression;
-    groupby: ASTGroupBy[];
-    orderby: ASTOrderBy[];
-    limit: ASTValue[];
+    columns: SQL_SelectColumn[];
+    from: SQL_SelectFrom[];
+    where: SQL_Expression;
+    groupby: SQL_GroupBy[];
+    orderby: SQL_OrderBy[];
+    limit: SQL_Value[];
     params: any[];
-    _next: ASTObject;
+    _next: SQL_AST;
   }
 
-  export interface ASTSelectColumn {
-    expr: ASTExpression;
+  export interface SQL_SelectColumn {
+    expr: SQL_Expression;
     as: string | null;
   }
 
-  export interface ASTColumnRef {
+  export interface SQL_ColumnRef {
     type: 'column_ref';
     table: string;
     column: string;
   }
 
-  export interface ASTSelectFrom {
+  export interface SQL_AggrFunction {
+    type: 'aggr_func';
+    name: string;
+    args: {
+      expr: SQL_Expression;
+    };
+  }
+
+  export interface SQL_SelectFrom {
     db: string;
     table: string;
     as: string | null;
   }
 
-  export type ASTGroupBy = ASTColumnRef;
+  export type SQL_GroupBy = SQL_ColumnRef;
 
-  export interface ASTOrderBy {
-    expr: ASTExpression;
+  export interface SQL_OrderBy {
+    expr: SQL_Expression;
     type: 'ASC' | 'DESC';
   }
 
-  export type ASTObject = ASTSelect; // TODO: add INSERT, DELETE, etc.
+  export type SQL_AST = SQL_Select; // TODO: add INSERT, DELETE, etc.
 
   export default class AST {
-    ast: ASTObject;
+    ast: SQL_AST;
     parse(input: string): void;
-    stringify(ast: ASTObject): string;
+    stringify(ast: SQL_AST): string;
   }
 
-  export function parse(input: string): ASTObject;
+  export function parse(input: string): SQL_AST;
   export function stringify(): string;
 }

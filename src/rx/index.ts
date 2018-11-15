@@ -1,10 +1,10 @@
-import { parse as parseSQL, ASTObject } from 'node-sqlparser';
+import { parse as parseSQL, SQL_AST } from 'node-sqlparser';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { collectionData } from 'rxfire/firestore';
-import { FirestoreSQL, DocumentData } from '../firesql';
+import { FirestoreSQL } from '../firesql';
 import { generateQueries, processDocuments } from '../select';
-import { assert } from '../utils';
+import { assert, DocumentData } from '../utils';
 
 declare module '../firesql' {
   interface FirestoreSQL {
@@ -16,14 +16,14 @@ declare module '../firesql' {
 FirestoreSQL.prototype.rxQuery = function<T>(
   sql: string
 ): Observable<T[] | DocumentData[]> {
-  const ast: ASTObject = parseSQL(sql);
+  const ast: SQL_AST = parseSQL(sql);
   assert(ast.type === 'select', 'Only SELECT statements are supported.');
   return rxSelect((this as any).ref, ast);
 };
 
 function rxSelect(
     ref: firebase.firestore.Firestore | firebase.firestore.DocumentReference,
-    ast: ASTObject
+    ast: SQL_AST
   ): Observable<firebase.firestore.DocumentData[]> {
     let queries = generateQueries(ref, ast);
   

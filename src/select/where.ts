@@ -1,4 +1,4 @@
-import { ASTValue, ASTValueString } from 'node-sqlparser';
+import { SQL_Value, SQL_ValueString } from 'node-sqlparser';
 import { assert, prefixSuccessor, astValueToNative } from '../utils';
 
 export function applyWhere(
@@ -25,7 +25,7 @@ export function applyWhere(
       );
 
       const newQueries: firebase.firestore.Query[] = [];
-      astWhere.right.value.forEach((valueObj: ASTValue) => {
+      astWhere.right.value.forEach((valueObj: SQL_Value) => {
         newQueries.push(
           ...applyCondition(queries, astWhere.left.column, '=', valueObj)
         );
@@ -51,6 +51,10 @@ export function applyWhere(
           whereLike.equals
         );
       } else if (whereLike.beginsWith !== void 0) {
+        /*
+         FIXME: using a single character (LIKE 'X%') doesn't seem to work.
+         This might actually be a bug either on the SDK or on the backend.
+         */
         const successorStr = prefixSuccessor(whereLike.beginsWith.value);
         queries = applyCondition(
           queries,
@@ -122,9 +126,8 @@ function applyCondition(
   queries: firebase.firestore.Query[],
   field: string,
   astOperator: string,
-  astValue: ASTValue
+  astValue: SQL_Value
 ): firebase.firestore.Query[] {
-
   /*
    TODO: Several things:
     - If we're applying a range condition to a query (<, <=, >, >=)
@@ -184,13 +187,13 @@ function whereFilterOp(op: string): firebase.firestore.WhereFilterOp {
 }
 
 interface WhereLikeResult {
-  beginsWith?: ASTValueString;
-  endsWith?: ASTValueString;
-  contains?: ASTValueString;
-  equals?: ASTValueString;
+  beginsWith?: SQL_ValueString;
+  endsWith?: SQL_ValueString;
+  contains?: SQL_ValueString;
+  equals?: SQL_ValueString;
 }
 
-function stringASTWhereValue(str: string): ASTValueString {
+function stringASTWhereValue(str: string): SQL_ValueString {
   return {
     type: 'string',
     value: str

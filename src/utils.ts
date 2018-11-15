@@ -1,10 +1,8 @@
-import {
-  ASTValue,
-  ASTValueBool,
-  ASTValueNumber,
-  ASTValueString,
-  ASTValueNull
-} from 'node-sqlparser';
+import { SQL_Value, SQL_AggrFunction } from 'node-sqlparser';
+
+export type DocumentData = { [field: string]: any };
+
+export type ValueOf<T> = T[keyof T];
 
 export function assert(condition: boolean, message: string) {
   if (!condition) {
@@ -36,7 +34,7 @@ export function deepGet(obj: any, path: string): any {
 }
 
 export function astValueToNative(
-  astValue: ASTValue
+  astValue: SQL_Value
 ): boolean | string | number | null {
   let value: boolean | string | number | null;
 
@@ -77,4 +75,20 @@ export function prefixSuccessor(prefix: string): string {
     }
   }
   return limit;
+}
+
+export function nameOrAlias(
+  name: string,
+  alias: string | null,
+  aggrFn?: SQL_AggrFunction
+): string {
+  if (alias !== null && alias.length > 0) {
+    return alias;
+  }
+
+  if (!aggrFn) {
+    return name;
+  }
+
+  return `${aggrFn.name}(${name})`;
 }
