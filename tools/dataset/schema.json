@@ -1,0 +1,134 @@
+{
+  "id": 139970,
+  "num_rows": 1,
+  "file_format": "json",
+  "name": "My Saved Schema",
+  "array": true,
+  "columns": [
+    {
+      "name": "$collection:shops",
+      "null_percentage": 0,
+      "type": "JSON Array",
+      "minItems": 50,
+      "maxItems": 50,
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.$id",
+      "null_percentage": 0,
+      "type": "Character Sequence",
+      "format": "************************",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.name",
+      "null_percentage": 0,
+      "type": "Fake Company Name",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.category",
+      "null_percentage": 5,
+      "type": "Department (Retail)",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.slogan",
+      "null_percentage": 50,
+      "type": "Slogan",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.rating",
+      "null_percentage": 0,
+      "type": "Number",
+      "min": 0,
+      "max": 5,
+      "decimals": 1,
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.tags[0-4]",
+      "null_percentage": 0,
+      "type": "Buzzword",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.manager.name",
+      "null_percentage": 10,
+      "type": "Full Name",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.manager.phone",
+      "null_percentage": 10,
+      "type": "Phone",
+      "format": "###-###-####",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.contact.address",
+      "null_percentage": 0,
+      "type": "Street Address",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.contact.city",
+      "null_percentage": 0,
+      "type": "City",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.contact.postal",
+      "null_percentage": 0,
+      "type": "Postal Code",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.contact.state",
+      "null_percentage": 0,
+      "type": "State",
+      "onlyUSPlaces": true,
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.$collection:products",
+      "null_percentage": 1,
+      "type": "JSON Array",
+      "minItems": 0,
+      "maxItems": 5,
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.$collection:products.$id",
+      "null_percentage": 0,
+      "type": "Character Sequence",
+      "format": "************************",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.$collection:products.name",
+      "null_percentage": 0,
+      "type": "Product (Grocery)",
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.$collection:products.price",
+      "null_percentage": 0,
+      "type": "Number",
+      "min": 0.01,
+      "max": 500,
+      "decimals": 2,
+      "formula": ""
+    },
+    {
+      "name": "$collection:shops.$collection:products.stock",
+      "null_percentage": 0,
+      "type": "Number",
+      "min": 0,
+      "max": 10,
+      "decimals": 0,
+      "formula": ""
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { parse as parseSQL, SQL_AST } from 'node-sqlparser';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { select } from './select';
+import { select, generateQueries } from './select';
 import { DocumentData } from './utils';
 
 // Polyfills
@@ -27,5 +27,10 @@ export class FirestoreSQL {
         `"${(ast.type as string).toUpperCase()}" statements are not supported.`
       );
     }
+  }
+
+  generateQueries(sql: string): firebase.firestore.Query[] {
+    const ast = parseSQL(sql);
+    return generateQueries(this.ref, ast);
   }
 }

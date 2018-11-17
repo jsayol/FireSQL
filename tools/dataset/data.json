@@ -1,0 +1,1645 @@
+[
+  {
+    "$collection:shops": [
+      {
+        "$id": "9OQ9tH0RKeceaq2VNXjCibVC",
+        "name": "Kilback and Sons",
+        "category": "Baby",
+        "slogan": null,
+        "rating": 0.2,
+        "tags": ["functionalities", "Extended", "portal"],
+        "manager": { "name": "Zacharie Polglase", "phone": "814-808-4203" },
+        "contact": {
+          "address": "19 Springs Place",
+          "city": "Erie",
+          "postal": "16522",
+          "state": "Pennsylvania"
+        },
+        "$collection:products": [
+          {
+            "$id": "oBQ5Hsv4P0bwpxrgxG8GYRrG",
+            "name": "Crackers - Graham",
+            "price": 483.73,
+            "stock": 8
+          },
+          {
+            "$id": "5cLc2MIyBWJaa1euD67pWxYg",
+            "name": "Chinese Lemon Pork",
+            "price": 74.97,
+            "stock": 4
+          },
+          {
+            "$id": "fF9RwyeJiMmUOMVRlcuimH5g",
+            "name": "Cheese - Pont Couvert",
+            "price": 413.84,
+            "stock": 10
+          },
+          {
+            "$id": "2FJ2dVk1B0ycVmpvdUoaLvQa",
+            "name": "Soup Campbells - Italian Wedding",
+            "price": 2.36,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "nF9eNQ4nyqlwWOaC576EFiFz",
+        "name": "Gottlieb-Hills",
+        "category": "Books",
+        "slogan": null,
+        "rating": 2.9,
+        "tags": ["Balanced"],
+        "manager": { "name": "Lavina Varey", "phone": "907-787-1848" },
+        "contact": {
+          "address": "0219 Northwestern Hill",
+          "city": "Anchorage",
+          "postal": "99512",
+          "state": "Alaska"
+        },
+        "$collection:products": [
+          {
+            "$id": "QtMLkfWOqLaIrJjXFuO9DUXP",
+            "name": "Mushroom - Chanterelle, Dry",
+            "price": 263.82,
+            "stock": 3
+          },
+          {
+            "$id": "ZIqGYtUtH7ctHzdsPsZITcn2",
+            "name": "Coffee - Espresso",
+            "price": 422.65,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "DsvRldo2nUNb8OIwkkm2bVTV",
+        "name": "Beatty LLC",
+        "category": "Jewelery",
+        "slogan": "innovate dot-com infomediaries",
+        "rating": 0.1,
+        "tags": [],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "6231 Grayhawk Road",
+          "city": "Erie",
+          "postal": "16550",
+          "state": "Pennsylvania"
+        },
+        "$collection:products": [
+          {
+            "$id": "iDgIGa34am0toOwIaJm6ua1r",
+            "name": "Pie Filling - Pumpkin",
+            "price": 102.58,
+            "stock": 4
+          },
+          {
+            "$id": "awE86M0uqLo5FEwNsnNhvwbq",
+            "name": "Bacardi Limon",
+            "price": 276.71,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "UWluDlEpUGtE4OKROlIoNHZw",
+        "name": "Watsica-Flatley",
+        "category": "Music",
+        "slogan": "engineer integrated e-services",
+        "rating": 1.6,
+        "tags": [],
+        "manager": { "name": "Hershel McMenamie", "phone": "720-317-7117" },
+        "contact": {
+          "address": "93315 East Street",
+          "city": "Littleton",
+          "postal": "80161",
+          "state": "Colorado"
+        },
+        "$collection:products": [
+          {
+            "$id": "TTal7Tf1mrhC2g8pKpy0kuPZ",
+            "name": "Peach - Fresh",
+            "price": 419.83,
+            "stock": 5
+          },
+          {
+            "$id": "BR9UusKnVyCs8wcTMY6l3nAn",
+            "name": "Pork - Shoulder",
+            "price": 179.1,
+            "stock": 10
+          },
+          {
+            "$id": "GoNmkig2P8NWflv9eHSgJ6Sp",
+            "name": "Radish - Black, Winter, Organic",
+            "price": 124.94,
+            "stock": 3
+          },
+          {
+            "$id": "L5by7lah1kW4i2GHwIZNsKMa",
+            "name": "Cheese - Comtomme",
+            "price": 102.79,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "Z2n6G380KjjfotERPkUGQY6z",
+        "name": "Hettinger-Flatley",
+        "category": "Clothing",
+        "slogan": "transform cross-platform eyeballs",
+        "rating": 3.2,
+        "tags": [],
+        "manager": { "name": "Tyrone Junes", "phone": "214-261-7900" },
+        "contact": {
+          "address": "3582 Beilfuss Parkway",
+          "city": "Dallas",
+          "postal": "75265",
+          "state": "Texas"
+        },
+        "$collection:products": [
+          {
+            "$id": "cdXdxMKH3WQMoT4umSr7gkGR",
+            "name": "Container - Foam Dixie 12 Oz",
+            "price": 496.67,
+            "stock": 6
+          },
+          {
+            "$id": "Sv0DtZzye4XkLE5c89xQBDkq",
+            "name": "Pepsi - Diet, 355 Ml",
+            "price": 26.57,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "zWEHhlY4Uw40oMyU79tP6t99",
+        "name": "Pacocha, Bergnaum and Cummerata",
+        "category": "Health",
+        "slogan": null,
+        "rating": 4.9,
+        "tags": ["Sharable", "process improvement", "3rd generation"],
+        "manager": { "name": "Hasty Mungham", "phone": "602-336-5634" },
+        "contact": {
+          "address": "92 Hansons Court",
+          "city": "Phoenix",
+          "postal": "85005",
+          "state": "Arizona"
+        },
+        "$collection:products": [
+          {
+            "$id": "f3h0IjkGaOY4W20BoQagHo6K",
+            "name": "Chives - Fresh",
+            "price": 276.85,
+            "stock": 4
+          },
+          {
+            "$id": "sD3e2ZuldXsy4Ti6gJJCWomA",
+            "name": "Turnip - Wax",
+            "price": 243.37,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "QYll7jvyP5W3IDMiscGpeIMP",
+        "name": "Legros LLC",
+        "category": "Automotive",
+        "slogan": null,
+        "rating": 2.1,
+        "tags": ["static"],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "09592 Forster Park",
+          "city": "Milwaukee",
+          "postal": "53210",
+          "state": "Wisconsin"
+        },
+        "$collection:products": [
+          {
+            "$id": "Ji1VPeT7LVVnxPKohHwFaFkd",
+            "name": "Bread - Rosemary Focaccia",
+            "price": 295.44,
+            "stock": 2
+          }
+        ]
+      },
+      {
+        "$id": "hhrIQJMcsJLafSGrEPV8nj0y",
+        "name": "Greenholt, Weber and Kuhlman",
+        "category": "Computers",
+        "slogan": "syndicate robust portals",
+        "rating": 2.7,
+        "tags": ["Profit-focused", "function"],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "5611 Old Shore Junction",
+          "city": "Sioux Falls",
+          "postal": "57198",
+          "state": "South Dakota"
+        },
+        "$collection:products": [
+          {
+            "$id": "5Jdd2hJPBEk2uFYTRyifx4IZ",
+            "name": "Nantucket Apple Juice",
+            "price": 141.53,
+            "stock": 5
+          },
+          {
+            "$id": "SkqMRTiSFiZfK9CdqMETIhDz",
+            "name": "Lamb Leg - Bone - In Nz",
+            "price": 286.8,
+            "stock": 3
+          },
+          {
+            "$id": "onqnxhHBYcY98oiAedAjX9uv",
+            "name": "Wine - Cave Springs Dry Riesling",
+            "price": 49.48,
+            "stock": 0
+          }
+        ]
+      },
+      {
+        "$id": "ZoUBK8LjxXD3p82hs8KJmXa7",
+        "name": "Jacobson, Hirthe and Sawayn",
+        "category": "Garden",
+        "slogan": null,
+        "rating": 2.7,
+        "tags": ["product"],
+        "manager": { "name": "Ave Alvy", "phone": "804-883-5478" },
+        "contact": {
+          "address": "12126 Southridge Lane",
+          "city": "Richmond",
+          "postal": "23277",
+          "state": "Virginia"
+        },
+        "$collection:products": []
+      },
+      {
+        "$id": "MofenG6hVgPOEk4lqV9RHr3T",
+        "name": "Gulgowski, Schultz and Emmerich",
+        "category": "Kids",
+        "slogan": "innovate cross-platform web services",
+        "rating": 0.7,
+        "tags": ["demand-driven", "Fully-configurable", "Right-sized"],
+        "manager": { "name": "Kally Wimp", "phone": "214-534-9753" },
+        "contact": {
+          "address": "44 Artisan Alley",
+          "city": "Irving",
+          "postal": "75062",
+          "state": "Texas"
+        },
+        "$collection:products": [
+          {
+            "$id": "cwABcCu7wy72XAHYHOE244iZ",
+            "name": "Coffee - Hazelnut Cream",
+            "price": 240.19,
+            "stock": 5
+          },
+          {
+            "$id": "xOPav3a3rveQUmWRpRCzYw8h",
+            "name": "Veal - Sweetbread",
+            "price": 367.91,
+            "stock": 6
+          },
+          {
+            "$id": "Ac9WQYlYTQMM8K8s3wqqC14s",
+            "name": "Pasta - Canelloni",
+            "price": 358.3,
+            "stock": 4
+          },
+          {
+            "$id": "3sqLlMYNj5Sm9TALnMz4ouZB",
+            "name": "Pork Ham Prager",
+            "price": 32.86,
+            "stock": 5
+          }
+        ]
+      },
+      {
+        "$id": "HHY8YrC7eyUyCGRoAFUKibzJ",
+        "name": "Stoltenberg and Sons",
+        "category": null,
+        "slogan": null,
+        "rating": 2.1,
+        "tags": ["customer loyalty"],
+        "manager": { "name": "Rora Cadd", "phone": "240-785-4429" },
+        "contact": {
+          "address": "69065 Westend Circle",
+          "city": "Hagerstown",
+          "postal": "21747",
+          "state": "Maryland"
+        },
+        "$collection:products": [
+          {
+            "$id": "bIf4kerZtIxKLhJBkSfCH968",
+            "name": "Cheese - Romano, Grated",
+            "price": 485.09,
+            "stock": 4
+          },
+          {
+            "$id": "qbfdOp3Oe9X5mZwnvmdq0FGM",
+            "name": "Tea - Lemon Green Tea",
+            "price": 442.66,
+            "stock": 3
+          },
+          {
+            "$id": "YB6iatvtVCv7NhpbW4uWwYBk",
+            "name": "Yams",
+            "price": 248.29,
+            "stock": 7
+          },
+          {
+            "$id": "yy0ifSRxYOmnGhBMZs7bHU7U",
+            "name": "Chives - Fresh",
+            "price": 180.4,
+            "stock": 0
+          },
+          {
+            "$id": "Op72HZsKQ4CPxVaTfzC5i3zo",
+            "name": "Madeira",
+            "price": 401.42,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "GGKk0PYuvwYS56KYdWtxKqRy",
+        "name": "Kuhic LLC",
+        "category": "Grocery",
+        "slogan": "empower ubiquitous supply-chains",
+        "rating": 4.8,
+        "tags": ["responsive"],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "1621 Namekagon Point",
+          "city": "Bryan",
+          "postal": "77806",
+          "state": "Texas"
+        },
+        "$collection:products": [
+          {
+            "$id": "oKamCiuHB6SiJx5VHo1ajkn8",
+            "name": "Island Oasis - Banana Daiquiri",
+            "price": 268.23,
+            "stock": 3
+          },
+          {
+            "$id": "sTQXicSBa5bxHV1lBbj8QdOn",
+            "name": "Pepper - Julienne, Frozen",
+            "price": 301.97,
+            "stock": 10
+          },
+          {
+            "$id": "0Pyjr5iEIDmEs6r9Jcp6xt1K",
+            "name": "Pepper - Green, Chili",
+            "price": 451.19,
+            "stock": 7
+          },
+          {
+            "$id": "0l80QPSkgnKU8teb8WqLbuts",
+            "name": "Oil - Coconut",
+            "price": 354.73,
+            "stock": 7
+          }
+        ]
+      },
+      {
+        "$id": "1XNGBznYMFZnkJj7GWGbFNZy",
+        "name": "Mohr, Yundt and Borer",
+        "category": "Jewelery",
+        "slogan": null,
+        "rating": 0.8,
+        "tags": [
+          "Cross-group",
+          "implementation",
+          "Distributed",
+          "next generation"
+        ],
+        "manager": { "name": "Adelina Anstice", "phone": "718-718-1145" },
+        "contact": {
+          "address": "60583 Porter Plaza",
+          "city": "Staten Island",
+          "postal": "10310",
+          "state": "New York"
+        },
+        "$collection:products": [
+          {
+            "$id": "RqqMqiKcEsxPBf0TabihbqS4",
+            "name": "Gingerale - Schweppes, 355 Ml",
+            "price": 244.31,
+            "stock": 0
+          },
+          {
+            "$id": "EPBkGghFuYMhD3vfyvK4z5by",
+            "name": "Beans - Fine",
+            "price": 60.94,
+            "stock": 10
+          }
+        ]
+      },
+      {
+        "$id": "21Bj3cQpXrF0lBgZ2hBoFOMq",
+        "name": "Stoltenberg-Hamill",
+        "category": null,
+        "slogan": "engineer user-centric deliverables",
+        "rating": 1.4,
+        "tags": ["uniform", "Profound"],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "5 Claremont Parkway",
+          "city": "Independence",
+          "postal": "64054",
+          "state": "Missouri"
+        },
+        "$collection:products": [
+          {
+            "$id": "QX2Xf56BB2O3zXz0R8rZBgB2",
+            "name": "Tortillas - Flour, 8",
+            "price": 333.15,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "nMrW1BEvEzBl7BH5Omb4djLK",
+        "name": "Feest, Deckow and Marvin",
+        "category": "Beauty",
+        "slogan": null,
+        "rating": 2.6,
+        "tags": ["neural-net", "incremental", "Networked"],
+        "manager": { "name": "Averil Winspire", "phone": "602-467-9704" },
+        "contact": {
+          "address": "2 Buhler Junction",
+          "city": "Phoenix",
+          "postal": "85083",
+          "state": "Arizona"
+        },
+        "$collection:products": []
+      },
+      {
+        "$id": "qDj7S6gJufPn96ca985919fP",
+        "name": "Ratke-Kihn",
+        "category": null,
+        "slogan": "evolve interactive e-markets",
+        "rating": 4.8,
+        "tags": ["Open-architected", "Right-sized", "Enhanced"],
+        "manager": { "name": "Dyana Satchel", "phone": "918-763-3045" },
+        "contact": {
+          "address": "73 Melody Park",
+          "city": "Tulsa",
+          "postal": "74141",
+          "state": "Oklahoma"
+        },
+        "$collection:products": [
+          {
+            "$id": "5JrXG7xtyyzTlDd1ea3ElQEK",
+            "name": "Lumpfish Black",
+            "price": 369.56,
+            "stock": 5
+          },
+          {
+            "$id": "GHKCNwbSzNthw8m5q8HB3Vxd",
+            "name": "Tarragon - Primerba, Paste",
+            "price": 302.57,
+            "stock": 1
+          },
+          {
+            "$id": "ijfIX30BJxaQ8pio1l1U61u6",
+            "name": "Longos - Grilled Veg Sandwiches",
+            "price": 17.22,
+            "stock": 1
+          },
+          {
+            "$id": "c8nV09shVhYAXJvG1GtxbVhF",
+            "name": "Oil - Safflower",
+            "price": 464.53,
+            "stock": 3
+          },
+          {
+            "$id": "eErLIsER6AhsArAsvCSbYq5x",
+            "name": "Chocolate - Sugar Free Semi Choc",
+            "price": 244.7,
+            "stock": 5
+          }
+        ]
+      },
+      {
+        "$id": "IrmOltmML2hVVOCcV3LvHefW",
+        "name": "Schaefer and Sons",
+        "category": "Home",
+        "slogan": null,
+        "rating": 4.6,
+        "tags": [
+          "multi-tasking",
+          "Customer-focused",
+          "eco-centric",
+          "Business-focused"
+        ],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "33015 Katie Lane",
+          "city": "Huntsville",
+          "postal": "35895",
+          "state": "Alabama"
+        },
+        "$collection:products": [
+          {
+            "$id": "JVrFVDP5iI15YVB1wLKwApgH",
+            "name": "Pea - Snow",
+            "price": 171.74,
+            "stock": 6
+          },
+          {
+            "$id": "Yy1IIWlBASM8sftEFXBW0hZv",
+            "name": "Water - Spring 1.5lit",
+            "price": 193.62,
+            "stock": 3
+          }
+        ]
+      },
+      {
+        "$id": "Y5Sx4ZDXuf0yzLdwESUcRvhK",
+        "name": "Rau, Dickens and Davis",
+        "category": "Books",
+        "slogan": "innovate integrated models",
+        "rating": 0.6,
+        "tags": [],
+        "manager": { "name": "Dorice Scoates", "phone": "361-291-2510" },
+        "contact": {
+          "address": "4353 Grayhawk Court",
+          "city": "Corpus Christi",
+          "postal": "78475",
+          "state": "Texas"
+        },
+        "$collection:products": [
+          {
+            "$id": "Gc9sMDYnS2HvmpjSd4OpQMm3",
+            "name": "Roe - Flying Fish",
+            "price": 189.91,
+            "stock": 2
+          },
+          {
+            "$id": "Ifz3TmkQRlqOfKbD89VeIn4M",
+            "name": "Pears - Bartlett",
+            "price": 298.88,
+            "stock": 2
+          },
+          {
+            "$id": "kS7p21Pu83odNacIw1tOKeQF",
+            "name": "Gooseberry",
+            "price": 357.89,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "F2bAKHesiKRMejXbhi0viWGZ",
+        "name": "Auer-Denesik",
+        "category": "Baby",
+        "slogan": null,
+        "rating": 4.9,
+        "tags": [],
+        "manager": { "name": "Luis Fulcher", "phone": "217-721-9960" },
+        "contact": {
+          "address": "43815 Karstens Circle",
+          "city": "Springfield",
+          "postal": "62718",
+          "state": "Illinois"
+        },
+        "$collection:products": [
+          {
+            "$id": "2eoW7qS3frW43jVFGqo8sZA7",
+            "name": "Salmon - Sockeye Raw",
+            "price": 230.9,
+            "stock": 6
+          },
+          {
+            "$id": "s3oWXmgXwueZPbJY1zDJjsjO",
+            "name": "Calvados - Boulard",
+            "price": 451.4,
+            "stock": 2
+          },
+          {
+            "$id": "s6GlEs30uRDaEyox9o4v5h6L",
+            "name": "Pork - European Side Bacon",
+            "price": 7.49,
+            "stock": 3
+          },
+          {
+            "$id": "94wfHnv3QMtbO8Jt4hpSnwCL",
+            "name": "Tuna - Yellowfin",
+            "price": 9.42,
+            "stock": 4
+          },
+          {
+            "$id": "AHQTtbZKbqecTwbEq2ZL3No9",
+            "name": "Soho Lychee Liqueur",
+            "price": 396.23,
+            "stock": 1
+          }
+        ]
+      },
+      {
+        "$id": "7dPh9PqPdUx4zOTBopXCXUco",
+        "name": "Schiller, Thiel and Murray",
+        "category": "Health",
+        "slogan": null,
+        "rating": 1.7,
+        "tags": ["solution-oriented", "impactful"],
+        "manager": { "name": "Pierrette Perfili", "phone": "907-473-8846" },
+        "contact": {
+          "address": "639 Di Loreto Junction",
+          "city": "Fairbanks",
+          "postal": "99709",
+          "state": "Alaska"
+        },
+        "$collection:products": []
+      },
+      {
+        "$id": "WD4X86TuIhkiLMnsce1DU04b",
+        "name": "Fay, West and Smitham",
+        "category": "Health",
+        "slogan": null,
+        "rating": 2.0,
+        "tags": [],
+        "manager": { "name": "Vinnie Worters", "phone": "816-323-5027" },
+        "contact": {
+          "address": "28762 Coleman Point",
+          "city": "Kansas City",
+          "postal": "64114",
+          "state": "Missouri"
+        },
+        "$collection:products": [
+          {
+            "$id": "IPjnbQoCbJRdBIDAqB9XNrrD",
+            "name": "Energy - Boo - Koo",
+            "price": 459.06,
+            "stock": 7
+          },
+          {
+            "$id": "XmqX5imlmQvhUcW3byoyzctr",
+            "name": "Wine - Alsace Riesling Reserve",
+            "price": 343.22,
+            "stock": 2
+          }
+        ]
+      },
+      {
+        "$id": "X3B7MIk7nB5Du8nP7tVe5KAG",
+        "name": "Bayer, Schimmel and Hansen",
+        "category": "Home",
+        "slogan": "extend clicks-and-mortar content",
+        "rating": 2.3,
+        "tags": ["mobile"],
+        "manager": { "name": "Gaynor Nary", "phone": "225-514-8635" },
+        "contact": {
+          "address": "665 Mesta Lane",
+          "city": "Baton Rouge",
+          "postal": "70815",
+          "state": "Louisiana"
+        },
+        "$collection:products": [
+          {
+            "$id": "wXGQs34rKGrEmVSXOKVJm566",
+            "name": "Oil - Margarine",
+            "price": 202.95,
+            "stock": 2
+          },
+          {
+            "$id": "21dGNzWveWvV7VXSXPIdGGWv",
+            "name": "Juice - Orangina",
+            "price": 220.25,
+            "stock": 8
+          }
+        ]
+      },
+      {
+        "$id": "lkbv4VlNEtyAOvZRhhH0By7A",
+        "name": "Witting-Kiehn",
+        "category": "Kids",
+        "slogan": null,
+        "rating": 3.6,
+        "tags": [
+          "modular",
+          "Future-proofed",
+          "User-centric",
+          "Quality-focused"
+        ],
+        "manager": { "name": "Kalinda Grunbaum", "phone": "253-622-1761" },
+        "contact": {
+          "address": "8 Manitowish Point",
+          "city": "Tacoma",
+          "postal": "98405",
+          "state": "Washington"
+        },
+        "$collection:products": [
+          {
+            "$id": "62Nq22jweObdgUR7k31nOnN1",
+            "name": "Wine - George Duboeuf Rose",
+            "price": 389.54,
+            "stock": 7
+          },
+          {
+            "$id": "31zS3wAJlpiNYdtjzgygQ438",
+            "name": "Pears - Anjou",
+            "price": 458.99,
+            "stock": 3
+          },
+          {
+            "$id": "FO1RHVmzUhmT7kboXhV9ZYv9",
+            "name": "Steam Pan Full Lid",
+            "price": 204.84,
+            "stock": 3
+          }
+        ]
+      },
+      {
+        "$id": "m5eiS5jlYiulLDLFu8LPdRss",
+        "name": "Jacobs, Tremblay and Swift",
+        "category": "Movies",
+        "slogan": null,
+        "rating": 4.9,
+        "tags": ["Adaptive"],
+        "manager": { "name": "Oby Waadenburg", "phone": "615-156-7069" },
+        "contact": {
+          "address": "8720 Forest Dale Drive",
+          "city": "Nashville",
+          "postal": "37245",
+          "state": "Tennessee"
+        },
+        "$collection:products": [
+          {
+            "$id": "dtKaqZB3HpOaXCBLUpxlEKjX",
+            "name": "Calypso - Strawberry Lemonade",
+            "price": 437.61,
+            "stock": 10
+          },
+          {
+            "$id": "8KSIVND55K6M3kr0XCUJdecX",
+            "name": "Pork - Sausage, Medium",
+            "price": 193.01,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "x9Q6hjKss7uQniNfqClCJ2SX",
+        "name": "Cormier, Marvin and McGlynn",
+        "category": "Electronics",
+        "slogan": "generate clicks-and-mortar infomediaries",
+        "rating": 0.1,
+        "tags": ["Sharable", "background"],
+        "manager": { "name": "Leia Clericoates", "phone": "559-697-6285" },
+        "contact": {
+          "address": "407 Northview Way",
+          "city": "Fresno",
+          "postal": "93740",
+          "state": "California"
+        },
+        "$collection:products": [
+          {
+            "$id": "xItDHkxT4w5uQqX71ssacJND",
+            "name": "Yucca",
+            "price": 414.86,
+            "stock": 2
+          },
+          {
+            "$id": "BzLYJ3jZucJTRBhqRO4sMvpH",
+            "name": "Foil - Round Foil",
+            "price": 89.37,
+            "stock": 6
+          },
+          {
+            "$id": "RP80PLMr9tXVBONrWrniyGzl",
+            "name": "Skirt - 24 Foot",
+            "price": 174.91,
+            "stock": 3
+          }
+        ]
+      },
+      {
+        "$id": "kZibLh51mSKPM94Gv5x69Pwv",
+        "name": "Abernathy LLC",
+        "category": "Music",
+        "slogan": null,
+        "rating": 0.1,
+        "tags": ["local", "5th generation"],
+        "manager": { "name": "Dewitt Chadwen", "phone": "314-125-8680" },
+        "contact": {
+          "address": "1 Springview Place",
+          "city": "Saint Louis",
+          "postal": "63150",
+          "state": "Missouri"
+        },
+        "$collection:products": [
+          {
+            "$id": "vWhlCwX9WEKvuM3ySHmWExQT",
+            "name": "French Kiss Vanilla",
+            "price": 307.37,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "WjICsOWEBnn3iV8t1egBb3jg",
+        "name": "Kunde, Pagac and Maggio",
+        "category": "Toys",
+        "slogan": null,
+        "rating": 1.3,
+        "tags": [],
+        "manager": { "name": "Whitaker Wastell", "phone": "727-527-3836" },
+        "contact": {
+          "address": "625 Utah Alley",
+          "city": "Clearwater",
+          "postal": "34615",
+          "state": "Florida"
+        },
+        "$collection:products": [
+          {
+            "$id": "BJqpab2MMBiZTciglHZrE70k",
+            "name": "Waffle Stix",
+            "price": 433.1,
+            "stock": 2
+          },
+          {
+            "$id": "iRLrH0Thaa6O0SUze65Tw9F4",
+            "name": "Squash - Pattypan, Yellow",
+            "price": 346.9,
+            "stock": 2
+          }
+        ]
+      },
+      {
+        "$id": "Be4dJwbcAxoYrXF15u6zU3c9",
+        "name": "Schulist, Crist and Jacobs",
+        "category": "Computers",
+        "slogan": null,
+        "rating": 4.7,
+        "tags": ["parallelism", "Managed", "multi-state", "system engine"],
+        "manager": { "name": "Mordy Mangeney", "phone": "919-753-9836" },
+        "contact": {
+          "address": "6930 Grim Alley",
+          "city": "Raleigh",
+          "postal": "27605",
+          "state": "North Carolina"
+        },
+        "$collection:products": [
+          {
+            "$id": "N1ZdfD5IiGanAIikMFBOUe12",
+            "name": "Mushroom - Portebello",
+            "price": 126.28,
+            "stock": 1
+          },
+          {
+            "$id": "xmko6aVPRzNbsSYrEkdFVGLS",
+            "name": "White Baguette",
+            "price": 223.19,
+            "stock": 2
+          },
+          {
+            "$id": "4sqHarVgpQ6gYpfJ9aYwHavc",
+            "name": "Shiro Miso",
+            "price": 47.04,
+            "stock": 8
+          },
+          {
+            "$id": "uA96xhc5gkE4lGma3MCR8kXK",
+            "name": "Lamb - Bones",
+            "price": 14.6,
+            "stock": 0
+          },
+          {
+            "$id": "Tl8Ow9wf3VyFkDSCGNWB77xG",
+            "name": "Bread - Sour Sticks With Onion",
+            "price": 394.47,
+            "stock": 3
+          }
+        ]
+      },
+      {
+        "$id": "GDHNzzFwxdx6hRc7d60GLBXb",
+        "name": "Torphy, Schmitt and Kulas",
+        "category": "Outdoors",
+        "slogan": null,
+        "rating": 1.7,
+        "tags": ["hub", "intranet"],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "52 Ryan Pass",
+          "city": "Garland",
+          "postal": "75049",
+          "state": "Texas"
+        },
+        "$collection:products": [
+          {
+            "$id": "RXza7bBb1qtE6sgYOYXfTNt3",
+            "name": "Lamb - Rack",
+            "price": 129.69,
+            "stock": 3
+          },
+          {
+            "$id": "mfRohvWIZgYMqDzHf7fXA1wR",
+            "name": "Salt And Pepper Mix - Black",
+            "price": 414.8,
+            "stock": 10
+          },
+          {
+            "$id": "9QkUrgrcxebyXJdaqUvMygwX",
+            "name": "Chinese Foods - Chicken",
+            "price": 14.55,
+            "stock": 5
+          },
+          {
+            "$id": "5oEZKhMD4a4iV9h9ICZ9eC8I",
+            "name": "Flavouring - Raspberry",
+            "price": 437.79,
+            "stock": 10
+          }
+        ]
+      },
+      {
+        "$id": "z1wfpmijz7QGk4Afcf011MP5",
+        "name": "Lemke-Herman",
+        "category": "Jewelery",
+        "slogan": "scale end-to-end initiatives",
+        "rating": 2.0,
+        "tags": ["methodology", "asynchronous", "5th generation", "extranet"],
+        "manager": { "name": "Stephenie Coughtrey", "phone": "434-888-7082" },
+        "contact": {
+          "address": "5285 Swallow Lane",
+          "city": "Lynchburg",
+          "postal": "24503",
+          "state": "Virginia"
+        },
+        "$collection:products": []
+      },
+      {
+        "$id": "VXGsK8M1F9Ziearuoi9xHl2m",
+        "name": "Langworth Group",
+        "category": "Games",
+        "slogan": "target open-source architectures",
+        "rating": 4.5,
+        "tags": ["Devolved", "mobile"],
+        "manager": { "name": "Albie Josuweit", "phone": "309-485-0719" },
+        "contact": {
+          "address": "15232 Hauk Junction",
+          "city": "Peoria",
+          "postal": "61614",
+          "state": "Illinois"
+        },
+        "$collection:products": [
+          {
+            "$id": "HRLGOZUWx7cb756Xfzn40ATJ",
+            "name": "Pie Pecan",
+            "price": 89.36,
+            "stock": 9
+          }
+        ]
+      },
+      {
+        "$id": "vlnW7ppQH9lnHrsJNaTPKEGh",
+        "name": "Hayes, Schmitt and Cartwright",
+        "category": "Computers",
+        "slogan": "reintermediate 24/365 e-tailers",
+        "rating": 4.1,
+        "tags": ["system engine", "neutral", "needs-based", "knowledge base"],
+        "manager": { "name": "Cara Lovie", "phone": "202-985-2397" },
+        "contact": {
+          "address": "94448 7th Drive",
+          "city": "Washington",
+          "postal": "20470",
+          "state": "District of Columbia"
+        },
+        "$collection:products": [
+          {
+            "$id": "kxNuOwZ00awm7VzRY9RnU036",
+            "name": "Shrimp, Dried, Small / Lb",
+            "price": 55.94,
+            "stock": 7
+          },
+          {
+            "$id": "rUccLC4drCCUez9LAAGVF6Ly",
+            "name": "Beef - Flank Steak",
+            "price": 238.58,
+            "stock": 1
+          },
+          {
+            "$id": "KtXsSi7AGhTNc02llhImsUqU",
+            "name": "Pepper - Cayenne",
+            "price": 313.38,
+            "stock": 9
+          },
+          {
+            "$id": "7ofk6OxrLQBLsp4XXjLSk499",
+            "name": "Coffee - Decaffeinato Coffee",
+            "price": 15.74,
+            "stock": 10
+          },
+          {
+            "$id": "8PtT6HWEn1O4htvAv5f4G4hE",
+            "name": "Tea - Honey Green Tea",
+            "price": 193.48,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "sDpQ13xyabwRYG8YhKBg6qrw",
+        "name": "Welch-Wunsch",
+        "category": "Health",
+        "slogan": "engage back-end relationships",
+        "rating": 0.4,
+        "tags": ["matrix", "reciprocal"],
+        "manager": { "name": "Melania Hillen", "phone": "651-806-4988" },
+        "contact": {
+          "address": "57720 Waxwing Street",
+          "city": "Saint Paul",
+          "postal": "55108",
+          "state": "Minnesota"
+        },
+        "$collection:products": [
+          {
+            "$id": "IL1BhwHU4PhhBOJa9NKM8mtq",
+            "name": "Beef - Diced",
+            "price": 37.58,
+            "stock": 5
+          },
+          {
+            "$id": "1HouxoYa0F96KIzfNcnQwh7C",
+            "name": "Galliano",
+            "price": 402.39,
+            "stock": 5
+          },
+          {
+            "$id": "1bBPVnukhTeT7vywtYvnLxmM",
+            "name": "Sprouts - Onion",
+            "price": 70.13,
+            "stock": 0
+          }
+        ]
+      },
+      {
+        "$id": "rDlGsCN2LU4lewgQz7ua53j7",
+        "name": "Wuckert, Emmerich and Hills",
+        "category": null,
+        "slogan": null,
+        "rating": 0.7,
+        "tags": ["Virtual"],
+        "manager": { "name": "Hamlen Farlham", "phone": "214-384-0893" },
+        "contact": {
+          "address": "9 Kipling Trail",
+          "city": "Dallas",
+          "postal": "75323",
+          "state": "Texas"
+        },
+        "$collection:products": []
+      },
+      {
+        "$id": "u2cGsLWJFMsRdL4QOsaiHPLB",
+        "name": "Terry Inc",
+        "category": "Automotive",
+        "slogan": "strategize real-time infrastructures",
+        "rating": 3.4,
+        "tags": ["hybrid", "Reduced", "intranet"],
+        "manager": { "name": "Rozella Lalor", "phone": "513-833-6773" },
+        "contact": {
+          "address": "51392 Novick Avenue",
+          "city": "Cincinnati",
+          "postal": "45233",
+          "state": "Ohio"
+        },
+        "$collection:products": [
+          {
+            "$id": "LhqGTFIGk0WvYao2BM2FZqjN",
+            "name": "Ecolab Crystal Fusion",
+            "price": 352.94,
+            "stock": 3
+          },
+          {
+            "$id": "jzRR0E83tM9Q5AO7jm6egN0R",
+            "name": "Sachet",
+            "price": 482.03,
+            "stock": 2
+          },
+          {
+            "$id": "muzovpeuayatTQt58MzjDkI6",
+            "name": "Beer - Alexander Kieths, Pale Ale",
+            "price": 90.18,
+            "stock": 5
+          },
+          {
+            "$id": "JoZGwBY0AJItkhntvcARiXtj",
+            "name": "Sprouts - Alfalfa",
+            "price": 122.46,
+            "stock": 4
+          },
+          {
+            "$id": "b0ZIAbI6FpHfGXF7CzCu0Y3w",
+            "name": "Carbonated Water - Blackcherry",
+            "price": 209.59,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "pOflEHZ41TdheRIJ3dzLBBI9",
+        "name": "Fritsch, Kirlin and Tromp",
+        "category": "Jewelery",
+        "slogan": null,
+        "rating": 2.0,
+        "tags": ["utilisation", "Switchable", "attitude"],
+        "manager": { "name": "Jessika Sabatini", "phone": "704-855-1372" },
+        "contact": {
+          "address": "1648 Sundown Pass",
+          "city": "Charlotte",
+          "postal": "28299",
+          "state": "North Carolina"
+        },
+        "$collection:products": [
+          {
+            "$id": "GSi8yjxp9xt7epe31nB1DpW6",
+            "name": "Lotus Root",
+            "price": 25.12,
+            "stock": 5
+          }
+        ]
+      },
+      {
+        "$id": "xYghQ7nDHzPnamBMOrrpEXsq",
+        "name": "Bogisich Group",
+        "category": null,
+        "slogan": null,
+        "rating": 2.8,
+        "tags": ["solution", "info-mediaries"],
+        "manager": { "name": "Garey Garling", "phone": "916-970-0607" },
+        "contact": {
+          "address": "5 Red Cloud Street",
+          "city": "Sacramento",
+          "postal": "95823",
+          "state": "California"
+        },
+        "$collection:products": [
+          {
+            "$id": "Yg2kGpj0g54IzEM1CUEpwOek",
+            "name": "Cafe Royale",
+            "price": 252.91,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "OWCtt0r1LP3gYm7Q12gNaKQ7",
+        "name": "Homenick, Hand and Hills",
+        "category": "Music",
+        "slogan": "generate web-enabled solutions",
+        "rating": 3.2,
+        "tags": ["hub", "Grass-roots", "methodology"],
+        "manager": { "name": "Ralph Patroni", "phone": "919-837-1658" },
+        "contact": {
+          "address": "81 Comanche Terrace",
+          "city": "Raleigh",
+          "postal": "27658",
+          "state": "North Carolina"
+        },
+        "$collection:products": [
+          {
+            "$id": "gY8Wt14i7xfYDsXuIc1vDdMV",
+            "name": "Ketchup - Tomato",
+            "price": 318.12,
+            "stock": 1
+          },
+          {
+            "$id": "CZTWggZZ9mAGu1baUY56I3sn",
+            "name": "Pear - Packum",
+            "price": 309.85,
+            "stock": 10
+          },
+          {
+            "$id": "7ot8P0DQ1eUoFWsxiDyzTHp9",
+            "name": "Shrimp - 16/20, Iqf, Shell On",
+            "price": 360.56,
+            "stock": 2
+          },
+          {
+            "$id": "lKoybQP0MXCbrecdUk8ANnSw",
+            "name": "Gloves - Goldtouch Disposable",
+            "price": 81.92,
+            "stock": 1
+          },
+          {
+            "$id": "Yp3gJfglm2J7dlhrEZ75DE73",
+            "name": "Phyllo Dough",
+            "price": 106.19,
+            "stock": 1
+          }
+        ]
+      },
+      {
+        "$id": "FpI3n4m1HTvY4a72Kyem66vQ",
+        "name": "Denesik, Strosin and Hauck",
+        "category": "Outdoors",
+        "slogan": null,
+        "rating": 2.0,
+        "tags": ["circuit", "didactic", "infrastructure", "dedicated"],
+        "manager": { "name": "Grantley Records", "phone": "816-826-9364" },
+        "contact": {
+          "address": "59 4th Crossing",
+          "city": "Kansas City",
+          "postal": "64114",
+          "state": "Missouri"
+        },
+        "$collection:products": [
+          {
+            "$id": "fr8kFhzyEMmOFS3tKXD4UwgW",
+            "name": "Port - 74 Brights",
+            "price": 352.3,
+            "stock": 10
+          },
+          {
+            "$id": "eHNofu4zQjSO8vQlk13hL3Uf",
+            "name": "Lamb Tenderloin Nz Fr",
+            "price": 330.38,
+            "stock": 1
+          },
+          {
+            "$id": "GHLc5TOJOar9jXJFyJWFlM7C",
+            "name": "Dill Weed - Dry",
+            "price": 262.87,
+            "stock": 2
+          }
+        ]
+      },
+      {
+        "$id": "SAxBtJLuvSTuMPqrR8aw1fzV",
+        "name": "Schneider-Gorczany",
+        "category": "Toys",
+        "slogan": null,
+        "rating": 4.0,
+        "tags": [],
+        "manager": { "name": "Mathilde Eriksson", "phone": "303-485-2948" },
+        "contact": {
+          "address": "9 Lawn Way",
+          "city": "Denver",
+          "postal": "80249",
+          "state": "Colorado"
+        },
+        "$collection:products": [
+          {
+            "$id": "tSskWArYdBNc5Y2sKbcs7xf5",
+            "name": "Chevril",
+            "price": 284.25,
+            "stock": 4
+          },
+          {
+            "$id": "c6GjBhkOc7h4n8yqZQzljW0j",
+            "name": "Limes",
+            "price": 359.28,
+            "stock": 3
+          },
+          {
+            "$id": "L3UwhCJI68e6XwBTHST4LdjV",
+            "name": "Beef - Bones, Cut - Up",
+            "price": 495.5,
+            "stock": 0
+          }
+        ]
+      },
+      {
+        "$id": "2JdrpE9Ls9Pfj5RSCu4vGVpd",
+        "name": "Hane, Powlowski and Schmeler",
+        "category": "Industrial",
+        "slogan": null,
+        "rating": 2.2,
+        "tags": ["transitional"],
+        "manager": { "name": "Gerianna Crauford", "phone": "317-350-3493" },
+        "contact": {
+          "address": "27 Declaration Plaza",
+          "city": "Indianapolis",
+          "postal": "46247",
+          "state": "Indiana"
+        },
+        "$collection:products": [
+          {
+            "$id": "exko4eZk5hrANK7ZYUc0n85u",
+            "name": "Sesame Seed",
+            "price": 211.62,
+            "stock": 4
+          },
+          {
+            "$id": "nlCkXVQ60a2mriRmeF7RL28a",
+            "name": "Dasheen",
+            "price": 464.85,
+            "stock": 5
+          }
+        ]
+      },
+      {
+        "$id": "EERL0MgN8LSZfA3YDSx6LKrQ",
+        "name": "Hauck, Jacobs and McDermott",
+        "category": "Garden",
+        "slogan": null,
+        "rating": 4.2,
+        "tags": ["fresh-thinking", "task-force", "Up-sized"],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "29774 Judy Pass",
+          "city": "Indianapolis",
+          "postal": "46216",
+          "state": "Indiana"
+        },
+        "$collection:products": [
+          {
+            "$id": "pC56sT2727ZirfqLfPJqWKp5",
+            "name": "Chips Potato All Dressed - 43g",
+            "price": 388.39,
+            "stock": 7
+          },
+          {
+            "$id": "QhchdAqZYG13lbHtGSrV9ROx",
+            "name": "Vinegar - Cider",
+            "price": 355.76,
+            "stock": 7
+          },
+          {
+            "$id": "DjPO4hGQT9vUrJSlW3xxXsJh",
+            "name": "Nestea - Ice Tea, Diet",
+            "price": 103.95,
+            "stock": 2
+          },
+          {
+            "$id": "EUJpEhl9cL1j3qcw7X5tjzA2",
+            "name": "Wine - Mas Chicet Rose, Vintage",
+            "price": 278.54,
+            "stock": 4
+          }
+        ]
+      },
+      {
+        "$id": "sHO9qjR7u6d2Z1CRC08v4lvu",
+        "name": "Lesch Group",
+        "category": "Health",
+        "slogan": "expedite front-end synergies",
+        "rating": 1.2,
+        "tags": ["Polarised", "Organic", "Decentralized", "disintermediate"],
+        "manager": { "name": "Amalee Spread", "phone": "218-347-9686" },
+        "contact": {
+          "address": "609 Pennsylvania Drive",
+          "city": "Duluth",
+          "postal": "55805",
+          "state": "Minnesota"
+        },
+        "$collection:products": []
+      },
+      {
+        "$id": "qeEg6JVcL1kCdidkBKSRRy0S",
+        "name": "Hermann, Koch and Simonis",
+        "category": "Baby",
+        "slogan": null,
+        "rating": 3.0,
+        "tags": [],
+        "manager": { "name": "Penny Yarrington", "phone": "615-401-0273" },
+        "contact": {
+          "address": "0 Blaine Road",
+          "city": "Nashville",
+          "postal": "37205",
+          "state": "Tennessee"
+        },
+        "$collection:products": [
+          {
+            "$id": "0yUNAWBe7TEHSVP4aAdBfgWJ",
+            "name": "Chicken - Ground",
+            "price": 211.5,
+            "stock": 3
+          },
+          {
+            "$id": "MOZFWW6oAwBHJFcSFF4nqYpV",
+            "name": "Pasta - Fett Alfredo, Single Serve",
+            "price": 403.12,
+            "stock": 4
+          },
+          {
+            "$id": "YkTgz4OcH6y9u2h1wz5XMGXS",
+            "name": "Cornstarch",
+            "price": 173.4,
+            "stock": 1
+          },
+          {
+            "$id": "OXSbo3xMA0OWGpimh38A9YBo",
+            "name": "Vinegar - Cider",
+            "price": 421.8,
+            "stock": 2
+          },
+          {
+            "$id": "9cN4KmE3UHSI0RScXD9sED9F",
+            "name": "Cheese - La Sauvagine",
+            "price": 344.55,
+            "stock": 6
+          }
+        ]
+      },
+      {
+        "$id": "0WDpH8EfuNEJ9CH2k5n8qCTB",
+        "name": "Bayer, Ankunding and Hegmann",
+        "category": "Automotive",
+        "slogan": "deploy 24/7 models",
+        "rating": 4.6,
+        "tags": ["uniform"],
+        "manager": { "name": "Dion Gelderd", "phone": "316-419-1947" },
+        "contact": {
+          "address": "525 Del Sol Plaza",
+          "city": "Wichita",
+          "postal": "67215",
+          "state": "Kansas"
+        },
+        "$collection:products": [
+          {
+            "$id": "RSBZzheo8Ky8hFAVDW0nshyv",
+            "name": "Cheese - Romano, Grated",
+            "price": 316.21,
+            "stock": 5
+          },
+          {
+            "$id": "xlHwXeqgMBm2fWjvPGWFFlaB",
+            "name": "Sachet",
+            "price": 304.17,
+            "stock": 1
+          },
+          {
+            "$id": "DiJx1Jrxrp54BAzXiuyUL004",
+            "name": "Pork - Belly Fresh",
+            "price": 150.86,
+            "stock": 5
+          },
+          {
+            "$id": "3H2qlGQycWPFmlzK4yfb7UlS",
+            "name": "Cocoa Powder - Dutched",
+            "price": 401.01,
+            "stock": 8
+          },
+          {
+            "$id": "c0p1nInXwjLKkexLRXffK4PY",
+            "name": "Persimmons",
+            "price": 288.71,
+            "stock": 0
+          }
+        ]
+      },
+      {
+        "$id": "GIVPcZIT1F4W6MNzyDMJ4SVO",
+        "name": "Witting Inc",
+        "category": "Health",
+        "slogan": "morph real-time mindshare",
+        "rating": 4.8,
+        "tags": ["function", "Decentralized"],
+        "manager": { "name": "Ivette Humburton", "phone": "318-708-0074" },
+        "contact": {
+          "address": "003 Alpine Street",
+          "city": "Shreveport",
+          "postal": "71115",
+          "state": "Louisiana"
+        },
+        "$collection:products": [
+          {
+            "$id": "eiElq88HWHdr6k5mnAIzfrOR",
+            "name": "Wine - Black Tower Qr",
+            "price": 54.76,
+            "stock": 7
+          },
+          {
+            "$id": "RS4IBGCmN1GYHztkP84NGFvB",
+            "name": "Lid - 3oz Med Rec",
+            "price": 146.97,
+            "stock": 9
+          },
+          {
+            "$id": "jpa8AUJw6HNbmSaR1fh5ravi",
+            "name": "Water - Evian 355 Ml",
+            "price": 56.28,
+            "stock": 2
+          },
+          {
+            "$id": "PKwnekpj1IbjaJ4PuUbfuH0P",
+            "name": "Peas - Pigeon, Dry",
+            "price": 106.93,
+            "stock": 5
+          }
+        ]
+      },
+      {
+        "$id": "AFkShz1iwev9SZP3UILN21pp",
+        "name": "Maggio, Price and Walter",
+        "category": "Sports",
+        "slogan": "aggregate cross-platform paradigms",
+        "rating": 4.1,
+        "tags": ["Front-line"],
+        "manager": { "name": null, "phone": null },
+        "contact": {
+          "address": "9 Forest Run Alley",
+          "city": "Philadelphia",
+          "postal": "19093",
+          "state": "Pennsylvania"
+        },
+        "$collection:products": [
+          {
+            "$id": "1bSp5FX8GMHhebxbSVX5h6et",
+            "name": "Appetizer - Spring Roll, Veg",
+            "price": 149.43,
+            "stock": 2
+          }
+        ]
+      },
+      {
+        "$id": "EkvEY6TKGjB1CAgKOUd9Czgk",
+        "name": "Conn-Roberts",
+        "category": "Games",
+        "slogan": null,
+        "rating": 4.9,
+        "tags": ["transitional", "Cloned", "complexity"],
+        "manager": { "name": "Chris Winkett", "phone": "513-591-8801" },
+        "contact": {
+          "address": "38 Coolidge Terrace",
+          "city": "Cincinnati",
+          "postal": "45999",
+          "state": "Ohio"
+        },
+        "$collection:products": [
+          {
+            "$id": "6PKos0x2FS0lYpp7Ih5v0j2A",
+            "name": "Turkey Tenderloin Frozen",
+            "price": 430.38,
+            "stock": 5
+          },
+          {
+            "$id": "4jyXqUppd5UWUA3f5gOZaJm4",
+            "name": "Pernod",
+            "price": 62.64,
+            "stock": 1
+          },
+          {
+            "$id": "S9R8wlQ0YEjAMWhy7JUYdGiq",
+            "name": "Sauce - Roasted Red Pepper",
+            "price": 99.05,
+            "stock": 1
+          },
+          {
+            "$id": "DnS2Sd9xSg5KUPOXoiqq2Dfh",
+            "name": "Bread - Pita, Mini",
+            "price": 28.98,
+            "stock": 8
+          },
+          {
+            "$id": "iKhKFzoxexdznkizGLbziQeT",
+            "name": "Lid - 16 Oz And 32 Oz",
+            "price": 103.78,
+            "stock": 3
+          }
+        ]
+      },
+      {
+        "$id": "8jcPvu0K9EGHoSYJOyrGHGco",
+        "name": "Gislason Inc",
+        "category": "Garden",
+        "slogan": "disintermediate B2C deliverables",
+        "rating": 0.1,
+        "tags": ["even-keeled", "function", "Public-key", "Reverse-engineered"],
+        "manager": { "name": "Perle Rablan", "phone": "808-114-8636" },
+        "contact": {
+          "address": "39 Corry Circle",
+          "city": "Honolulu",
+          "postal": "96820",
+          "state": "Hawaii"
+        },
+        "$collection:products": [
+          {
+            "$id": "p3OmEmLkjZRsbG4BX5ybkWR0",
+            "name": "Rhubarb",
+            "price": 7.84,
+            "stock": 0
+          }
+        ]
+      },
+      {
+        "$id": "ojh32ugnhcL0ciNJbbdJvkSA",
+        "name": "Stokes, Corkery and Abbott",
+        "category": null,
+        "slogan": "evolve global partnerships",
+        "rating": 0.4,
+        "tags": ["model", "Expanded"],
+        "manager": { "name": "Veradis Galgey", "phone": "603-796-0722" },
+        "contact": {
+          "address": "063 8th Road",
+          "city": "Manchester",
+          "postal": "03105",
+          "state": "New Hampshire"
+        },
+        "$collection:products": [
+          {
+            "$id": "nJpiKXiiPkMhiMagTFVB7PFS",
+            "name": "Soup - Campbells Broccoli",
+            "price": 244.36,
+            "stock": 2
+          }
+        ]
+      }
+    ]
+  }
+]
