@@ -192,7 +192,7 @@ db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'ea
 db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'west').where('capital', '==', true);
 db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'west').where('population', '>', 100000);
 ```
-As you can see, SQL offers a very concise and powerful way to express your query. But as they say, ***with a lot of power comes a lot of responsibility***. Always be mindful of the underlying data model when using FireSQL.
+As you can see, SQL offers a very concise and powerful way to express your query. But as they say, ***with great power comes great responsibility***. Always be mindful of the underlying data model when using FireSQL.
 
 ## Examples of supported queries:
 
