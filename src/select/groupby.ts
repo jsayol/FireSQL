@@ -1,6 +1,5 @@
 import { SQL_GroupBy } from 'node-sqlparser';
 import { assert, safeGet, contains, DocumentData, ValueOf } from '../utils';
-import { DocumentsGroup } from './index';
 
 export function applyGroupByLocally(
   documents: DocumentData[],
@@ -55,6 +54,19 @@ function applySingleGroupBy(
     });
     return groupedDocs;
   }
+}
+
+export class DocumentsGroup {
+  documents: DocumentData[] = [];
+  aggr: GroupAggregateValues = {
+    sum: {},
+    avg: {},
+    min: {},
+    max: {},
+    total: {}
+  };
+
+  constructor(public key?: string) {}
 }
 
 export interface GroupedDocuments {

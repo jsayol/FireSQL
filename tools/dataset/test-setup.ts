@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as admin from 'firebase-admin';
 import { wipeFirestore } from './wipe-firestore';
-import { loadTestDataset } from './load-test-data';
+import { loadTestDataset, TestCollection } from './load-test-data';
 
 main().then(() => process.exit());
 
@@ -23,7 +23,7 @@ async function main() {
   firestore.settings({ timestampsInSnapshots: true });
 
   await wipeFirestore(firestore, project.projectId);
-  await loadTestDataset(firestore, loadJSONFile('./data.json'));
+  await loadTestDataset(firestore, loadJSONFile('./data.json') as TestCollection[]);
 
   console.log('\nDone! you can now run "yarn test" to run the tests.\n');
 }

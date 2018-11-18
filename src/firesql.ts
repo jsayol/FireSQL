@@ -8,32 +8,30 @@ import { DocumentData, assert } from './utils';
 import 'core-js/fn/array/includes';
 import 'core-js/fn/number/is-nan';
 
-type FirestoreOrDocRef =
-  | firebase.firestore.Firestore
-  | firebase.firestore.DocumentReference;
-
 export class FireSQL {
   private _ref?: firebase.firestore.DocumentReference;
   private _path?: string;
 
-  constructor(ref?: string | FirestoreOrDocRef) {
-    if (ref instanceof firebase.firestore.DocumentReference) {
-      this._ref = ref;
-    } else if (ref instanceof firebase.firestore.Firestore) {
-      this._ref = ref.doc('/');
+  constructor(
+    ref?:
+      | string
+      | firebase.firestore.Firestore
+      | firebase.firestore.DocumentReference
+  ) {
+    if (ref !== void 0 && ref.constructor) {
+      if (ref.constructor.name === 'DocumentReference') {
+        this._ref = ref as firebase.firestore.DocumentReference;
+      } else if (ref.constructor.name === 'Firestore') {
+        this._ref = (ref as firebase.firestore.Firestore).doc('/');
+      }
     } else {
-      // It's ok, we'll try to get the default Firebase app
+      // No problem, we'll try to get the default Firebase app
       // when the user launches the first query.
-
       if (typeof ref === 'string') {
         this._path = ref;
       }
     }
   }
-
-  // constructor(
-  //   private ref: FirestoreRef
-  // ) {}
 
   query(sql: string): Promise<DocumentData[]>;
   query<T>(sql: string): Promise<T[]>;
@@ -80,7 +78,10 @@ export class FireSQL {
  */
 export class FirestoreSQL extends FireSQL {
   constructor(
-    ref: firebase.firestore.Firestore | firebase.firestore.DocumentReference
+    ref?:
+      | string
+      | firebase.firestore.Firestore
+      | firebase.firestore.DocumentReference
   ) {
     console.warn(
       'DEPRECATED: Class FirestoreSQL has been renamed FireSQL.\n' +

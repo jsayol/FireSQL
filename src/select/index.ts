@@ -1,7 +1,6 @@
 import {
   SQL_AST,
   SQL_SelectColumn,
-  SQL_Expression,
   SQL_ColumnRef,
   SQL_AggrFunction
 } from 'node-sqlparser';
@@ -11,13 +10,13 @@ import {
   deepGet,
   DocumentData,
   safeGet,
-  nameOrAlias,
-  ValueOf
+  nameOrAlias
 } from '../utils';
 import {
   applyGroupByLocally,
   GroupedDocuments,
-  GroupAggregateValues
+  GroupAggregateValues,
+  DocumentsGroup
 } from './groupby';
 import { applyOrderBy, applyOrderByLocally } from './orderby';
 import { applyLimit, applyLimitLocally } from './limit';
@@ -482,17 +481,4 @@ export function flattenGroupedDocs(
  */
 class AliasedField {
   constructor(public name: string, public alias: string, public value: any) {}
-}
-
-export class DocumentsGroup {
-  documents: DocumentData[] = [];
-  aggr: GroupAggregateValues = {
-    sum: {},
-    avg: {},
-    min: {},
-    max: {},
-    total: {}
-  };
-
-  constructor(public key?: string) {}
 }

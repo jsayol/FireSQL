@@ -1,6 +1,6 @@
 {
   "name": "firesql-src",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0-alpha.7",
   "description": "Query Cloud Firestore for Firebase using SQL",
   "keywords": [],
   "main": "dist/firesql.umd.js",
@@ -16,16 +16,19 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
-    "start": "rollup -c rollup.config.ts -w",
+    "build": "tsc --module commonjs && rollup -c rollup.config.js",
+    "build:withdocs": "tsc --module commonjs && rollup -c rollup.config.js && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "start": "rollup -c rollup.config.js -w",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:prod": "yarn run lint && yarn run test -- --coverage --no-cache",
+    "test:prod": "yarn run lint && yarn run test --coverage --no-cache",
+    "test:setup": "ts-node --project tools/dataset/tsconfig.json tools/dataset/test-setup.ts",
+    "ts-node": "ts-node",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "prepare-release": "yarn run build && rimraf release && ts-node tools/prepare-release.ts",
+    "release:prepare": "yarn run build && rimraf release && ts-node tools/prepare-release.ts",
     "npm:publish": "cd release && npm publish"
   },
   "lint-staged": {
@@ -50,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.1.6",
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
     "@types/core-js": "^2.5.0",
@@ -76,11 +80,13 @@
     "replace-in-file": "^3.4.2",
     "rimraf": "^2.6.2",
     "rollup": "^0.66.2",
+    "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-commonjs": "^9.1.8",
     "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "^0.17.0",
+    "rollup-plugin-uglify": "^6.0.0",
     "rxfire": "^3.0.10",
     "rxjs": "^6.3.3",
     "semantic-release": "^15.11.0",

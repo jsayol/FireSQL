@@ -31,46 +31,18 @@ function loadDocument(
   const docRef = colRef.doc(doc.key);
 
   return Promise.all([
-    docRef.set(flattenObject(doc.data)),
+    docRef.set(doc.data),
     ...(doc.collections || []).map(col => loadCollection(docRef, col))
   ]);
 }
 
-interface TestCollection {
+export interface TestCollection {
   collection: string;
   docs: TestDocument[];
 }
 
-interface TestDocument {
+export interface TestDocument {
   key: string;
   data: { [k: string]: any };
   collections: TestCollection[];
-}
-
-export function contains(obj: object, prop: string): boolean {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-export function flattenObject(obj: { [k: string]: any }): typeof obj {
-  let result: { [k: string]: any } = {};
-
-  for (let prop in obj) {
-    if (!contains(obj, prop)) {
-      continue;
-    }
-
-    if (typeof obj[prop] === 'object' && !Array.isArray(obj[prop])) {
-      let flatInner = flattenObject(obj[prop]);
-
-      for (let innerProp in flatInner) {
-        if (!contains(flatInner, innerProp)) {
-          continue;
-        }
-        result[prop + '.' + innerProp] = flatInner[innerProp];
-      }
-    } else {
-      result[prop] = obj[prop];
-    }
-  }
-  return result;
 }
