@@ -1,6 +1,6 @@
 {
   "name": "firesql-src",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.8",
   "description": "Query Cloud Firestore for Firebase using SQL",
   "keywords": [],
   "main": "dist/firesql.umd.js",
