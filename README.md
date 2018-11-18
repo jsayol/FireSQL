@@ -35,11 +35,11 @@ const dbRef = firebase.firestore();
 // ... or the subcollections of some document
 const docRef = firebase.firestore().doc('someDoc');
 
-// And then just pass that reference to FirestoreSQL
-const firestoreSQL = new FirestoreSQL(dbRef);
+// And then just pass that reference to FireSQL
+const fireSQL = new FireSQL(dbRef);
 
 // Use `.query()` to get a one-time result
-firestoreSQL.query('SELECT ...').then(documents => {
+fireSQL.query('SELECT ...').then(documents => {
   documents.forEach(doc => {
     /* Do something with the document */
   });
@@ -47,7 +47,7 @@ firestoreSQL.query('SELECT ...').then(documents => {
 
 // Use `.rxQuery()` to get an observable for realtime results.
 // Don't forget to import "firesql/rx" first (see example below).
-firestoreSQL.rxQuery('SELECT ...').subscribe(documents => {
+fireSQL.rxQuery('SELECT ...').subscribe(documents => {
   /* Got an update with the documents! */
 });
 
@@ -58,15 +58,15 @@ firestoreSQL.rxQuery('SELECT ...').subscribe(documents => {
 ### One-time result (Promise)
 
 ```js
-import { FirestoreSQL } from 'firesql';
+import { FireSQL } from 'firesql';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
 firebase.initializeApp({ /* ... */ });
 
-const firestoreSQL = new FirestoreSQL(firebase.firestore());
+const fireSQL = new FireSQL(firebase.firestore());
 
-const citiesPromise = firestoreSQL.query(`
+const citiesPromise = fireSQL.query(`
   SELECT name AS city, country, population AS people
   FROM cities
   WHERE country = 'USA' AND population > 700000
@@ -86,16 +86,16 @@ citiesPromise.then(cities => {
 ### Realtime updates (Observable)
 
 ```js
-import { FirestoreSQL } from 'firesql';
+import { FireSQL } from 'firesql';
 import firebase from 'firebase/app';
 import 'firesql/rx'; // <-- Important! Don't forget
 import 'firebase/firestore';
 
 firebase.initializeApp({ /* ... */ });
 
-const firestoreSQL = new FirestoreSQL(firebase.firestore());
+const fireSQL = new FireSQL(firebase.firestore());
 
-const cities$ = firestoreSQL.rxQuery(`
+const cities$ = fireSQL.rxQuery(`
   SELECT city, category, AVG(price) AS avgPrice
   FROM restaurants
   WHERE category IN ("Mexican", "Indian", "Brunch")
