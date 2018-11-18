@@ -1,2 +1,2 @@
 export * from './firesql';
-// import './rx';
+import './rx';
