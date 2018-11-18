@@ -24,7 +24,7 @@ import { applyLimit, applyLimitLocally } from './limit';
 import { applyWhere } from './where';
 
 export async function select(
-  ref: firebase.firestore.Firestore | firebase.firestore.DocumentReference,
+  ref: firebase.firestore.DocumentReference,
   ast: SQL_AST
 ): Promise<DocumentData[]> {
   const queries = generateQueries(ref, ast);
@@ -33,7 +33,7 @@ export async function select(
 }
 
 export function generateQueries(
-  ref: firebase.firestore.Firestore | firebase.firestore.DocumentReference,
+  ref: firebase.firestore.DocumentReference,
   ast: SQL_AST
 ): firebase.firestore.Query[] {
   assert(

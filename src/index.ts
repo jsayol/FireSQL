@@ -1,2 +1,2 @@
-export { FirestoreSQL } from './firesql';
+export { FireSQL } from './firesql';
 import './rx';

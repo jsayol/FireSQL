@@ -39,8 +39,8 @@ async function userConfirmation(): Promise<boolean> {
     message: 'Are you sure you want to continue? Type "yes":'
   });
 
-  const answer = await input.run();
-  return answer === 'yes';
+  const answer: string = await input.run();
+  return answer.toLowerCase() === 'yes';
 }
 
 async function wipeSubcollections(

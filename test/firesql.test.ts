@@ -1,28 +1,35 @@
-import { FirestoreSQL } from '../src/firesql';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import { FireSQL } from '../src/firesql';
+import { initFirestore } from './helpers/utils';
 
-/**
- * Dummy test
- */
-describe('Dummy test', () => {
-  it('works if true is truthy', () => {
-    expect(true).toBeTruthy();
+let firestore: firebase.firestore.Firestore;
+
+beforeAll(() => {
+  firestore = initFirestore();
+});
+
+describe('FireSQL basic API', () => {
+  it('is instantiable without arguments', () => {
+    expect(new FireSQL()).toBeInstanceOf(FireSQL);
   });
 
-  it('FirestoreSQL is instantiable', () => {
-    // expect(new FirestoreSQL()).toBeInstanceOf(FirestoreSQL);
+  it('is instantiable with Firestore', () => {
+    expect(new FireSQL(firestore)).toBeInstanceOf(FireSQL);
   });
 
-  // it('FirestoreSQL parses SQL', () => {
-  //   const firestoreSQL = new FirestoreSQL();
-  //   const sql = `
-  //     SELECT c.name AS city, d.name AS district, d.population
-  //     FROM cities c JOIN districts d ON c.id=d.cityId
-  //     WHERE c.state = "CA" AND d.population > 25000 AND c.name LIKE "A%"
-  //   `;
-  //   const parsed = firestoreSQL.parse(sql);
-  //   expect(parsed).not.toBeNull();
-  //   console.log(parsed);
-  // });
+  it('is instantiable with a document path', () => {
+    expect(new FireSQL('testing/doc')).toBeInstanceOf(FireSQL);
+  });
+
+  it('is instantiable with a DocumentReference', () => {
+    expect(new FireSQL(firestore.doc('testing/doc'))).toBeInstanceOf(FireSQL);
+  });
+
+  it('has query() method', () => {
+    expect(typeof new FireSQL().query).toBe('function');
+  });
+
+  it("doesn't have rxQuery() method", () => {
+    // We haven't imported "firesql/rx" so rxQuery shouldn't exist
+    expect((new FireSQL() as any).rxQuery).toBeUndefined();
+  });
 });

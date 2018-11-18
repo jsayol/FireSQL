@@ -1,0 +1,13 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /shops/{shopId} {
+      allow read: if true;
+      allow write: if false;
+
+      match /products/{productId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+  }
+}

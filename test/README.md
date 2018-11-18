@@ -1,4 +1,4 @@
-## Steps to set up the test environment
+## Setting up the test environment
 
 1. Create a new Firebase project
 2. Enable Firestore in the project
@@ -38,11 +38,11 @@
 
 5. Run `yarn test:setup`
    
-   ![WARNING](https://placehold.it/400x10/f03c15/ffffff?text=+) 
-   
+   ![WARNING](https://placehold.it/440x10/f03c15/ffffff?text=+)
+
    **WARNING!! This will erase all Firestore data for this project!**
-   
-   ![WARNING](https://placehold.it/400x10/f03c15/ffffff?text=+) 
+
+   ![WARNING](https://placehold.it/440x10/f03c15/ffffff?text=+) 
 
 ## Launching the tests
 
