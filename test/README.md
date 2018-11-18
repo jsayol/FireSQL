@@ -38,11 +38,11 @@
 
 5. Run `yarn test:setup`
    
-   ![WARNING](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAAKAQMAAACg+5oeAAAAA1BMVEXwPBUMkNMeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADUlEQVQYGWMYBSMYAAAB/gAB2bMmfwAAAABJRU5ErkJggg==) 
+   ![WARNING](https://placehold.it/400x10/f03c15/ffffff?text=+) 
    
    **WARNING!! This will erase all Firestore data for this project!**
    
-   ![WARNING](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAAKAQMAAACg+5oeAAAAA1BMVEXwPBUMkNMeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADUlEQVQYGWMYBSMYAAAB/gAB2bMmfwAAAABJRU5ErkJggg==) 
+   ![WARNING](https://placehold.it/400x10/f03c15/ffffff?text=+) 
 
 ## Launching the tests
 
