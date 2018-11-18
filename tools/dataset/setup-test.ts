@@ -23,9 +23,7 @@ async function main() {
   firestore.settings({ timestampsInSnapshots: true });
 
   await wipeFirestore(firestore, project.projectId);
-
-  console.log('Loading test data ...');
-  await loadTestDataset(firestore);
+  await loadTestDataset(firestore, loadJSONFile('./data.json'));
 
   console.log('\nDone! you can now run "yarn test" to run the tests.\n');
 }
