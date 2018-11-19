@@ -1,5 +1,9 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /nonExistantCollection/{foo} {
+      allow read, write: if true;
+    }
+
     match /shops/{shopId} {
       allow read, write: if true;
 
