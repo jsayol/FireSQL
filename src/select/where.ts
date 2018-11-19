@@ -1,4 +1,4 @@
-import { SQL_Value, SQL_ValueString } from 'node-sqlparser';
+import { SQL_Value, SQL_ValueString, SQL_ValueBool } from 'node-sqlparser';
 import { assert, prefixSuccessor, astValueToNative } from '../utils';
 
 export function applyWhere(
@@ -51,10 +51,6 @@ export function applyWhere(
           whereLike.equals
         );
       } else if (whereLike.beginsWith !== void 0) {
-        /*
-         FIXME: using a single character (LIKE 'X%') doesn't seem to work.
-         This might actually be a bug either on the SDK or on the backend.
-         */
         const successorStr = prefixSuccessor(whereLike.beginsWith.value);
         queries = applyCondition(
           queries,
@@ -135,21 +131,26 @@ function applyCondition(
       query is only applied to the same field. Firestore doesn't
       allow range conditions on several fields in the same query.
     - If we apply a range condition, the first .orderBy() needs to
-      be on that same field. We could either apply an orderBy straight
-      away as soon as we apply a range condition, or we can wait and
-      only apply it if the user has requested an ORDER BY.
+      be on that same field. We should wait and only apply it if
+      the user has requested an ORDER BY. Otherwise, they might be
+      expecting the results ordered by document id.
   */
 
   if (astOperator === '!=' || astOperator === '<>') {
-    // The != operator is not supported in Firestore so we
-    // split this query in two, one with the < operator and
-    // another one with the > operator.
-    // TODO: if one of the operands is a boolean, then just
-    // perform a == operation with the negation of the value.
-    return [
-      ...applyCondition(queries, field, '<', astValue),
-      ...applyCondition(queries, field, '>', astValue)
-    ];
+    if (astValue.type === 'bool') {
+      // If the value is a boolean, then just perform a == operation
+      // with the negation of the value.
+      const negValue: SQL_ValueBool = { type: 'bool', value: !astValue.value };
+      return applyCondition(queries, field, '=', negValue);
+    } else {
+      // The != operator is not supported in Firestore so we
+      // split this query in two, one with the < operator and
+      // another one with the > operator.
+      return [
+        ...applyCondition(queries, field, '<', astValue),
+        ...applyCondition(queries, field, '>', astValue)
+      ];
+    }
   } else {
     const value = astValueToNative(astValue);
     const operator = whereFilterOp(astOperator);
@@ -211,7 +212,7 @@ function parseWhereLike(str: string): WhereLikeResult {
       result.endsWith = stringASTWhereValue(str.substring(1));
     }
   } else if (str[strLength - 1] === '%') {
-    result.beginsWith = stringASTWhereValue(str.substr(0, strLength - 2));
+    result.beginsWith = stringASTWhereValue(str.substr(0, strLength - 1));
   } else {
     result.equals = stringASTWhereValue(str);
   }
