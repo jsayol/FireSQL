@@ -6,9 +6,9 @@ import { promisify } from 'util';
 import { resolve as resolvePath } from 'path';
 import { showTask } from './show-task';
 import { wipeCollection } from './remove-collection';
-import * as firebase from 'firebase';
 import { muteDeprecationWarning } from './mute-warning';
 import { loadTestDataset, TestCollection } from './load-test-data';
+import * as firebase from 'firebase';
 
 const firebaseTools = require('firebase-tools');
 const inquirer = require('inquirer');

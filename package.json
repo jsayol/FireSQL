@@ -68,7 +68,6 @@
     "cross-env": "^5.2.0",
     "cz-conventional-changelog": "^2.1.0",
     "firebase": "^5.5.8",
-    "firebase-admin": "^6.1.0",
     "firebase-tools": "^6.1.0",
     "fs-extra": "^7.0.1",
     "husky": "^1.0.1",
