@@ -18,19 +18,37 @@ export class FireSQL {
       | firebase.firestore.Firestore
       | firebase.firestore.DocumentReference
   ) {
-    if (ref !== void 0 && ref.constructor) {
+    if (typeof ref === 'object') {
       if (ref.constructor.name === 'DocumentReference') {
         this._ref = ref as firebase.firestore.DocumentReference;
       } else if (ref.constructor.name === 'Firestore') {
         this._ref = (ref as firebase.firestore.Firestore).doc('/');
+      } else {
+        throw new Error(
+          'Parameter needs to be a Firestore reference or a path string to a document.'
+        );
       }
     } else {
-      // No problem, we'll try to get the default Firebase app
-      // when the user launches the first query.
       if (typeof ref === 'string') {
         this._path = ref;
       }
+
+      try {
+        this._getRef();
+      } catch (err) {
+        // The default Firebase app hasn't been initialized yet.
+        // No problem, we'll try again when the user launches
+        // the first query.
+      }
     }
+  }
+
+  get ref(): firebase.firestore.DocumentReference {
+    return this._getRef();
+  }
+
+  get firestore(): firebase.firestore.Firestore {
+    return this._getRef().firestore;
   }
 
   query(sql: string): Promise<DocumentData[]>;

@@ -1,7 +1,5 @@
-import { FireSQL } from '../../src/firesql';
-import { initFirestore } from '../helpers/utils';
-import { Observable } from 'rxjs';
-import '../../src/rx';
+import { FireSQL } from '../src/firesql';
+import { initFirestore } from './helpers/utils';
 
 let fireSQL: FireSQL;
 
@@ -10,33 +8,29 @@ beforeAll(() => {
   fireSQL = new FireSQL();
 });
 
-describe('Method rxQuery()', () => {
-  it('FireSQL has rxQuery() method', () => {
-    expect(typeof fireSQL.rxQuery).toBe('function');
-  });
-
-  it('returns an Observable', () => {
-    const returnValue = fireSQL.rxQuery('SELECT * FROM nonExistantCollection');
-    expect(returnValue).toBeInstanceOf(Observable);
+describe('Method query()', () => {
+  it('returns a Promise', () => {
+    const returnValue = fireSQL.query('SELECT * FROM nonExistantCollection');
+    expect(returnValue).toBeInstanceOf(Promise);
   });
 
   it('expects one non-empty string argument', async () => {
     expect.assertions(3);
 
     try {
-      await (fireSQL as any).rxQuery();
+      await (fireSQL as any).query();
     } catch (err) {
       expect(err).not.toBeUndefined();
     }
 
     try {
-      await (fireSQL as any).rxQuery('');
+      await (fireSQL as any).query('');
     } catch (err) {
       expect(err).not.toBeUndefined();
     }
 
     try {
-      await (fireSQL as any).rxQuery(42);
+      await (fireSQL as any).query(42);
     } catch (err) {
       expect(err).not.toBeUndefined();
     }
@@ -46,7 +40,7 @@ describe('Method rxQuery()', () => {
     expect.assertions(2);
 
     try {
-      await fireSQL.rxQuery('not a valid query');
+      await fireSQL.query('not a valid query');
     } catch (err) {
       expect(err).toBeInstanceOf(Error);
       expect(err).toHaveProperty('name', 'SyntaxError');

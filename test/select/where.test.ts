@@ -21,35 +21,54 @@ beforeAll(() => {
 // "SELECT * FROM cities WHERE country != 'USA'",
 // "SELECT * FROM cities WHERE name LIKE 'Sa%'",
 // "SELECT * FROM cities WHERE state IS NULL",
-// "SELECT * FROM cities WHERE country = 'USA' OR country = 'Spain' ORDER BY population DESC, name",
 // "SELECT * FROM cities WHERE population BETWEEN 700000 AND 2000000",
 // "SELECT * FROM cities WHERE country = 'USA' UNION SELECT * FROM cities WHERE country = 'Japan'",
-// "SELECT * FROM cities WHERE country = 'Japan' OR country = 'USA' LIMIT 3",
-// "SELECT name AS city, population AS people FROM cities WHERE country = 'USA'"
 
-describe('SELECT statement', () => {
-  it('without conditions returns the correct documents', async () => {
-    expect.assertions(4);
+describe('WHERE', () => {
+  it("throws when there's no conditions", async () => {
+    expect.assertions(2);
 
-    const docs = await new FireSQL('shops/2DIHCbOMkKz0YcrKUsRf6kgF').query(
-      'SELECT * FROM products'
-    );
+    try {
+      await fireSQL.query('SELECT * FROM shops WHERE');
+    } catch (err) {
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toHaveProperty('name', 'SyntaxError');
+    }
+  });
+
+  it('from non-existant collection returns no documents', async () => {
+    expect.assertions(2);
+
+    const docs = await fireSQL.query('SELECT * FROM nonExistantCollection');
 
     expect(docs).toBeInstanceOf(Array);
-    expect(docs).toHaveLength(4);
+    expect(docs).toHaveLength(0);
+  });
 
-    // Should be doc 3UXchxNEyXZ0t1URO6DrIlFZ
-    expect(docs[0]).toEqual({
-      name: 'Juice - Lagoon Mango',
-      price: 488.61,
-      stock: 2
-    });
+  it('with "=" condition returns the correct documents', async () => {
+    expect.assertions(3);
 
-    // Should be doc jpF9MHHfw8XyfZm2ukvfEXZK
-    expect(docs[3]).toEqual({
-      name: 'Graham Cracker Mix',
-      price: 300.42,
-      stock: 9
-    });
+    const docs = await fireSQL.query(`
+      SELECT category, name
+      FROM shops
+      WHERE category = 'Toys'
+    `);
+
+    expect(docs).toBeInstanceOf(Array);
+    expect(docs).toHaveLength(3);
+    expect(docs).toEqual([
+      {
+        category: 'Toys',
+        name: 'Stiedemann, Keeling and Carter'
+      },
+      {
+        category: 'Toys',
+        name: 'Carroll Group'
+      },
+      {
+        category: 'Toys',
+        name: 'Leannon-Conroy'
+      }
+    ]);
   });
 });

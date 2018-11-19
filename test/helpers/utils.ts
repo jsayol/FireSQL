@@ -1,6 +1,5 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { FireSQL } from '../../src/firesql';
 
 export function initFirestore(): firebase.firestore.Firestore {
   let firestore: firebase.firestore.Firestore;
@@ -15,16 +14,4 @@ export function initFirestore(): firebase.firestore.Firestore {
   }
 
   return firestore;
-}
-
-/**
- * Returns a new FireSQL instance
- */
-export function getInstance(
-  ref?:
-    | string
-    | firebase.firestore.Firestore
-    | firebase.firestore.DocumentReference
-): FireSQL {
-  return new FireSQL(ref);
 }
