@@ -126,14 +126,25 @@ function applyCondition(
 ): firebase.firestore.Query[] {
   /*
    TODO: Several things:
+
     - If we're applying a range condition to a query (<, <=, >, >=)
       we need to make sure that any other range condition on that same
       query is only applied to the same field. Firestore doesn't
       allow range conditions on several fields in the same query.
+
     - If we apply a range condition, the first .orderBy() needs to
       be on that same field. We should wait and only apply it if
       the user has requested an ORDER BY. Otherwise, they might be
       expecting the results ordered by document id.
+
+    - Can't combine "LIKE 'value%'" and inequality filters (>, <=, ...)
+      with AND:
+        SELECT * FROM shops WHERE rating > 2 AND name LIKE 'T%'
+      In theory it's only a problem when they're on the same field,
+      but since applying those on different fields doesn't make any
+      sense it's easier if we just disallow it in any case.
+      It's OK if it's with an OR (not the same query):
+        SELECT * FROM shops WHERE rating > 2 OR name LIKE 'T%'
   */
 
   if (astOperator === '!=' || astOperator === '<>') {

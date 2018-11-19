@@ -342,4 +342,47 @@ describe('WHERE', () => {
       }
     ]);
   });
+
+  test('multiple nested operators', async () => {
+    expect.assertions(1);
+
+    const docs = await fireSQL.query(`
+      SELECT name, rating, category, \`contact.state\`
+      FROM shops
+      WHERE rating < 2
+        AND (
+          \`contact.state\` = 'California'
+          OR
+          category IN ('Computers', 'Automotive')
+        )
+    `);
+
+    expect(docs).toEqual([
+      {
+        name: 'Orn-Auer',
+        rating: 0.6,
+        category: 'Outdoors',
+        'contact.state': 'California'
+      },
+      {
+        name: 'Trantow, Deckow and Oberbrunner',
+        rating: 1.5,
+        category: 'Shoes',
+        'contact.state': 'California'
+      },
+      {
+        name: 'Schumm-Zieme',
+        rating: 0.9,
+        category: 'Computers',
+        'contact.state': 'Ohio'
+      }
+    ]);
+  });
+
+  // TODO: Can't combine "LIKE 'value%'" with inequality filters (>, <=, ...)
+  /*
+      SELECT *
+      FROM shops
+      WHERE rating > 2 AND name LIKE 'T%'
+  */
 });
