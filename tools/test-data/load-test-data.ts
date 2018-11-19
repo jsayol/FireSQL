@@ -1,23 +1,20 @@
-import * as admin from 'firebase-admin';
+import * as firebase from 'firebase';
 
 export async function loadTestDataset(
-  firestore: admin.firestore.Firestore,
+  ref: firebase.firestore.DocumentReference,
   data: TestCollection[]
 ): Promise<any> {
-  // TODO
-  console.log('Loading test data ...');
-
   if (!Array.isArray(data)) {
     throw new Error('Test data needs to be an array of collections.');
   }
 
   for (let collection of data) {
-    await loadCollection(firestore, collection);
+    await loadCollection(ref, collection);
   }
 }
 
 function loadCollection(
-  docRef: admin.firestore.Firestore | admin.firestore.DocumentReference,
+  docRef: firebase.firestore.DocumentReference,
   col: TestCollection
 ): Promise<any> {
   const colRef = docRef.collection(col.collection);
@@ -25,7 +22,7 @@ function loadCollection(
 }
 
 function loadDocument(
-  colRef: admin.firestore.CollectionReference,
+  colRef: firebase.firestore.CollectionReference,
   doc: TestDocument
 ): Promise<any> {
   const docRef = colRef.doc(doc.key);
