@@ -4,8 +4,7 @@ import { homedir } from 'os';
 import { writeFile } from 'fs';
 import { promisify } from 'util';
 import { resolve as resolvePath } from 'path';
-import { showTask } from './show-task';
-import { wipeCollection } from './remove-collection';
+import { showTask } from './task-list';
 import { muteDeprecationWarning } from './mute-warning';
 import { loadTestDataset, TestCollection } from './load-test-data';
 import * as firebase from 'firebase';
@@ -18,6 +17,74 @@ const cliOptions = {
   token: argv.token || argv.T,
   project: argv.project || argv.P
 };
+
+getToken()
+  .then(async (token: string) => {
+    const project = await getProject(token);
+
+    showWarning(project);
+
+    const confirmation = await userConfirmation();
+    if (!confirmation) {
+      console.log('\nYou chose not to continue. Nothing was changed.\n');
+      return false;
+    }
+
+    console.log('');
+
+    let task = showTask('Downloading project configuration');
+    const config = await firebaseTools.setup.web({ project, token });
+    task.done('config/project.json');
+
+    // Write config to top-level config directory
+    await promisify(writeFile)(
+      resolvePath(__dirname, '../../config/project.json'),
+      JSON.stringify(config, null, 2)
+    );
+
+    // Deploy database rules
+    task = showTask('Deploying Firestore indexes and security rules');
+    await firebaseTools.deploy({
+      project,
+      token,
+      cwd: resolvePath(__dirname, '../../config')
+    });
+
+    // Firestore calls grpc.load() which has been deprecated and we
+    // get an ugly warning on screen. This mutes it temporarily.
+    const unmute = muteDeprecationWarning();
+
+    const firestore = firebase.initializeApp(config).firestore();
+    firestore.settings({ timestampsInSnapshots: true });
+    const rootRef = firestore.doc('/');
+
+    task = showTask('Deleting "shops" collection');
+    await firebaseTools.firestore.delete('/shops', {
+      project,
+      yes: true,
+      recursive: true
+    });
+
+    task = showTask('Loading test data into "shops" collection');
+    await loadTestDataset(rootRef, loadJSONFile(
+      './data.json'
+    ) as TestCollection[]);
+
+    unmute();
+    task.done();
+    return;
+  })
+  .then((result?: boolean) => {
+    if (result !== false) {
+      console.log('\nDone!');
+      console.log('You can now run "yarn test" to run the tests.\n');
+    }
+    process.exit();
+  })
+  .catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
 
 async function getToken(): Promise<string> {
   if (cliOptions.token) {
@@ -68,69 +135,6 @@ async function getProject(token: string): Promise<string> {
   return project.id;
 }
 
-getToken()
-  .then(async (token: string) => {
-    const project = await getProject(token);
-
-    showWarning(project);
-
-    const configPromise = firebaseTools.setup.web({ project, token });
-    const confirmation = await userConfirmation();
-
-    if (!confirmation) {
-      console.log('\nYou chose not to continue. Nothing was changed.\n');
-      return;
-    }
-
-    console.log('');
-
-    let task = showTask('Downloading project configuration');
-    const config = await configPromise;
-
-    // Write config to top-level config directory
-    await promisify(writeFile)(
-      resolvePath(__dirname, '../../config/project.json'),
-      JSON.stringify(config, null, 2)
-    );
-
-    // Deploy database rules
-    task = showTask('Deploying Firestore indexes and security rules');
-    await firebaseTools.deploy({
-      project,
-      token,
-      cwd: resolvePath(__dirname, '../../config')
-    });
-
-    // Firestore calls grpc.load() which has been deprecated and we
-    // get an ugly warning on screen. This mutes it temporarily.
-    const unmute = muteDeprecationWarning();
-
-    const firestore = firebase.initializeApp(config).firestore();
-    firestore.settings({ timestampsInSnapshots: true });
-    const rootRef = firestore.doc('/');
-
-    task = showTask('Deleting "shops" collection');
-    await wipeCollection(rootRef, 'shops', 'products');
-
-    task = showTask('Loading test data into "shops" collection');
-    await loadTestDataset(rootRef, loadJSONFile(
-      './data.json'
-    ) as TestCollection[]);
-
-    unmute();
-    task.done();
-    return;
-  })
-  .then(() => {
-    console.log('\nDone!');
-    console.log('You can now run "yarn test" to run the tests.\n');
-    process.exit();
-  })
-  .catch(err => {
-    console.error(err);
-    process.exit(1);
-  });
-
 function showWarning(projectId: string) {
   console.log('');
   console.log(
@@ -150,13 +154,14 @@ function showWarning(projectId: string) {
 async function userConfirmation(): Promise<boolean> {
   const { confirmation } = await inquirer.prompt([
     {
-      type: 'input',
+      default: false,
+      type: 'confirm',
       name: 'confirmation',
-      message: 'Are you sure you want to continue? Type "yes":'
+      message: 'Are you sure you want to continue?'
     }
   ]);
 
-  return confirmation.toLowerCase() === 'yes';
+  return confirmation;
 }
 
 function loadJSONFile(fileName: string): { [k: string]: any } | null {

@@ -24,9 +24,16 @@ export function showTask(str: string): { done: Function } {
   return { done };
 }
 
-function done() {
+function done(result?: string) {
   clearInterval(interval);
-  logUpdate(chalk`{green {bold \u2713}} ${task}`);
+
+  let log = chalk`{green {bold \u2713}} ${task}`;
+
+  if (result !== void 0) {
+    log += chalk` {grey ${result}}`;
+  }
+
+  logUpdate(log);
   logUpdate.done();
   interval = null;
   task = '';
