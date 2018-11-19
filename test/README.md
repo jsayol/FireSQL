@@ -6,4 +6,4 @@
 
 ## Launching the tests
 
-Once your test environment is set up you can launch the suite of test by running `yarn test`
+Once your test environment is set up you can launch the test suite by running `yarn test`
