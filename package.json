@@ -24,7 +24,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:prod": "yarn run lint && yarn run test --coverage --no-cache",
-    "test:setup": "ts-node --project tools/dataset/tsconfig.json tools/dataset/test-setup.ts",
+    "test:setup": "ts-node --project tools/test-data/tsconfig.json tools/test-data/test-setup.ts",
     "ts-node": "ts-node",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
@@ -59,6 +59,7 @@
     "@types/core-js": "^2.5.0",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",
+    "@types/yargs": "^12.0.1",
     "chalk": "^2.4.1",
     "colors": "^1.3.2",
     "commitizen": "^3.0.0",
@@ -68,12 +69,15 @@
     "cz-conventional-changelog": "^2.1.0",
     "firebase": "^5.5.8",
     "firebase-admin": "^6.1.0",
+    "firebase-tools": "^6.1.0",
     "fs-extra": "^7.0.1",
     "husky": "^1.0.1",
+    "inquirer": "^6.2.0",
     "jest": "^23.6.0",
     "jest-config": "^23.6.0",
     "lint-staged": "^7.3.0",
     "lodash.camelcase": "^4.3.0",
+    "log-update": "^2.3.0",
     "prettier": "^1.14.3",
     "prompt": "^1.0.0",
     "prompt-input": "^3.0.0",
@@ -97,7 +101,8 @@
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.12.0",
-    "typescript": "^3.0.3"
+    "typescript": "^3.0.3",
+    "yargs": "^12.0.4"
   },
   "dependencies": {
     "node-sqlparser": "^1.0.4"
