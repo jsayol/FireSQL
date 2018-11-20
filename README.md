@@ -140,6 +140,22 @@ FROM products
 WHERE `details.available` = true
 ```
 
+## Getting the document keys
+You can use the special field `__name__` to refer to the document key (its ID). For convenience, you might want to alias it:
+```sql
+SELECT __name__ AS docId, country, population
+FROM cities
+```
+
+It's also possible to use it as a search field. For example, you could search for all the documents whose keys start with `Hello`:
+```sql
+SELECT __name__
+FROM cities
+WHERE __name__ LIKE 'Hello%'
+```
+
+When using `SELECT *` it's currently not possible to include the document key in the results.
+
 ## How does FireSQL work?
 
 FireSQL transforms your SQL query into one or more queries to Firestore. Once all the necessary data has been retrieved, it does some internal processing in order to give you exactly what you asked for.
