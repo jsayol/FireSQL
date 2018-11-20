@@ -26,8 +26,22 @@ export async function select(
   ref: firebase.firestore.DocumentReference,
   ast: SQL_AST
 ): Promise<DocumentData[]> {
+  // We need to determine if we have to include
+  // the document's key (__name__) in the results.
+  let includeKey = false;
+  if (Array.isArray(ast.columns)) {
+    for (let i = 0; i < ast.columns.length; i++) {
+      if (ast.columns[i].expr.type === 'column_ref') {
+        if ((ast.columns[i].expr as SQL_ColumnRef).column === '__name__') {
+          includeKey = true;
+          break;
+        }
+      }
+    }
+  }
+
   const queries = generateQueries(ref, ast);
-  const documents = await executeQueries(queries);
+  const documents = await executeQueries(queries, includeKey);
   return processDocuments(ast, queries, documents);
 }
 
@@ -106,7 +120,8 @@ export function generateQueries(
 }
 
 async function executeQueries(
-  queries: firebase.firestore.Query[]
+  queries: firebase.firestore.Query[],
+  includeKey: boolean
 ): Promise<DocumentData[]> {
   let documents: DocumentData[] = [];
   const seenDocs: { [id: string]: true } = {};
@@ -118,10 +133,14 @@ async function executeQueries(
         const numDocs = snapshot.docs.length;
 
         for (let i = 0; i < numDocs; i++) {
-          const doc = snapshot.docs[i];
-          if (!contains(seenDocs, doc.ref.path)) {
-            documents.push(doc.data());
-            seenDocs[doc.ref.path] = true;
+          const docSnap = snapshot.docs[i];
+          if (!contains(seenDocs, docSnap.ref.path)) {
+            const docData = docSnap.data();
+            if (includeKey) {
+              docData['__name__'] = docSnap.id;
+            }
+            documents.push(docData);
+            seenDocs[docSnap.ref.path] = true;
           }
         }
       })
@@ -189,7 +208,9 @@ function processUngroupedDocs(
       );
       documents = [resultEntry];
     } else {
-      documents = documents.map(doc => buildResultEntry(doc, ast.columns));
+      documents = documents.map(doc =>
+        buildResultEntry(doc, ast.columns as SQL_SelectColumn[])
+      );
     }
   } else {
     // We should never reach here
@@ -204,6 +225,8 @@ function processGroupedDocs(
   queries: firebase.firestore.Query[],
   groupedDocs: GroupedDocuments
 ): DocumentData[] {
+  assert(ast.columns !== '*', 'Cannot "SELECT *" when using GROUP BY.');
+
   const aggrColumns = getAggrColumns(ast.columns);
   const groups = flattenGroupedDocs(groupedDocs);
 
@@ -214,7 +237,7 @@ function processGroupedDocs(
     const firstGroupKey = Object.keys(groups)[0];
     const firstGroup = groups[firstGroupKey];
     const firstDoc = firstGroup.documents[0];
-    return [buildResultEntry(firstDoc, ast.columns)];
+    return [buildResultEntry(firstDoc, ast.columns as SQL_SelectColumn[])];
   } else {
     const results: DocumentData[] = [];
 
@@ -230,7 +253,7 @@ function processGroupedDocs(
 
       const resultEntry = buildResultEntry(
         docsGroup.documents[0],
-        ast.columns,
+        ast.columns as SQL_SelectColumn[],
         docsGroup.aggr
       );
 
@@ -338,20 +361,22 @@ function aggregateDocuments(
   return docsGroup;
 }
 
-function getAggrColumns(columns: SQL_SelectColumn[]): SQL_AggrFunction[] {
+function getAggrColumns(columns: SQL_SelectColumn[] | '*'): SQL_AggrFunction[] {
   const aggrColumns: SQL_AggrFunction[] = [];
 
-  columns.forEach(astColumn => {
-    if (astColumn.expr.type === 'aggr_func') {
-      vaidateAggrFunction(astColumn.expr);
-      aggrColumns.push(astColumn.expr);
-    } else {
-      assert(
-        astColumn.expr.type === 'column_ref',
-        'Only field names and aggregate functions are supported in SELECT statements.'
-      );
-    }
-  });
+  if (columns !== '*') {
+    columns.forEach(astColumn => {
+      if (astColumn.expr.type === 'aggr_func') {
+        vaidateAggrFunction(astColumn.expr);
+        aggrColumns.push(astColumn.expr);
+      } else {
+        assert(
+          astColumn.expr.type === 'column_ref',
+          'Only field names and aggregate functions are supported in SELECT statements.'
+        );
+      }
+    });
+  }
 
   return aggrColumns;
 }

@@ -77,7 +77,7 @@ declare module 'node-sqlparser' {
   export interface SQL_Select {
     type: 'select';
     distinct: 'DISTINCT' | null;
-    columns: SQL_SelectColumn[];
+    columns: SQL_SelectColumn[] | '*';
     from: SQL_SelectFrom[];
     where: SQL_Expression;
     groupby: SQL_GroupBy[];

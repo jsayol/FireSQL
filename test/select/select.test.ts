@@ -40,7 +40,7 @@ describe('SELECT', () => {
     }
   });
 
-  it('without conditions returns the correct documents', async () => {
+  test('without conditions returns the correct documents', async () => {
     expect.assertions(3);
 
     const docs = await new FireSQL('shops/2DIHCbOMkKz0YcrKUsRf6kgF').query(
@@ -73,11 +73,11 @@ describe('SELECT', () => {
         name: 'Graham Cracker Mix',
         price: 300.42,
         stock: 9
-      },
+      }
     ]);
   });
 
-  it('with "*" returns all fields', async () => {
+  test('with "*" returns all fields', async () => {
     expect.assertions(2);
 
     const docs = await fireSQL.query(`
@@ -105,7 +105,7 @@ describe('SELECT', () => {
     });
   });
 
-  it('with field list returns only those fields', async () => {
+  test('with field list returns only those fields', async () => {
     expect.assertions(2);
 
     const docs = await fireSQL.query(`
@@ -124,7 +124,7 @@ describe('SELECT', () => {
     });
   });
 
-  it('with field alias', async () => {
+  test('with field alias', async () => {
     expect.assertions(2);
 
     const docs = await fireSQL.query(`
@@ -139,5 +139,18 @@ describe('SELECT', () => {
     expect(docs[0]).toEqual({
       aliasedName: 'Beer LLC'
     });
+  });
+
+  test('"__name__" returns the document key', async () => {
+    expect.assertions(2);
+
+    const docs = await fireSQL.query(`
+      SELECT __name__
+      FROM shops
+      WHERE name = 'Simonis, Howe and Kovacek'
+    `);
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).toHaveProperty('__name__', 'AbvczIyCuxEof6TpfOSwdsGO');
   });
 });

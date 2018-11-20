@@ -1,4 +1,4 @@
-import { parse as parseSQL, SQL_AST } from 'node-sqlparser';
+import { parse as parseSQL, SQL_AST, SQL_ColumnRef } from 'node-sqlparser';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { collectionData } from 'rxfire/firestore';
@@ -52,7 +52,25 @@ function rxSelect(
     // SELECT only, instead of to the whole UNION. Find a workaround.
   }
 
-  const rxData = combineLatest(queries.map(query => collectionData(query)));
+  // We need to determine if we have to include
+  // the document's key (__name__) in the results.
+  let includeKey = false;
+  if (Array.isArray(ast.columns)) {
+    for (let i = 0; i < ast.columns.length; i++) {
+      if (ast.columns[i].expr.type === 'column_ref') {
+        if ((ast.columns[i].expr as SQL_ColumnRef).column === '__name__') {
+          includeKey = true;
+          break;
+        }
+      }
+    }
+  }
+
+  const rxData = combineLatest(
+    queries.map(query =>
+      collectionData(query, includeKey ? '__name__' : void 0)
+    )
+  );
 
   return rxData.pipe(
     map((results: firebase.firestore.DocumentData[][]) => {

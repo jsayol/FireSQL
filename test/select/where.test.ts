@@ -379,6 +379,22 @@ describe('WHERE', () => {
     ]);
   });
 
+  test('using "__name__" filters by document key', async () => {
+    expect.assertions(1);
+
+    const docs = await fireSQL.query(`
+      SELECT name
+      FROM shops
+      WHERE __name__ = 'A2AwXRvhW3HmEivfS5LPH3s8'
+    `);
+
+    expect(docs).toEqual([
+      {
+        name: 'Price, Monahan and Bogisich'
+      }
+    ]);
+  });
+
   // TODO: Can't combine "LIKE 'value%'" with inequality filters (>, <=, ...)
   /*
       SELECT *
