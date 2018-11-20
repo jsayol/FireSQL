@@ -185,7 +185,7 @@ db.collection('cities').where('population', '>', 50000);
 ```
 The results are then merged and any possible duplicates are eliminated.
 
-The same principle applies to any other query. Some times your SQL will result in a single Firestore query and some other times it might result in several.
+The same principle applies to any other query. Sometimes your SQL will result in a single Firestore query and some other times it might result in several.
 
 For example, take a seemingly simple SQL statement like the following:
 ```sql
@@ -195,18 +195,19 @@ WHERE country != 'Japan' AND region IN ('north', 'east', 'west') AND (capital = 
 ```
 This will need to launch a total of 12 concurrent queries to Firestore!
 ```js
-db.collection('cities').where('country', '<', 'Japan').where('region', '==', 'north').where('capital', '==', true);
-db.collection('cities').where('country', '<', 'Japan').where('region', '==', 'north').where('population', '>', 100000);
-db.collection('cities').where('country', '<', 'Japan').where('region', '==', 'east').where('capital', '==', true);
-db.collection('cities').where('country', '<', 'Japan').where('region', '==', 'east').where('population', '>', 100000);
-db.collection('cities').where('country', '<', 'Japan').where('region', '==', 'west').where('capital', '==', true);
-db.collection('cities').where('country', '<', 'Japan').where('region', '==', 'west').where('population', '>', 100000);
-db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'north').where('capital', '==', true);
-db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'north').where('population', '>', 100000);
-db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'east').where('capital', '==', true);
-db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'east').where('population', '>', 100000);
-db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'west').where('capital', '==', true);
-db.collection('cities').where('country', '>', 'Japan').where('region', '==', 'west').where('population', '>', 100000);
+const cities = db.collection('cities');
+cities.where('country', '<', 'Japan').where('region', '==', 'north').where('capital', '==', true);
+cities.where('country', '<', 'Japan').where('region', '==', 'north').where('population', '>', 100000);
+cities.where('country', '<', 'Japan').where('region', '==', 'east').where('capital', '==', true);
+cities.where('country', '<', 'Japan').where('region', '==', 'east').where('population', '>', 100000);
+cities.where('country', '<', 'Japan').where('region', '==', 'west').where('capital', '==', true);
+cities.where('country', '<', 'Japan').where('region', '==', 'west').where('population', '>', 100000);
+cities.where('country', '>', 'Japan').where('region', '==', 'north').where('capital', '==', true);
+cities.where('country', '>', 'Japan').where('region', '==', 'north').where('population', '>', 100000);
+cities.where('country', '>', 'Japan').where('region', '==', 'east').where('capital', '==', true);
+cities.where('country', '>', 'Japan').where('region', '==', 'east').where('population', '>', 100000);
+cities.where('country', '>', 'Japan').where('region', '==', 'west').where('capital', '==', true);
+cities.where('country', '>', 'Japan').where('region', '==', 'west').where('population', '>', 100000);
 ```
 As you can see, SQL offers a very concise and powerful way to express your query. But as they say, ***with great power comes great responsibility***. Always be mindful of the underlying data model when using FireSQL.
 
