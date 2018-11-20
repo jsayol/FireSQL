@@ -1,8 +1,8 @@
 import {
-  SQL_AST,
   SQL_SelectColumn,
   SQL_ColumnRef,
-  SQL_AggrFunction
+  SQL_AggrFunction,
+  SQL_Select
 } from 'node-sqlparser';
 import {
   assert,
@@ -21,248 +21,360 @@ import {
 import { applyOrderBy, applyOrderByLocally } from './orderby';
 import { applyLimit, applyLimitLocally } from './limit';
 import { applyWhere } from './where';
+import { QueryOptions, DOCUMENT_KEY_NAME } from '../firesql';
 
-export async function select(
+const VALID_AGGR_FUNCTIONS = ['MIN', 'MAX', 'SUM', 'AVG'];
+
+export async function select_(
   ref: firebase.firestore.DocumentReference,
-  ast: SQL_AST
+  ast: SQL_Select,
+  options: QueryOptions
 ): Promise<DocumentData[]> {
-  // We need to determine if we have to include
-  // the document's key (__name__) in the results.
-  let includeKey = false;
-  if (Array.isArray(ast.columns)) {
-    for (let i = 0; i < ast.columns.length; i++) {
-      if (ast.columns[i].expr.type === 'column_ref') {
-        if ((ast.columns[i].expr as SQL_ColumnRef).column === '__name__') {
-          includeKey = true;
-          break;
+  const selectOp = new SelectOperation(ref, ast, options);
+  const queries = selectOp.generateQueries_();
+  const documents = await selectOp.executeQueries_(queries);
+  return selectOp.processDocuments_(queries, documents);
+}
+
+export class SelectOperation {
+  _includeId?: boolean | string;
+
+  constructor(
+    private _ref: firebase.firestore.DocumentReference,
+    private _ast: SQL_Select,
+    options: QueryOptions
+  ) {
+    // We need to determine if we have to include
+    // the document's ID (__name__) in the results.
+    this._includeId = options.includeId || false;
+    if (!this._includeId && Array.isArray(_ast.columns)) {
+      for (let i = 0; i < _ast.columns.length; i++) {
+        if (_ast.columns[i].expr.type === 'column_ref') {
+          if (
+            (_ast.columns[i].expr as SQL_ColumnRef).column === DOCUMENT_KEY_NAME
+          ) {
+            this._includeId = true;
+            break;
+          }
         }
+      }
+    }
+
+    if (this._includeId === void 0) {
+      this._includeId = false;
+    }
+  }
+
+  generateQueries_(ast?: SQL_Select): firebase.firestore.Query[] {
+    ast = ast || this._ast;
+
+    assert(
+      ast.from.length === 1,
+      'Only one collection at a time (no JOINs yet).'
+    );
+
+    const colName = ast.from[0].table;
+    let collection = this._ref.collection(colName);
+    let queries: firebase.firestore.Query[] = [collection];
+
+    /*
+   * We'd need this if we end up implementing JOINs, but for now
+   * it's unnecessary since we're only querying a single collection
+   
+    // Keep track of aliased "tables" (collections)
+    const aliasedCollections: { [k: string]: string } = {};
+    if (ast.from[0].as.length > 0) {
+      aliasedCollections[ast.from[0].as] = colName;
+    } else {
+      aliasedCollections[colName] = colName;
+    }
+   */
+
+    if (ast.where) {
+      queries = applyWhere(queries, ast.where);
+    }
+
+    if (ast.orderby) {
+      queries = applyOrderBy(queries, ast.orderby);
+
+      /*
+       FIXME: the following query throws an error:
+          SELECT city, name
+          FROM restaurants
+          WHERE city IN ('Nashvile', 'Denver')
+          ORDER BY city, name
+  
+       It happens because "WHERE ... IN ..." splits into 2 separate
+       queries with a "==" filter, and an order by clause cannot
+       contain a field with an equality filter:
+          ...where("city","==","Denver").orderBy("city")
+      */
+    }
+
+    // if (ast.groupby) {
+    //   throw new Error('GROUP BY not supported yet');
+    // }
+
+    if (ast.limit) {
+      // First we apply the limit to each query we may have
+      // and later we'll apply it again locally to the
+      // merged set of documents, in case we end up with too many.
+      queries = applyLimit(queries, ast.limit);
+    }
+
+    if (ast._next) {
+      assert(
+        ast._next.type === 'select',
+        ' UNION statements are only supported between SELECTs.'
+      );
+      // This is the UNION of 2 SELECTs, so lets process the second
+      // one and merge their queries
+      queries = queries.concat(this.generateQueries_(ast._next));
+
+      // FIXME: The SQL parser incorrectly attributes ORDER BY to the second
+      // SELECT only, instead of to the whole UNION. Find a workaround.
+    }
+
+    return queries;
+  }
+
+  async executeQueries_(
+    queries: firebase.firestore.Query[]
+  ): Promise<DocumentData[]> {
+    let documents: DocumentData[] = [];
+    const seenDocuments: { [id: string]: true } = {};
+
+    try {
+      await Promise.all(
+        queries.map(async query => {
+          const snapshot = await query.get();
+          const numDocs = snapshot.docs.length;
+
+          for (let i = 0; i < numDocs; i++) {
+            const docSnap = snapshot.docs[i];
+            const docPath = docSnap.ref.path;
+
+            if (!contains(seenDocuments, docPath)) {
+              const docData = docSnap.data();
+
+              if (this._includeId) {
+                docData[
+                  typeof this._includeId === 'string'
+                    ? this._includeId
+                    : DOCUMENT_KEY_NAME
+                ] = docSnap.id;
+              }
+
+              documents.push(docData);
+              seenDocuments[docPath] = true;
+            }
+          }
+        })
+      );
+    } catch (err) {
+      // TODO: handle error?
+      throw err;
+    }
+
+    return documents;
+  }
+
+  processDocuments_(
+    queries: firebase.firestore.Query[],
+    documents: DocumentData[]
+  ): DocumentData[] {
+    if (documents.length === 0) {
+      return [];
+    } else {
+      if (this._ast.groupby) {
+        const groupedDocs = applyGroupByLocally(documents, this._ast.groupby);
+        return this._processGroupedDocs(queries, groupedDocs);
+      } else {
+        return this._processUngroupedDocs(queries, documents);
       }
     }
   }
 
-  const queries = generateQueries(ref, ast);
-  const documents = await executeQueries(queries, includeKey);
-  return processDocuments(ast, queries, documents);
-}
+  private _processUngroupedDocs(
+    queries: firebase.firestore.Query[],
+    documents: DocumentData[]
+  ): DocumentData[] {
+    if (this._ast.orderby && queries.length > 1) {
+      // We merged more than one query into a single set of documents
+      // so we need to order the documents again, this time client-side.
+      documents = applyOrderByLocally(documents, this._ast.orderby);
+    }
 
-export function generateQueries(
-  ref: firebase.firestore.DocumentReference,
-  ast: SQL_AST
-): firebase.firestore.Query[] {
-  assert(
-    ast.from.length === 1,
-    'Only one collection at a time (no JOINs yet).'
-  );
+    if (this._ast.limit && queries.length > 1) {
+      // We merged more than one query into a single set of documents
+      // so we need to apply the limit again, this time client-side.
+      documents = applyLimitLocally(documents, this._ast.limit);
+    }
 
-  const colName = ast.from[0].table;
-  let collection = ref.collection(colName);
-  let queries: firebase.firestore.Query[] = [collection];
+    if (typeof this._ast.columns === 'string' && this._ast.columns === '*') {
+      // Return all fields from the documents
+    } else if (Array.isArray(this._ast.columns)) {
+      const aggrColumns = getAggrColumns(this._ast.columns);
 
-  /*
- * We'd need this if we end up implementing JOINs, but for now
- * it's unnecessary since we're only querying a single collection
- 
-  // Keep track of aliased "tables" (collections)
-  const aliasedCollections: { [k: string]: string } = {};
-  if (ast.from[0].as.length > 0) {
-    aliasedCollections[ast.from[0].as] = colName;
-  } else {
-    aliasedCollections[colName] = colName;
-  }
- */
+      if (aggrColumns.length > 0) {
+        const docsGroup = new DocumentsGroup();
+        docsGroup.documents = documents;
+        aggregateDocuments(docsGroup, aggrColumns);
 
-  if (ast.where) {
-    queries = applyWhere(queries, ast.where);
-  }
+        /// Since there is no GROUP BY and we already computed all
+        // necessary aggregated values, at this point we only care
+        // about the first document in the list. Anything else is
+        // irrelevant.
+        const resultEntry = this._buildResultEntry(
+          docsGroup.documents[0],
+          docsGroup.aggr
+        );
 
-  if (ast.orderby) {
-    queries = applyOrderBy(queries, ast.orderby);
+        documents = [resultEntry];
+      } else {
+        documents = documents.map(doc => this._buildResultEntry(doc));
+      }
+    } else {
+      // We should never reach here
+      throw new Error('Internal error (ast.columns).');
+    }
 
-    /*
-     FIXME: the following query throws an error:
-        SELECT city, name
-        FROM restaurants
-        WHERE city IN ('Nashvile', 'Denver')
-        ORDER BY city, name
-
-     It happens because "WHERE ... IN ..." splits into 2 separate
-     queries with a "==" filter, and an order by clause cannot
-     contain a field with an equality filter:
-        ...where("city","==","Denver").orderBy("city")
-    */
+    return documents;
   }
 
-  // if (ast.groupby) {
-  //   throw new Error('GROUP BY not supported yet');
-  // }
+  private _processGroupedDocs(
+    queries: firebase.firestore.Query[],
+    groupedDocs: GroupedDocuments
+  ): DocumentData[] {
+    assert(this._ast.columns !== '*', 'Cannot "SELECT *" when using GROUP BY.');
 
-  if (ast.limit) {
-    // First we apply the limit to each query we may have
-    // and later we'll apply it again locally to the
-    // merged set of documents, in case we end up with too many.
-    queries = applyLimit(queries, ast.limit);
+    const aggrColumns = getAggrColumns(this._ast.columns);
+    const groups = flattenGroupedDocs(groupedDocs);
+
+    if (aggrColumns.length === 0) {
+      // We're applying a GROUP BY but none of the fields requested
+      // in the SELECT are an aggregate function. In this case we
+      // just return an entry for the first document.
+      const firstGroupKey = Object.keys(groups)[0];
+      const firstGroup = groups[firstGroupKey];
+      const firstDoc = firstGroup.documents[0];
+      return [this._buildResultEntry(firstDoc)];
+    } else {
+      const results: DocumentData[] = [];
+
+      // TODO: ORDER BY
+      assert(
+        !this._ast.orderby,
+        'ORDER BY is not yet supported when using GROUP BY.'
+      );
+
+      // TODO: LIMIT
+      assert(
+        !this._ast.limit,
+        'LIMIT is not yet supported when using GROUP BY.'
+      );
+
+      Object.keys(groups).forEach(groupKey => {
+        const docsGroup = groups[groupKey];
+        aggregateDocuments(docsGroup, aggrColumns);
+
+        const resultEntry = this._buildResultEntry(
+          docsGroup.documents[0],
+          docsGroup.aggr
+        );
+
+        results.push(resultEntry);
+      });
+
+      return results;
+    }
   }
 
-  if (ast._next) {
-    assert(
-      ast._next.type === 'select',
-      ' UNION statements are only supported between SELECTs.'
-    );
-    // This is the UNION of 2 SELECTs, so lets process the second
-    // one and merge their queries
-    queries = queries.concat(generateQueries(ref, ast._next));
+  private _buildResultEntry(
+    document: DocumentData,
+    aggregate?: GroupAggregateValues,
+    asFieldArray?: false
+  ): DocumentData;
+  private _buildResultEntry(
+    document: DocumentData,
+    aggregate?: GroupAggregateValues,
+    asFieldArray?: true
+  ): AliasedField[];
+  private _buildResultEntry(
+    document: DocumentData,
+    aggregate?: GroupAggregateValues,
+    asFieldArray = false
+  ): DocumentData | AliasedField[] {
+    let idIncluded = false;
+    const columns = this._ast.columns as SQL_SelectColumn[];
 
-    // FIXME: The SQL parser incorrectly attributes ORDER BY to the second
-    // SELECT only, instead of to the whole UNION. Find a workaround.
-  }
+    const resultFields: AliasedField[] = columns.reduce(
+      (entries: AliasedField[], column) => {
+        let fieldName: string;
+        let fieldAlias: string;
 
-  return queries;
-}
-
-async function executeQueries(
-  queries: firebase.firestore.Query[],
-  includeKey: boolean
-): Promise<DocumentData[]> {
-  let documents: DocumentData[] = [];
-  const seenDocs: { [id: string]: true } = {};
-
-  try {
-    await Promise.all(
-      queries.map(async query => {
-        const snapshot = await query.get();
-        const numDocs = snapshot.docs.length;
-
-        for (let i = 0; i < numDocs; i++) {
-          const docSnap = snapshot.docs[i];
-          if (!contains(seenDocs, docSnap.ref.path)) {
-            const docData = docSnap.data();
-            if (includeKey) {
-              docData['__name__'] = docSnap.id;
+        switch (column.expr.type) {
+          case 'column_ref':
+            fieldName = column.expr.column;
+            fieldAlias = nameOrAlias(fieldName, column.as);
+            entries.push(
+              new AliasedField(
+                fieldName,
+                fieldAlias,
+                deepGet(document, fieldName)
+              )
+            );
+            if (fieldName === DOCUMENT_KEY_NAME) {
+              idIncluded = true;
             }
-            documents.push(docData);
-            seenDocs[docSnap.ref.path] = true;
-          }
+            break;
+
+          case 'aggr_func':
+            vaidateAggrFunction(column.expr);
+            fieldName = (column.expr.args.expr as SQL_ColumnRef).column;
+            fieldAlias = nameOrAlias(fieldName, column.as, column.expr);
+            entries.push(
+              new AliasedField(
+                fieldName,
+                fieldAlias,
+                (aggregate! as any)[column.expr.name.toLowerCase()][fieldName]
+              )
+            );
+            break;
+
+          default:
+            throw new Error('Unsupported type in SELECT.');
         }
-      })
+
+        return entries;
+      },
+      []
     );
-  } catch (err) {
-    // TODO: handle error?
-    throw err;
-  }
 
-  return documents;
-}
+    if (this._includeId && !idIncluded) {
+      resultFields.push(
+        new AliasedField(
+          DOCUMENT_KEY_NAME,
+          typeof this._includeId === 'string'
+            ? this._includeId
+            : DOCUMENT_KEY_NAME,
+          safeGet(document, DOCUMENT_KEY_NAME)
+        )
+      );
+    }
 
-export function processDocuments(
-  ast: SQL_AST,
-  queries: firebase.firestore.Query[],
-  documents: DocumentData[]
-): DocumentData[] {
-  if (documents.length === 0) {
-    return [];
-  } else {
-    if (ast.groupby) {
-      const groupedDocs = applyGroupByLocally(documents, ast.groupby);
-      return processGroupedDocs(ast, queries, groupedDocs);
+    if (asFieldArray) {
+      return resultFields;
     } else {
-      return processUngroupedDocs(ast, queries, documents);
+      return resultFields.reduce((doc: DocumentData, field: AliasedField) => {
+        doc[field.alias] = field.value;
+        return doc;
+      }, {});
     }
   }
 }
 
-function processUngroupedDocs(
-  ast: SQL_AST,
-  queries: firebase.firestore.Query[],
-  documents: DocumentData[]
-): DocumentData[] {
-  if (ast.orderby && queries.length > 1) {
-    // We merged more than one query into a single set of documents
-    // so we need to order the documents again, this time client-side.
-    documents = applyOrderByLocally(documents, ast.orderby);
-  }
-
-  if (ast.limit && queries.length > 1) {
-    // We merged more than one query into a single set of documents
-    // so we need to apply the limit again, this time client-side.
-    documents = applyLimitLocally(documents, ast.limit);
-  }
-
-  if (typeof ast.columns === 'string' && ast.columns === '*') {
-    // Return all fields from the documents
-  } else if (Array.isArray(ast.columns)) {
-    const aggrColumns = getAggrColumns(ast.columns);
-
-    if (aggrColumns.length > 0) {
-      const docsGroup = new DocumentsGroup();
-      docsGroup.documents = documents;
-      aggregateDocuments(docsGroup, aggrColumns);
-
-      /// Since there is no GROUP BY and we already computed all
-      // necessary aggregated values, at this point we only care
-      // about the first document in the list. Anything else is
-      // irrelevant.
-      const resultEntry = buildResultEntry(
-        docsGroup.documents[0],
-        ast.columns,
-        docsGroup.aggr
-      );
-      documents = [resultEntry];
-    } else {
-      documents = documents.map(doc =>
-        buildResultEntry(doc, ast.columns as SQL_SelectColumn[])
-      );
-    }
-  } else {
-    // We should never reach here
-    throw new Error('Internal error (ast.columns).');
-  }
-
-  return documents;
-}
-
-function processGroupedDocs(
-  ast: SQL_AST,
-  queries: firebase.firestore.Query[],
-  groupedDocs: GroupedDocuments
-): DocumentData[] {
-  assert(ast.columns !== '*', 'Cannot "SELECT *" when using GROUP BY.');
-
-  const aggrColumns = getAggrColumns(ast.columns);
-  const groups = flattenGroupedDocs(groupedDocs);
-
-  if (aggrColumns.length === 0) {
-    // We're applying a GROUP BY but none of the fields requested
-    // in the SELECT are an aggregate function. In this case we
-    // just return an entry for the first document.
-    const firstGroupKey = Object.keys(groups)[0];
-    const firstGroup = groups[firstGroupKey];
-    const firstDoc = firstGroup.documents[0];
-    return [buildResultEntry(firstDoc, ast.columns as SQL_SelectColumn[])];
-  } else {
-    const results: DocumentData[] = [];
-
-    // TODO: ORDER BY
-    assert(!ast.orderby, 'ORDER BY is not yet supported when using GROUP BY.');
-
-    // TODO: LIMIT
-    assert(!ast.limit, 'ORDER BY is not yet supported when using GROUP BY.');
-
-    Object.keys(groups).forEach(groupKey => {
-      const docsGroup = groups[groupKey];
-      aggregateDocuments(docsGroup, aggrColumns);
-
-      const resultEntry = buildResultEntry(
-        docsGroup.documents[0],
-        ast.columns as SQL_SelectColumn[],
-        docsGroup.aggr
-      );
-
-      results.push(resultEntry);
-    });
-
-    return results;
-  }
-}
+/*************************************************/
 
 function aggregateDocuments(
   docsGroup: DocumentsGroup,
@@ -381,78 +493,6 @@ function getAggrColumns(columns: SQL_SelectColumn[] | '*'): SQL_AggrFunction[] {
   return aggrColumns;
 }
 
-function buildResultEntry(
-  document: DocumentData,
-  columns: SQL_SelectColumn[],
-  aggregate?: GroupAggregateValues,
-  asFieldArray?: false
-): DocumentData;
-
-function buildResultEntry(
-  document: DocumentData,
-  columns: SQL_SelectColumn[],
-  aggregate?: GroupAggregateValues,
-  asFieldArray?: true
-): AliasedField[];
-
-function buildResultEntry(
-  document: DocumentData,
-  columns: SQL_SelectColumn[],
-  aggregate?: GroupAggregateValues,
-  asFieldArray = false
-): DocumentData | AliasedField[] {
-  const resultFields: AliasedField[] = columns.reduce(
-    (entries: AliasedField[], column: SQL_SelectColumn) => {
-      let fieldName: string;
-      let fieldAlias: string;
-
-      switch (column.expr.type) {
-        case 'column_ref':
-          fieldName = column.expr.column;
-          fieldAlias = nameOrAlias(fieldName, column.as);
-          entries.push(
-            new AliasedField(
-              fieldName,
-              fieldAlias,
-              deepGet(document, fieldName)
-            )
-          );
-          break;
-
-        case 'aggr_func':
-          vaidateAggrFunction(column.expr);
-          fieldName = (column.expr.args.expr as SQL_ColumnRef).column;
-          fieldAlias = nameOrAlias(fieldName, column.as, column.expr);
-          entries.push(
-            new AliasedField(
-              fieldName,
-              fieldAlias,
-              (aggregate! as any)[column.expr.name.toLowerCase()][fieldName]
-            )
-          );
-          break;
-
-        default:
-          throw new Error('Unsupported type in SELECT.');
-      }
-
-      return entries;
-    },
-    []
-  );
-
-  if (asFieldArray) {
-    return resultFields;
-  } else {
-    return resultFields.reduce((doc: DocumentData, field: AliasedField) => {
-      doc[field.alias] = field.value;
-      return doc;
-    }, {});
-  }
-}
-
-const VALID_AGGR_FUNCTIONS = ['MIN', 'MAX', 'SUM', 'AVG'];
-
 function vaidateAggrFunction(aggrFn: SQL_AggrFunction) {
   // TODO: support COUNT, then remove this assert
   assert(
@@ -471,7 +511,7 @@ function vaidateAggrFunction(aggrFn: SQL_AggrFunction) {
   );
 }
 
-export function flattenGroupedDocs(
+function flattenGroupedDocs(
   groupedDocs: GroupedDocuments
 ): { [k: string]: DocumentsGroup } {
   let result: { [k: string]: any } = {};

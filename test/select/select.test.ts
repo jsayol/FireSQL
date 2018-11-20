@@ -1,4 +1,4 @@
-import { FireSQL } from '../../src/firesql';
+import { FireSQL, DOCUMENT_KEY_NAME } from '../../src/firesql';
 import { initFirestore } from '../helpers/utils';
 
 let fireSQL: FireSQL;
@@ -7,17 +7,6 @@ beforeAll(() => {
   initFirestore();
   fireSQL = new FireSQL();
 });
-
-// `
-// SELECT city, category, AVG(price) AS avgPrice, SUM(price > 5)
-// FROM restaurants
-// WHERE category IN ("Mexican", "Indian", "Brunch")
-// GROUP BY city, category
-// `
-// `
-// SELECT SUM(price) AS sumPrice, AVG(price)
-// FROM restaurants
-// `
 
 describe('SELECT', () => {
   it('from non-existant collection returns no documents', async () => {
@@ -141,16 +130,149 @@ describe('SELECT', () => {
     });
   });
 
+  it('returns document id with global includeId=true option', async () => {
+    expect.assertions(2);
+
+    const docs = await new FireSQL(fireSQL.ref, { includeId: true }).query(`
+      SELECT *
+      FROM shops
+      WHERE name = 'Beer LLC'
+    `);
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).toHaveProperty(
+      DOCUMENT_KEY_NAME,
+      '6yZrSjRzn8DzhjQ6MPv0HfTz'
+    );
+  });
+
+  it('returns document id with query includeId=true option', async () => {
+    expect.assertions(2);
+
+    const docs = await fireSQL.query(
+      `
+      SELECT *
+      FROM shops
+      WHERE name = 'Beer LLC'
+      `,
+      { includeId: true }
+    );
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).toHaveProperty(
+      DOCUMENT_KEY_NAME,
+      '6yZrSjRzn8DzhjQ6MPv0HfTz'
+    );
+  });
+
+  it("doesn't return document id with query includeId=false and global includeId=true", async () => {
+    expect.assertions(2);
+
+    const docs = await new FireSQL(fireSQL.ref, { includeId: true }).query(
+      `
+      SELECT *
+      FROM shops
+      WHERE name = 'Beer LLC'
+      `,
+      { includeId: false }
+    );
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).not.toHaveProperty(DOCUMENT_KEY_NAME);
+  });
+
+  it('returns document id with global includeId="alias" option', async () => {
+    expect.assertions(3);
+
+    const docs = await new FireSQL(fireSQL.ref, { includeId: 'docIdAlias' })
+      .query(`
+      SELECT *
+      FROM shops
+      WHERE name = 'Beer LLC'
+    `);
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).not.toHaveProperty(DOCUMENT_KEY_NAME);
+    expect(docs[0]).toHaveProperty('docIdAlias', '6yZrSjRzn8DzhjQ6MPv0HfTz');
+  });
+
+  it('returns document id with query includeId="alias" option', async () => {
+    expect.assertions(3);
+
+    const docs = await fireSQL.query(
+      `
+      SELECT *
+      FROM shops
+      WHERE name = 'Beer LLC'
+      `,
+      { includeId: 'docIdAlias' }
+    );
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).not.toHaveProperty(DOCUMENT_KEY_NAME);
+    expect(docs[0]).toHaveProperty('docIdAlias', '6yZrSjRzn8DzhjQ6MPv0HfTz');
+  });
+
+  it('returns document id with includeId=true even if not in SELECTed fields', async () => {
+    expect.assertions(2);
+
+    const docs = await fireSQL.query(
+      `
+      SELECT rating
+      FROM shops
+      WHERE name = 'Beer LLC'
+      `,
+      { includeId: true }
+    );
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).toHaveProperty(
+      DOCUMENT_KEY_NAME,
+      '6yZrSjRzn8DzhjQ6MPv0HfTz'
+    );
+  });
+
   test('"__name__" returns the document key', async () => {
     expect.assertions(2);
 
     const docs = await fireSQL.query(`
-      SELECT __name__
+      SELECT ${DOCUMENT_KEY_NAME}
       FROM shops
       WHERE name = 'Simonis, Howe and Kovacek'
     `);
 
     expect(docs).toHaveLength(1);
-    expect(docs[0]).toHaveProperty('__name__', 'AbvczIyCuxEof6TpfOSwdsGO');
+    expect(docs[0]).toHaveProperty(
+      DOCUMENT_KEY_NAME,
+      'AbvczIyCuxEof6TpfOSwdsGO'
+    );
   });
+
+  test('"__name__" can be aliased', async () => {
+    expect.assertions(3);
+
+    const docs = await fireSQL.query(`
+      SELECT ${DOCUMENT_KEY_NAME} AS docIdAlias
+      FROM shops
+      WHERE name = 'Simonis, Howe and Kovacek'
+    `);
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).not.toHaveProperty(DOCUMENT_KEY_NAME);
+    expect(docs[0]).toHaveProperty('docIdAlias', 'AbvczIyCuxEof6TpfOSwdsGO');
+  });
+
+  // TODO:
+  // `
+  // SELECT city, category, AVG(price) AS avgPrice, SUM(price > 5)
+  // FROM restaurants
+  // WHERE category IN ("Mexican", "Indian", "Brunch")
+  // GROUP BY city, category
+  // `
+
+  // TODO:
+  // `
+  // SELECT SUM(price) AS sumPrice, AVG(price)
+  // FROM restaurants
+  // `
 });

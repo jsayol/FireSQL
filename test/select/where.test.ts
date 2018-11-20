@@ -1,4 +1,4 @@
-import { FireSQL } from '../../src/firesql';
+import { FireSQL, DOCUMENT_KEY_NAME } from '../../src/firesql';
 import { initFirestore } from '../helpers/utils';
 
 let fireSQL: FireSQL;
@@ -379,13 +379,13 @@ describe('WHERE', () => {
     ]);
   });
 
-  test('using "__name__" filters by document key', async () => {
+  it('filters by document key when using "__name__"', async () => {
     expect.assertions(1);
 
     const docs = await fireSQL.query(`
       SELECT name
       FROM shops
-      WHERE __name__ = 'A2AwXRvhW3HmEivfS5LPH3s8'
+      WHERE ${DOCUMENT_KEY_NAME} = 'A2AwXRvhW3HmEivfS5LPH3s8'
     `);
 
     expect(docs).toEqual([

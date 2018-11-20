@@ -36,6 +36,24 @@ describe('Method query()', () => {
     }
   });
 
+  it('accepts options as second argument', async () => {
+    expect.assertions(1);
+
+    const returnValue = fireSQL.query('SELECT * FROM nonExistantCollection', {
+      includeId: true
+    });
+
+    expect(returnValue).toBeInstanceOf(Promise);
+
+    try {
+      await returnValue;
+    } catch (err) {
+      // We're testing that query() doesn't throw, so
+      // this assertion shouldn't be reached.
+      expect(true).toBe(false);
+    }
+  });
+
   it('throws when SQL has syntax errors', async () => {
     expect.assertions(2);
 

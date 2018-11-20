@@ -140,21 +140,33 @@ FROM products
 WHERE `details.available` = true
 ```
 
-## Getting the document keys
-You can use the special field `__name__` to refer to the document key (its ID). For convenience, you might want to alias it:
+## Getting the document IDs
+You can use the special field `__name__` to refer to the document ID (its key inside a collection). For convenience, you might want to alias it:
 ```sql
 SELECT __name__ AS docId, country, population
 FROM cities
 ```
 
-It's also possible to use it as a search field. For example, you could search for all the documents whose keys start with `Hello`:
+If you always want to include the document ID, you can specify that as a global option to the FireSQL class:
+```js
+const fireSQL = new FireSQL(ref, { includeId: true}); // To include it as "__name__"
+const fireSQL = new FireSQL(ref, { includeId: 'fieldName'}); // To include it as "fieldName"
+```
+
+You can also specify that option when querying. This will always take preference over the global option:
+```js
+fireSQL.query(sql, { includeId: 'id'}); // To include it as "id"
+fireSQL.query(sql, { includeId: false}); // To not include it
+```
+
+When querying it's also possible to use the document as a search field by using `__name__` directly. For example, you could search for all the documents whose IDs start with `Hello`:
 ```sql
-SELECT __name__
+SELECT *
 FROM cities
 WHERE __name__ LIKE 'Hello%'
 ```
 
-When using `SELECT *` it's currently not possible to include the document key in the results.
+> **Note**: You will need to specify the `includeId` option if you want to obtain the document IDs when doing a `SELECT *` query.
 
 ## How does FireSQL work?
 
@@ -193,6 +205,7 @@ SELECT *
 FROM cities
 WHERE country != 'Japan' AND region IN ('north', 'east', 'west') AND (capital = true OR population > 100000)
 ```
+
 This will need to launch a total of 12 concurrent queries to Firestore!
 ```js
 const cities = db.collection('cities');
