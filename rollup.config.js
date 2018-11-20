@@ -56,7 +56,18 @@ const createConfig = ({ umd = false, output } = {}) => ({
       }),
 
     // Uglify UMD bundle for smaller size
-    umd && uglify(),
+    umd &&
+      uglify({
+        mangle: {
+          properties: {
+            keep_quoted: true,
+            regex: /_$|^_/
+          }
+        },
+        compress: {
+          passes: 3
+        }
+      }),
 
     // Resolve source maps to the original source
     sourceMaps()
@@ -74,7 +85,8 @@ export default [
       format: 'umd',
       name: camelCase(libraryName),
       sourcemap: true,
-      footer: 'var FireSQL = (typeof firesql !== "undefined") && firesql.FireSQL;'
+      footer:
+        'var FireSQL = (typeof firesql !== "undefined") && firesql.FireSQL;'
     }
   })
 ];
