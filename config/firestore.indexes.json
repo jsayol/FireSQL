@@ -1,3 +1,30 @@
 {
-  "indexes": []
+  "indexes": [
+    {
+      "collectionId": "shops",
+      "fields": [
+        {
+          "fieldPath": "category",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "rating",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionId": "shops",
+      "fields": [
+        {
+          "fieldPath": "contact.state",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "rating",
+          "mode": "ASCENDING"
+        }
+      ]
+    }
+  ]
 }
