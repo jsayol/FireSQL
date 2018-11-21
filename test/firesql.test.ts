@@ -7,6 +7,10 @@ beforeAll(() => {
   firestore = initFirestore();
 });
 
+afterAll(() => {
+  firestore.app.delete();
+});
+
 describe('FireSQL basic API', () => {
   it('is instantiable without arguments', () => {
     expect(new FireSQL()).toBeInstanceOf(FireSQL);

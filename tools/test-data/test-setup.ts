@@ -18,75 +18,75 @@ const cliOptions = {
   project: argv.project || argv.P
 };
 
-getToken()
-  .then(async (token: string) => {
-    const project = await getProject(token);
+// getToken()
+//   .then(async (token: string) => {
+//     const project = await getProject(token);
 
-    showWarning(project);
+//     showWarning(project);
 
-    const confirmation = await userConfirmation();
-    if (!confirmation) {
-      console.log('\nYou chose not to continue. Nothing was changed.\n');
-      return false;
-    }
+//     const confirmation = await userConfirmation();
+//     if (!confirmation) {
+//       console.log('\nYou chose not to continue. Nothing was changed.\n');
+//       return false;
+//     }
 
-    console.log('');
+//     console.log('');
 
-    let task = showTask('Downloading project configuration');
-    const config = await firebaseTools.setup.web({ project, token });
-    task.done('config/project.json');
+//     let task = showTask('Downloading project configuration');
+//     const config = await firebaseTools.setup.web({ project, token });
+//     task.done('config/project.json');
 
-    // Write config to top-level config directory
-    await promisify(writeFile)(
-      resolvePath(__dirname, '../../config/project.json'),
-      JSON.stringify(config, null, 2)
-    );
+//     // Write config to top-level config directory
+//     await promisify(writeFile)(
+//       resolvePath(__dirname, '../../config/project.json'),
+//       JSON.stringify(config, null, 2)
+//     );
 
-    // Deploy database rules
-    task = showTask('Deploying Firestore indexes and security rules');
-    await firebaseTools.deploy({
-      project,
-      token,
-      cwd: resolvePath(__dirname, '../../config')
-    });
+//     // Deploy database rules
+//     task = showTask('Deploying Firestore indexes and security rules');
+//     await firebaseTools.deploy({
+//       project,
+//       token,
+//       cwd: resolvePath(__dirname, '../../config')
+//     });
 
-    // Firestore calls grpc.load() which has been deprecated and we
-    // get an ugly warning on screen. This mutes it temporarily.
-    const unmute = muteDeprecationWarning();
+//     // Firestore calls grpc.load() which has been deprecated and we
+//     // get an ugly warning on screen. This mutes it temporarily.
+//     const unmute = muteDeprecationWarning();
 
-    const firestore = firebase.initializeApp(config).firestore();
-    firestore.settings({ timestampsInSnapshots: true });
-    const rootRef = firestore.doc('/');
+//     const firestore = firebase.initializeApp(config).firestore();
+//     firestore.settings({ timestampsInSnapshots: true });
+//     const rootRef = firestore.doc('/');
 
-    task = showTask('Deleting "shops" collection');
-    await firebaseTools.firestore.delete('/shops', {
-      project,
-      yes: true,
-      recursive: true
-    });
+//     task = showTask('Deleting "shops" collection');
+//     await firebaseTools.firestore.delete('/shops', {
+//       project,
+//       yes: true,
+//       recursive: true
+//     });
 
-    task = showTask('Loading test data into "shops" collection');
-    await loadTestDataset(rootRef, loadJSONFile(
-      './data.json'
-    ) as TestCollection[]);
+//     task = showTask('Loading test data into "shops" collection');
+//     await loadTestDataset(rootRef, loadJSONFile(
+//       './data.json'
+//     ) as TestCollection[]);
 
-    unmute();
-    task.done();
-    return;
-  })
-  .then((result?: boolean) => {
-    if (result !== false) {
-      console.log('\nDone!');
-      console.log('You can now run "yarn test" to run the tests.\n');
-    }
-    process.exit();
-  })
-  .catch(err => {
-    console.error(err);
-    process.exit(1);
-  });
+//     unmute();
+//     task.done();
+//     return;
+//   })
+//   .then((result?: boolean) => {
+//     if (result !== false) {
+//       console.log('\nDone!');
+//       console.log('You can now run "yarn test" to run the tests.\n');
+//     }
+//     process.exit();
+//   })
+//   .catch(err => {
+//     console.error(err);
+//     process.exit(1);
+//   });
 
-async function getToken(): Promise<string> {
+export async function getToken(): Promise<string> {
   if (cliOptions.token) {
     return cliOptions.token;
   }
@@ -164,7 +164,7 @@ async function userConfirmation(): Promise<boolean> {
   return confirmation;
 }
 
-function loadJSONFile(fileName: string): { [k: string]: any } | null {
+export function loadJSONFile(fileName: string): { [k: string]: any } | null {
   let data: { [k: string]: any } | null = null;
 
   try {

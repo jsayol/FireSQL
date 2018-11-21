@@ -1,11 +1,16 @@
 import { FireSQL, DOCUMENT_KEY_NAME } from '../../src/firesql';
 import { initFirestore } from '../helpers/utils';
 
+let firestore: firebase.firestore.Firestore;
 let fireSQL: FireSQL;
 
 beforeAll(() => {
-  initFirestore();
+  firestore = initFirestore();
   fireSQL = new FireSQL();
+});
+
+afterAll(() => {
+  firestore.app.delete();
 });
 
 describe('SELECT', () => {

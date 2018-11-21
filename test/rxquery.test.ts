@@ -3,11 +3,16 @@ import { initFirestore } from './helpers/utils';
 import { Observable } from 'rxjs';
 import '../src/rx';
 
+let firestore: firebase.firestore.Firestore;
 let fireSQL: FireSQL;
 
 beforeAll(() => {
-  initFirestore();
+  firestore = initFirestore();
   fireSQL = new FireSQL();
+});
+
+afterAll(() => {
+  firestore.app.delete();
 });
 
 afterAll(() => {

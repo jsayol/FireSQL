@@ -22,6 +22,7 @@
     "build:withdocs": "tsc --module commonjs && rollup -c rollup.config.js && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.js -w",
     "test": "jest --verbose",
+    "test:emulator": "ts-node --project tools/test-data/tsconfig.json tools/test-data/emulator/index.ts",
     "test:watch": "jest --verbose --watch",
     "test:prod": "yarn run lint && yarn run test --coverage --no-cache",
     "test:setup": "ts-node --project tools/test-data/tsconfig.json tools/test-data/test-setup.ts",
@@ -57,7 +58,8 @@
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
     "@types/core-js": "^2.5.0",
-    "@types/jest": "^23.3.2",
+    "@types/jest": "^23.3.9",
+    "@types/jest-cli": "^23.6.0",
     "@types/node": "^10.11.0",
     "@types/yargs": "^12.0.1",
     "chalk": "^2.4.1",
@@ -104,6 +106,7 @@
     "yargs": "^12.0.4"
   },
   "dependencies": {
+    "@firebase/testing": "^0.3.3",
     "node-sqlparser": "^1.0.4"
   },
   "peerDependencies": {
