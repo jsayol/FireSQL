@@ -12,5 +12,4 @@ compiled
 .rpt2_cache
 docs
 stuff
-config/project.json
-config/serviceAccountKey.json
+config/test.config.json

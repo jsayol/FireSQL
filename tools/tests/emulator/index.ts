@@ -1,27 +1,25 @@
 import { fork, ChildProcess } from 'child_process';
-import * as firebaseTest from '@firebase/testing';
-import { loadJSONFile } from '../test-setup';
-import { showTask } from '../task-list';
-import { muteDeprecationWarning } from '../mute-warning';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import { loadTestDataset, TestCollection } from '../load-test-data';
 import { resolve as resolvePath } from 'path';
 import * as jest from 'jest-cli';
 import chalk from 'chalk';
+import * as firebaseTest from '@firebase/testing';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+
+import { loadJSONFile } from '../../utils';
+import { showTask } from '../task-list';
+import { muteDeprecationWarning } from '../mute-warning';
+import { loadTestDataset, TestCollection } from '../load-test-data';
 
 const FIRESQL_TEST_PROJECT_ID = 'firesql-tests-with-emulator';
 
-const firebaseTools = require('firebase-tools');
-const unmute = muteDeprecationWarning();
 let task: ReturnType<typeof showTask>;
 let childProc: ChildProcess;
 
+muteDeprecationWarning();
+
 Promise.resolve().then(async () => {
   try {
-    // task = showTask('Setting up Firestore emulator');
-    // await firebaseTools.setup.emulators.firestore();
-
     task = showTask('Starting Firestore emulator');
     childProc = fork(resolvePath(__dirname, './serve.js'), [], {
       stdio: ['inherit', 'pipe', 'pipe', 'ipc']
@@ -62,7 +60,7 @@ async function onChildProcStdout(data: ReadableStream) {
       emulatorRunning = true;
       await runTests(devServerHost);
 
-      task = showTask('Closing the emulator.');
+      task = showTask('Shutting down the emulator');
       childProc.kill('SIGINT');
     } else if (emulatorRunning) {
       task.done();

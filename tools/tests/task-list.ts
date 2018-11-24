@@ -27,31 +27,21 @@ export function showTask(str: string): { done: Function } {
 function done(result?: string) {
   clearInterval(interval);
 
-  let log = chalk`{green {bold \u2713}} ${task}`;
+  if (task.length > 0) {
+    let log = chalk`{green {bold \u2713}} ${task}`;
 
-  if (result !== void 0) {
-    log += chalk` {grey ${result}}`;
+    if (result !== void 0) {
+      log += chalk` {grey ${result}}`;
+    }
+
+    logUpdate(log);
+    task = '';
   }
 
-  logUpdate(log);
   logUpdate.done();
   interval = null;
-  task = '';
 }
 
-function demo() {
-  let lasTask: any;
-
-  showTask('Downloading project configuration');
-  setTimeout(
-    () => showTask('Deploying Firestore security rules and indexes'),
-    1500
-  );
-  setTimeout(() => showTask('Erasing "shop" collection'), 3000);
-  setTimeout(
-    () => (lasTask = showTask('Loading test data into "shop" collection')),
-    4500
-  );
-
-  setTimeout(() => lasTask.done(), 6000);
+export function cleanTasks() {
+  logUpdate.done();
 }

@@ -15,9 +15,10 @@ function parent() {
   });
 
   proc.stdout.on('data', async data => {
-    const stdout = data.toString();
+    const stdout = data.toString().trim();
+    console.log('[SERVE-LOG]', stdout);
 
-    if (/^Dev App Server is now running/.test(stdout)) {
+    if (/^API endpoint: /.test(stdout)) {
       console.log('Emulator is running.');
 
       /** Run tests with @firebase/testing using the emulator ... **/
@@ -27,6 +28,11 @@ function parent() {
       console.log('Done testing, closing the emulator.');
       proc.kill('SIGINT');
     }
+  });
+
+  proc.stderr.on('data', async data => {
+    const stderr = data.toString().trim();
+    console.log('[SERVE-ERR]', stderr);
   });
 
   proc.on('exit', message => {

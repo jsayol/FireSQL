@@ -1,4 +1,3 @@
-import * as firebaseTest from '@firebase/testing';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
@@ -28,7 +27,7 @@ export function initFirestore(): firebase.firestore.Firestore {
     try {
       firestore = firebase.app().firestore();
     } catch (err) {
-      const project = require('../../config/project.json');
+      const { project } = require('../../config/test.config.json');
       const app = firebase.initializeApp(project);
       firestore = app.firestore();
       firestore.settings({ timestampsInSnapshots: true });
