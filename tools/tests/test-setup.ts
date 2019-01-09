@@ -15,8 +15,8 @@ const inquirer = require('inquirer');
 
 // Command-line arguments
 const cliOptions = {
-  token: argv.token || argv.T,
-  project: argv.project || argv.P
+  token: (argv.token || argv.T) as string,
+  project: (argv.project || argv.P) as string
 };
 
 let task: ReturnType<typeof showTask>;

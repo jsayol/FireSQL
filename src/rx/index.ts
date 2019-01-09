@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { collectionData } from 'rxfire/firestore';
 import { FireSQL, QueryOptions, DOCUMENT_KEY_NAME } from '../firesql';
 import { SelectOperation } from '../select';
-import { assert, DocumentData } from '../utils';
+import { assert, DocumentData, contains } from '../utils';
 
 declare module '../firesql' {
   interface FireSQL {
@@ -58,22 +58,47 @@ function rxSelect(
     // SELECT only, instead of to the whole UNION. Find a workaround.
   }
 
-  let rxFireIdField: string | undefined;
+  let idField: string;
+  let keepIdField: boolean;
+
   if (selectOp._includeId === true) {
-    rxFireIdField = DOCUMENT_KEY_NAME;
+    idField = DOCUMENT_KEY_NAME;
+    keepIdField = true;
   } else if (typeof selectOp._includeId === 'string') {
-    rxFireIdField = selectOp._includeId;
+    idField = selectOp._includeId;
+    keepIdField = true;
+  } else {
+    idField = DOCUMENT_KEY_NAME;
+    keepIdField = false;
   }
 
   const rxData = combineLatest(
-    queries.map(query => collectionData(query, rxFireIdField))
+    queries.map(query => collectionData(query, idField))
   );
 
   return rxData.pipe(
     map((results: firebase.firestore.DocumentData[][]) => {
       // We have an array of results (one for each query we generated) where
       // each element is an array of documents. We need to flatten them.
-      return results.reduce((docs, current) => docs.concat(current), []);
+      const documents: firebase.firestore.DocumentData[] = [];
+      const seenDocuments: { [id: string]: true } = {};
+
+      for (const docs of results) {
+        for (const doc of docs) {
+          // Note: for now we're only allowing to query a single collection, but
+          // if at any point we change that (for example with JOINs) we'll need to
+          // use the full document path here instead of just its ID
+          if (!contains(seenDocuments, doc[idField])) {
+            seenDocuments[doc[idField]] = true;
+            if (!keepIdField) {
+              delete doc[idField];
+            }
+            documents.push(doc);
+          }
+        }
+      }
+
+      return documents;
     }),
     map((documents: firebase.firestore.DocumentData[]) => {
       return selectOp.processDocuments_(queries, documents);

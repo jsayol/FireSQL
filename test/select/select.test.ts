@@ -267,6 +267,31 @@ describe('SELECT', () => {
     expect(docs[0]).toHaveProperty('docIdAlias', 'AbvczIyCuxEof6TpfOSwdsGO');
   });
 
+  it('filters duplicate documents from combined queries', async () => {
+    expect.assertions(3);
+
+    const docs1 = await fireSQL.query(`
+        SELECT *
+        FROM shops
+        WHERE category = 'Toys'
+    `);
+    expect(docs1).toHaveLength(3);
+
+    const docs2 = await fireSQL.query(`
+        SELECT *
+        FROM shops
+        WHERE rating > 3
+    `);
+    expect(docs2).toHaveLength(20);
+
+    const docs3 = await fireSQL.query(`
+        SELECT *
+        FROM shops
+        WHERE category = 'Toys' OR rating > 3
+    `);
+    expect(docs3).toHaveLength(21); // rather than 23 (3 + 20)
+  });
+
   // TODO:
   // `
   // SELECT city, category, AVG(price) AS avgPrice, SUM(price > 5)

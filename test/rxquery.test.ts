@@ -11,17 +11,14 @@ beforeAll(() => {
   fireSQL = new FireSQL();
 });
 
-afterAll(() => {
-  firestore.app.delete();
-});
-
-afterAll(() => {
+afterAll(async () => {
   // Cleanup
-  fireSQL.ref
+  await fireSQL.ref
     .collection('shops/p0H5osOFWCPlT1QthpXUnnzI/products')
     .doc('rxQueryTest')
     .delete()
     .catch(() => void 0); // We don't want any failure here to affect the tests
+  firestore.app.delete();
 });
 
 describe('Method rxQuery()', () => {
@@ -38,35 +35,35 @@ describe('Method rxQuery()', () => {
     expect.assertions(3);
 
     try {
-      await (fireSQL as any).rxQuery();
+      (fireSQL as any).rxQuery();
     } catch (err) {
-      expect(err).not.toBeUndefined();
+      expect(err).toBeDefined();
     }
 
     try {
-      await (fireSQL as any).rxQuery('');
+      (fireSQL as any).rxQuery('');
     } catch (err) {
-      expect(err).not.toBeUndefined();
+      expect(err).toBeDefined();
     }
 
     try {
-      await (fireSQL as any).rxQuery(42);
+      (fireSQL as any).rxQuery(42);
     } catch (err) {
-      expect(err).not.toBeUndefined();
+      expect(err).toBeDefined();
     }
   });
 
   it('accepts options as second argument', async () => {
     expect.assertions(1);
 
-    const returnValue = fireSQL.rxQuery('SELECT * FROM nonExistantCollection', {
-      includeId: true
-    });
-
-    expect(returnValue).toBeInstanceOf(Observable);
-
     try {
-      await returnValue;
+      const returnValue = fireSQL.rxQuery(
+        'SELECT * FROM nonExistantCollection',
+        {
+          includeId: true
+        }
+      );
+      expect(returnValue).toBeInstanceOf(Observable);
     } catch (err) {
       // We're testing that query() doesn't throw, so
       // this assertion shouldn't be reached.
@@ -78,7 +75,7 @@ describe('Method rxQuery()', () => {
     expect.assertions(2);
 
     try {
-      await fireSQL.rxQuery('not a valid query');
+      fireSQL.rxQuery('not a valid query');
     } catch (err) {
       expect(err).toBeInstanceOf(Error);
       expect(err).toHaveProperty('name', 'SyntaxError');

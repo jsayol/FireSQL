@@ -7,7 +7,11 @@ export function muteDeprecationWarning() {
     if (regex.test(chunk)) {
       callback();
     } else {
-      stderrWrite.apply(this, arguments);
+      stderrWrite.apply(this, (arguments as unknown) as [
+        any,
+        string,
+        Function
+      ]);
     }
   };
 
