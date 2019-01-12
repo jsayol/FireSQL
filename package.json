@@ -1,6 +1,6 @@
 {
   "name": "firesql-src",
-  "version": "1.0.0-alpha.12",
+  "version": "1.0.2",
   "description": "Query Cloud Firestore for Firebase using SQL",
   "keywords": [],
   "main": "dist/firesql.umd.js",
@@ -57,6 +57,7 @@
     "@babel/preset-env": "^7.1.6",
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
+    "@firebase/testing": "^0.5.3",
     "@types/core-js": "^2.5.0",
     "@types/jest": "^23.3.9",
     "@types/jest-cli": "^23.6.0",
@@ -106,7 +107,6 @@
     "yargs": "^12.0.4"
   },
   "dependencies": {
-    "@firebase/testing": "^0.3.3",
     "node-sqlparser": "^1.0.4"
   },
   "peerDependencies": {

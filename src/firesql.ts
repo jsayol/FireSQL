@@ -22,9 +22,9 @@ export class FireSQL {
     this._options = options as FireSQLOptions;
 
     if (typeof refOrOptions === 'object') {
-      if (refOrOptions.constructor.name === 'DocumentReference') {
+      if (refOrOptions instanceof firebase.firestore.DocumentReference) {
         this._ref = refOrOptions as firebase.firestore.DocumentReference;
-      } else if (refOrOptions.constructor.name === 'Firestore') {
+      } else if (refOrOptions instanceof firebase.firestore.Firestore) {
         this._ref = (refOrOptions as firebase.firestore.Firestore).doc('/');
       } else if (!options) {
         this._options = refOrOptions as FireSQLOptions;
@@ -91,7 +91,7 @@ export class FireSQL {
   private _getRef(): firebase.firestore.DocumentReference {
     if (!this._ref) {
       try {
-        const firestore = firebase.app().firestore();
+        const firestore = firebase.firestore();
         this._ref = firestore.doc(this._path !== void 0 ? this._path : '/');
         delete this._path;
       } catch (err) {

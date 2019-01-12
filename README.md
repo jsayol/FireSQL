@@ -6,8 +6,6 @@ FireSQL is a library built on top of the official Firebase SDK that allows you t
 
 On top of that, it offers some of the handy utilities that you're used to when using SQL, so that it can provide a better querying experience beyond what's offered by the native querying methods.
 
-**DISCLAIMER: This is a work in progress!** You're more than welcome to try it out and play with it, but please don't use it in production for now. Things might break :)
-
 ## Installation
 
 Just add `firesql` and `firebase` to your project:
@@ -39,7 +37,7 @@ const docRef = firebase.firestore().doc('someDoc');
 const fireSQL = new FireSQL(dbRef);
 
 // Use `.query()` to get a one-time result
-fireSQL.query('SELECT ...').then(documents => {
+fireSQL.query('SELECT * FROM myCollection').then(documents => {
   documents.forEach(doc => {
     /* Do something with the document */
   });
@@ -47,7 +45,7 @@ fireSQL.query('SELECT ...').then(documents => {
 
 // Use `.rxQuery()` to get an observable for realtime results.
 // Don't forget to import "firesql/rx" first (see example below).
-fireSQL.rxQuery('SELECT ...').subscribe(documents => {
+fireSQL.rxQuery('SELECT * FROM myCollection').subscribe(documents => {
   /* Got an update with the documents! */
 });
 
