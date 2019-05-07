@@ -1,14 +1,14 @@
+// import admin from 'firebase-admin';
+import firebase from 'firebase/app';
 import { FireSQL } from '../src/firesql';
-import { initFirestore } from './helpers/utils';
+import { initFirestore/*, initAdminFirestore*/ } from './helpers/utils';
 
 let firestore: firebase.firestore.Firestore;
+// let adminFirestore: admin.firestore.Firestore;
 
 beforeAll(() => {
   firestore = initFirestore();
-});
-
-afterAll(() => {
-  firestore.app.delete();
+  // adminFirestore = initAdminFirestore();
 });
 
 describe('FireSQL basic API', () => {
@@ -23,6 +23,16 @@ describe('FireSQL basic API', () => {
   it('is instantiable with DocumentReference', () => {
     expect(new FireSQL(firestore.doc('testing/doc'))).toBeInstanceOf(FireSQL);
   });
+
+  // it('is instantiable with firebase-admin Firestore', () => {
+  //   expect(new FireSQL(adminFirestore)).toBeInstanceOf(FireSQL);
+  // });
+
+  // it('is instantiable with firebase-admin DocumentReference', () => {
+  //   expect(new FireSQL(adminFirestore.doc('testing/doc'))).toBeInstanceOf(
+  //     FireSQL
+  //   );
+  // });
 
   it('is instantiable with a document path', () => {
     expect(new FireSQL('testing/doc')).toBeInstanceOf(FireSQL);
@@ -58,6 +68,27 @@ describe('FireSQL basic API', () => {
     expect(() => fireSQL.ref).not.toThrow();
     expect(fireSQL.ref.path).toBe('a/b');
   });
+
+  // it('is instantiable with firebase-admin Firestore and options', () => {
+  //   const options = { includeId: true };
+  //   const fireSQL = new FireSQL(adminFirestore, options);
+
+  //   expect(fireSQL).toBeInstanceOf(FireSQL);
+  //   expect(fireSQL.options).toEqual(options);
+  //   expect(() => fireSQL.ref).not.toThrow();
+  //   expect(fireSQL.ref.path).toBe('');
+  // });
+
+  // it('is instantiable with firebase-admin DocumentReference and options', () => {
+  //   const options = { includeId: true };
+  //   const docRef = adminFirestore.doc('a/b');
+  //   const fireSQL = new FireSQL(docRef, options);
+
+  //   expect(fireSQL).toBeInstanceOf(FireSQL);
+  //   expect(fireSQL.options).toEqual(options);
+  //   expect(() => fireSQL.ref).not.toThrow();
+  //   expect(fireSQL.ref.path).toBe('a/b');
+  // });
 
   it('is instantiable with a document path and options', () => {
     const options = { includeId: true };

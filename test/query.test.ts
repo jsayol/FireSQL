@@ -9,10 +9,6 @@ beforeAll(() => {
   fireSQL = new FireSQL();
 });
 
-afterAll(() => {
-  firestore.app.delete();
-});
-
 describe('Method query()', () => {
   it('returns a Promise', () => {
     const returnValue = fireSQL.query('SELECT * FROM nonExistantCollection');

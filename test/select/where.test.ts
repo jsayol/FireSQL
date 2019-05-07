@@ -9,10 +9,6 @@ beforeAll(() => {
   fireSQL = new FireSQL();
 });
 
-afterAll(() => {
-  firestore.app.delete();
-});
-
 // 'SELECT * FROM cities',
 // "SELECT * FROM cities WHERE state = 'CA'",
 // "SELECT * FROM cities WHERE country = 'USA' AND population > 700000",

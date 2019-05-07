@@ -118,7 +118,6 @@ function initFirestoreTest(devServerHost: string) {
   const firestore = app.firestore();
   firestore.settings({
     host: devServerHost,
-    ssl: false,
-    timestampsInSnapshots: true
+    ssl: false
   });
 }

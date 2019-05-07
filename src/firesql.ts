@@ -1,33 +1,50 @@
-import { parse as parseSQL } from 'node-sqlparser';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { parse as parseSQL } from 'node-sqlparser';
 import { DocumentData, assert } from './utils';
 import { select_ } from './select';
 
 // Polyfills
-import 'core-js/fn/array/includes';
-import 'core-js/fn/number/is-nan';
+import 'core-js/features/array/includes';
+import 'core-js/features/number/is-nan';
 
 export const DOCUMENT_KEY_NAME = '__name__';
 
 export class FireSQL {
   private _ref?: firebase.firestore.DocumentReference;
   private _path?: string;
-  private _options: FireSQLOptions;
+  private _options!: FireSQLOptions;
 
   constructor(
     refOrOptions?: FirestoreOrDocOrOptions,
     options?: FireSQLOptions
   ) {
-    this._options = options as FireSQLOptions;
+    let hasSetOptions = false;
 
     if (typeof refOrOptions === 'object') {
-      if (refOrOptions instanceof firebase.firestore.DocumentReference) {
+      /*
+       We initially used `instanceof` to determine the object type, but that
+       only allowed using the client SDK. Doing it this way we can support
+       both the client and the admin SDKs.
+       */
+      if (typeof (refOrOptions as any).doc === 'function') {
+        // It's an instance of firebase.firestore.Firestore
+        try {
+          this._ref = (refOrOptions as firebase.firestore.Firestore).doc('/');
+        } catch (err) {
+          // If the Firestore instance we get is from the Admin SDK, it throws
+          // an error if we call `.doc("/")` on it. In that case we just treat
+          // it as a firebase.firestore.DocumentReference
+          this._ref = refOrOptions as firebase.firestore.DocumentReference;
+        }
+      } else if (typeof (refOrOptions as any).collection === 'function') {
+        // It's an instance of firebase.firestore.DocumentReference
         this._ref = refOrOptions as firebase.firestore.DocumentReference;
-      } else if (refOrOptions instanceof firebase.firestore.Firestore) {
-        this._ref = (refOrOptions as firebase.firestore.Firestore).doc('/');
       } else if (!options) {
+        // It's an options object
+        // TODO: check it's a valid options object
         this._options = refOrOptions as FireSQLOptions;
+        hasSetOptions = true;
       } else {
         throw new Error(
           'With options as the second parameter, the first parameter ' +
@@ -40,7 +57,8 @@ export class FireSQL {
       }
     }
 
-    if (!this._options) {
+    if (!hasSetOptions) {
+      // TODO: check it's a valid options object
       this._options = options || {};
     }
 
@@ -119,12 +137,34 @@ export interface FireSQLOptions {
 
 export interface QueryOptions extends FireSQLOptions {}
 
-export type FirestoreOrDocument =
+type FirestoreOrDocument =
   | string
   | firebase.firestore.Firestore
-  | firebase.firestore.DocumentReference;
+  | firebase.firestore.DocumentReference
+  | AdminFirestore
+  | AdminDocumentReference;
 
 export type FirestoreOrDocOrOptions = FirestoreOrDocument | FireSQLOptions;
+
+/**
+ * An interface representing the basics we need from the
+ * admin.firestore.Firestore class.
+ * We use it like this to avoid having to require "firebase-admin".
+ */
+interface AdminFirestore {
+  collection(collectionPath: string): any;
+  doc(documentPath: string): any;
+}
+
+/**
+ * An interface representing the basics we need from the
+ * admin.firestore.DocumentReference class.
+ * We use it like this to avoid having to require "firebase-admin".
+ */
+interface AdminDocumentReference {
+  collection(collectionPath: string): any;
+  get(options?: any): Promise<any>;
+}
 
 /**
  * @deprecated Class FirestoreSQL has been renamed FireSQL
@@ -140,6 +180,6 @@ export class FirestoreSQL extends FireSQL {
       'DEPRECATED: Class FirestoreSQL has been renamed FireSQL.\n' +
         'Using "FirestoreSQL" will stop working in future releases, update your code accordingly.'
     );
-    super(ref);
+    super(ref as any);
   }
 }

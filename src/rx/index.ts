@@ -73,7 +73,9 @@ function rxSelect(
   }
 
   const rxData = combineLatest(
-    queries.map(query => collectionData(query, idField))
+    queries.map(query =>
+      collectionData<firebase.firestore.DocumentData>(query, idField)
+    )
   );
 
   return rxData.pipe(

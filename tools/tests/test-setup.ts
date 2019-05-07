@@ -130,7 +130,6 @@ async function setupProject(): Promise<boolean> {
   const unmute = muteDeprecationWarning();
 
   const firestore = firebase.initializeApp(config).firestore();
-  firestore.settings({ timestampsInSnapshots: true });
   const rootRef = firestore.doc('/');
 
   task = showTask('Deleting "shops" collection');
