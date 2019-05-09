@@ -31,7 +31,9 @@
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "release:prepare": "yarn run build && rimraf release && ts-node tools/prepare-release.ts",
-    "npm:publish": "cd release && npm publish"
+    "npm:publish": "cd release && npm publish",
+    "pegjs": "pegjs --cache -o src/sql-parser/sql-parser.js src/sql-parser/sql-parser.pegjs",
+    "pegjs:ts": "pegjs --cache --plugin ./node_modules/ts-pegjs --extra-options-file pegjs.config.json -o src/sql-parser/sql-parser.ts src/sql-parser/sql-parser.pegjs"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -80,6 +82,7 @@
     "lint-staged": "^7.3.0",
     "lodash.camelcase": "^4.3.0",
     "log-update": "^2.3.0",
+    "pegjs": "^0.10.0",
     "prettier": "^1.14.3",
     "prompt": "^1.0.0",
     "prompt-input": "^3.0.0",
@@ -99,6 +102,7 @@
     "travis-deploy-once": "^5.0.9",
     "ts-jest": "^23.10.2",
     "ts-node": "^7.0.1",
+    "ts-pegjs": "^0.2.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
