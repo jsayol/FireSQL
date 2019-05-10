@@ -227,15 +227,6 @@ expr_list
       return el;
     }
 
-// expr_list_or_empty
-//   = l:expr_list
-//   / (''{
-//       return {
-//         type  : 'expr_list',
-//         value : []
-//       }
-//     })
-
 /**
  * Borrowed from PL/SQL ,the priority of below list IS ORDER BY DESC
  * ---------------------------------------------------------------------------------------------------
