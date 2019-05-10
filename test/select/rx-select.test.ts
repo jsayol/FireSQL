@@ -11,7 +11,7 @@ let fireSQL: FireSQL;
 beforeAll(() => {
   // adminFirestore = initAdminFirestore();
   firestore = initFirestore();
-  fireSQL = new FireSQL();
+  fireSQL = new FireSQL(firestore);
 });
 
 describe('rxQuery() SELECT', () => {

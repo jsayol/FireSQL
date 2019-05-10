@@ -1,4 +1,4 @@
-import { assert, prefixSuccessor } from '../utils';
+import { assert } from '../utils';
 
 export function applyOrderBy(
   queries: firebase.firestore.Query[],

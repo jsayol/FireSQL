@@ -1,12 +1,13 @@
-import { FireSQL, DOCUMENT_KEY_NAME } from '../../src/firesql';
+import { FireSQL } from '../../src/firesql';
 import { initFirestore } from '../helpers/utils';
+import { DOCUMENT_KEY_NAME } from '../../src/utils';
 
 let firestore: firebase.firestore.Firestore;
 let fireSQL: FireSQL;
 
 beforeAll(() => {
   firestore = initFirestore();
-  fireSQL = new FireSQL();
+  fireSQL = new FireSQL(firestore);
 });
 
 // 'SELECT * FROM cities',
@@ -161,7 +162,9 @@ describe('WHERE', () => {
   test('"!=" condition', async () => {
     expect.assertions(1);
 
-    const docs = await new FireSQL('/shops/mEjD3yDXz2Her0OtIGGMeZGx').query(`
+    const docs = await new FireSQL(
+      firestore.doc('/shops/mEjD3yDXz2Her0OtIGGMeZGx')
+    ).query(`
       SELECT *
       FROM products
       WHERE stock != 9
@@ -392,6 +395,31 @@ describe('WHERE', () => {
     expect(docs).toEqual([
       {
         name: 'Price, Monahan and Bogisich'
+      }
+    ]);
+  });
+
+  test('"CONTAINS" condition', async () => {
+    expect.assertions(3);
+
+    const docs = await fireSQL.query(`
+      SELECT category, name, tags
+      FROM shops
+      WHERE tags CONTAINS "content-based"
+    `);
+
+    expect(docs).toBeInstanceOf(Array);
+    expect(docs).toHaveLength(2);
+    expect(docs).toEqual([
+      {
+        category: 'Industrial',
+        name: 'Waelchi-Koss',
+        tags: ['content-based', 'User-centric', 'Profound']
+      },
+      {
+        category: 'Computers',
+        name: 'Brekke-Maggio',
+        tags: ['content-based', 'Decentralized', 'exuding']
       }
     ]);
   });

@@ -3,16 +3,14 @@ import commonjs from 'rollup-plugin-commonjs';
 import sourceMaps from 'rollup-plugin-sourcemaps';
 import camelCase from 'lodash.camelcase';
 import typescript from 'rollup-plugin-typescript2';
-// import json from 'rollup-plugin-json';
-import babel from 'rollup-plugin-babel';
 import { uglify } from 'rollup-plugin-uglify';
 
 const pkg = require('./package.json');
 
 const libraryName = 'firesql';
 
-const createConfig = ({ umd = false, output } = {}) => ({
-  input: 'src/index.ts',
+const createConfig = ({ umd = false, input, output, external } = {}) => ({
+  input,
   output,
   external: [
     ...Object.keys(umd ? {} : pkg.dependencies || {}),
@@ -20,7 +18,8 @@ const createConfig = ({ umd = false, output } = {}) => ({
     'firebase/app',
     'firebase/firestore',
     'rxjs/operators',
-    'rxfire/firestore'
+    'rxfire/firestore',
+    ...(external || [])
   ],
   watch: {
     include: 'src/**'
@@ -36,24 +35,6 @@ const createConfig = ({ umd = false, output } = {}) => ({
 
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
     commonjs({ extensions: ['.js', '.jsx'] }),
-
-    // The node-sqlparser module includes code with some ES6 features
-    // so we need to transpile it with Babel for the UMD bundle
-    umd &&
-      babel({
-        test: /\.js$/,
-        include: 'node_modules/node-sqlparser/lib/**',
-        presets: [
-          [
-            '@babel/preset-env',
-            {
-              targets: {
-                browsers: 'ie >= 8'
-              }
-            }
-          ]
-        ]
-      }),
 
     // Uglify UMD bundle for smaller size
     umd &&
@@ -75,15 +56,24 @@ const createConfig = ({ umd = false, output } = {}) => ({
 });
 
 export default [
+  // createConfig({
+  //   input: 'src/index.ts',
+  //   output: { file: pkg.module, format: 'es', sourcemap: true }
+  // }),
   createConfig({
-    output: { file: pkg.module, format: 'es', sourcemap: true }
-  }),
-  createConfig({
+    input: 'src/index.umd.ts',
     umd: true,
     output: {
-      file: pkg.main,
+      file: 'out/firesql.umd.js',
       format: 'umd',
       name: camelCase(libraryName),
+      globals: {
+        'firebase/app': 'firebase',
+        'firebase/firestore': 'firebase',
+        'rxjs': '*',
+        'rxjs/operators': '*',
+        'rxfire/firestore': '*',
+      },
       sourcemap: true,
       footer:
         'var FireSQL = (typeof firesql !== "undefined") && firesql.FireSQL;'

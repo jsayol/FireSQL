@@ -1,10 +1,11 @@
-import { parse as parseSQL, SQL_Select } from 'node-sqlparser';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { collectionData } from 'rxfire/firestore';
-import { FireSQL, QueryOptions, DOCUMENT_KEY_NAME } from '../firesql';
+import { parse, SQL_Select } from '../sql-parser';
+import { FireSQL } from '../firesql';
 import { SelectOperation } from '../select';
-import { assert, DocumentData, contains } from '../utils';
+import { assert, DocumentData, contains, DOCUMENT_KEY_NAME } from '../utils';
+import { QueryOptions } from '../shared';
 
 declare module '../firesql' {
   interface FireSQL {
@@ -26,12 +27,13 @@ FireSQL.prototype.rxQuery = function<T>(
   options?: QueryOptions
 ): Observable<T[] | DocumentData[]> {
   assert(
+    // tslint:disable-next-line: strict-type-predicates
     typeof sql === 'string' && sql.length > 0,
     'rxQuery() expects a non-empty string.'
   );
-  const ast = parseSQL(sql);
+  const ast = parse(sql);
   assert(ast.type === 'select', 'Only SELECT statements are supported.');
-  return rxSelect((this as any)._getRef(), ast, {
+  return rxSelect((this as any)._ref, ast, {
     ...(this as any)._options,
     ...options
   });

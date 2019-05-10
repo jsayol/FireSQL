@@ -1,6 +1,7 @@
 // import admin from 'firebase-admin';
-import { FireSQL, DOCUMENT_KEY_NAME } from '../../src/firesql';
+import { FireSQL } from '../../src/firesql';
 import { initFirestore /*, initAdminFirestore*/ } from '../helpers/utils';
+import { DOCUMENT_KEY_NAME } from '../../src/utils';
 
 // let adminFirestore: admin.firestore.Firestore;
 let firestore: firebase.firestore.Firestore;
@@ -9,7 +10,7 @@ let fireSQL: FireSQL;
 beforeAll(() => {
   // adminFirestore = initAdminFirestore();
   firestore = initFirestore();
-  fireSQL = new FireSQL();
+  fireSQL = new FireSQL(firestore);
 });
 
 describe('SELECT', () => {
@@ -36,9 +37,9 @@ describe('SELECT', () => {
   test('without conditions returns the correct documents', async () => {
     expect.assertions(3);
 
-    const docs = await new FireSQL('shops/2DIHCbOMkKz0YcrKUsRf6kgF').query(
-      'SELECT * FROM products'
-    );
+    const docs = await new FireSQL(
+      firestore.doc('shops/2DIHCbOMkKz0YcrKUsRf6kgF')
+    ).query('SELECT * FROM products');
 
     expect(docs).toBeInstanceOf(Array);
     expect(docs).toHaveLength(4);
@@ -326,6 +327,36 @@ describe('SELECT', () => {
         WHERE category = 'Toys' OR rating > 3
     `);
     expect(docs3).toHaveLength(21); // rather than 23 (3 + 20)
+  });
+
+  test('collection group query returns the correct documents', async () => {
+    expect.assertions(3);
+
+    const docs = await fireSQL.query(`
+      SELECT *
+      FROM GROUP products
+      WHERE price < 10
+    `);
+
+    expect(docs).toBeInstanceOf(Array);
+    expect(docs).toHaveLength(3);
+    expect(docs).toEqual([
+      {
+        name: 'Juice - Grape, White',
+        price: 5.72,
+        stock: 7
+      },
+      {
+        name: 'Wine - Baron De Rothschild',
+        price: 5.86,
+        stock: 4
+      },
+      {
+        name: 'Tart Shells - Barquettes, Savory',
+        price: 8.63,
+        stock: 4
+      }
+    ]);
   });
 
   // TODO:

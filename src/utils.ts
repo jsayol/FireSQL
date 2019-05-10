@@ -1,8 +1,10 @@
-import { SQL_Value, SQL_AggrFunction } from 'node-sqlparser';
+import { SQL_Value, SQL_AggrFunction } from './sql-parser';
 
 export type DocumentData = { [field: string]: any };
 
 export type ValueOf<T> = T[keyof T];
+
+export const DOCUMENT_KEY_NAME = '__name__';
 
 export function assert(condition: boolean, message: string) {
   if (!condition) {

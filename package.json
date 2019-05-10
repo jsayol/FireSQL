@@ -1,11 +1,10 @@
 {
   "name": "firesql-src",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Query Cloud Firestore for Firebase using SQL",
   "keywords": [],
-  "main": "dist/firesql.umd.js",
-  "module": "dist/firesql.es5.js",
-  "typings": "dist/types/index.d.ts",
+  "main": "out/firesql.js",
+  "typings": "out/types/index.d.ts",
   "author": "Josep Sayol <josep.sayol@gmail.com>",
   "repository": {
     "type": "git",
@@ -17,7 +16,7 @@
   },
   "scripts": {
     "lint": "tslint --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "prebuild": "rimraf dist",
+    "prebuild": "yarn run pegjs && rimraf out",
     "build": "tsc --module commonjs && rollup -c rollup.config.js",
     "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file src",
     "build:withdocs": "yarn run build && yarn run build:docs",
@@ -30,10 +29,9 @@
     "ts-node": "ts-node",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "release:prepare": "yarn run build && rimraf release && ts-node tools/prepare-release.ts",
+    "release:prepare": "yarn run build && ts-node tools/prepare-release.ts",
     "npm:publish": "cd release && npm publish",
-    "pegjs": "pegjs --cache -o src/sql-parser/sql-parser.js src/sql-parser/sql-parser.pegjs",
-    "pegjs:ts": "pegjs --cache --plugin ./node_modules/ts-pegjs --extra-options-file pegjs.config.json -o src/sql-parser/sql-parser.ts src/sql-parser/sql-parser.pegjs"
+    "pegjs": "pegjs --extra-options-file pegjs.config.json"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -72,7 +70,7 @@
     "coveralls": "^3.0.2",
     "cross-env": "^5.2.0",
     "cz-conventional-changelog": "^2.1.0",
-    "firebase": "^5.5.8",
+    "firebase": "^6.0.0",
     "firebase-tools": "^6.1.0",
     "fs-extra": "^7.0.1",
     "husky": "^1.0.1",
@@ -82,16 +80,14 @@
     "lint-staged": "^7.3.0",
     "lodash.camelcase": "^4.3.0",
     "log-update": "^2.3.0",
-    "pegjs": "^0.10.0",
+    "pegjs": "0.11.0-master.30f3260",
     "prettier": "^1.14.3",
     "prompt": "^1.0.0",
     "prompt-input": "^3.0.0",
     "replace-in-file": "^3.4.2",
     "rimraf": "^2.6.2",
     "rollup": "^0.66.2",
-    "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-commonjs": "^9.1.8",
-    "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "^0.17.0",
@@ -102,7 +98,6 @@
     "travis-deploy-once": "^5.0.9",
     "ts-jest": "^23.10.2",
     "ts-node": "^7.0.1",
-    "ts-pegjs": "^0.2.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
@@ -111,12 +106,11 @@
     "yargs": "^12.0.4"
   },
   "dependencies": {
-    "core-js": "^3.0.1",
-    "node-sqlparser": "^1.0.4"
+    "core-js": "^3.0.1"
   },
   "peerDependencies": {
-    "firebase": "^5.5.8",
-    "rxfire": "^3.0.10",
-    "rxjs": "^6.3.3"
+    "firebase": "*",
+    "rxfire": "*",
+    "rxjs": "*"
   }
 }

@@ -14,36 +14,9 @@ import { loadTestDataset, TestCollection } from '../load-test-data';
 const FIRESQL_TEST_PROJECT_ID = 'firesql-tests-with-emulator';
 
 let task: ReturnType<typeof showTask>;
-let childProc: ChildProcess;
+let childProc: ChildProcess | undefined;
 
 muteDeprecationWarning();
-
-Promise.resolve().then(async () => {
-  try {
-    task = showTask('Starting Firestore emulator');
-    childProc = fork(resolvePath(__dirname, './serve.js'), [], {
-      stdio: ['inherit', 'pipe', 'pipe', 'ipc']
-    });
-
-    childProc.stdout.on('data', onChildProcStdout);
-    childProc.stderr.on('data', async data => {
-      task.done();
-      const stderr = data.toString();
-      console.log('[EMULATOR][Error]', stderr);
-    });
-
-    childProc.on('exit', message => {
-      task.done();
-      process.exit();
-    });
-  } catch (err) {
-    console.error(err);
-
-    if (childProc) {
-      childProc.kill('SIGINT');
-    }
-  }
-});
 
 async function onChildProcStdout(data: ReadableStream) {
   let emulatorRunning = false;
@@ -61,13 +34,13 @@ async function onChildProcStdout(data: ReadableStream) {
       await runTests(devServerHost);
 
       task = showTask('Shutting down the emulator');
-      childProc.kill('SIGINT');
+      childProc!.kill('SIGINT');
     } else if (emulatorRunning) {
       task.done();
       // console.log('[EMULATOR]', stdout);
     }
 
-    // console.log('[EMULATOR]', stdout);
+    console.log('[EMULATOR]', stdout);
   } catch (err) {
     console.error(err);
 
@@ -82,7 +55,7 @@ async function runTests(devServerHost: string) {
     const testApp = firebaseTest.initializeTestApp({
       projectId: FIRESQL_TEST_PROJECT_ID
     });
-    const firestore = testApp.firestore();
+    const firestore = testApp.firestore() as any as firebase.firestore.Firestore;
 
     task = showTask('Loading test data');
     await loadTestDataset(firestore.doc('/'), loadJSONFile(
@@ -120,4 +93,29 @@ function initFirestoreTest(devServerHost: string) {
     host: devServerHost,
     ssl: false
   });
+}
+
+try {
+  task = showTask('Starting Firestore emulator');
+  childProc = fork(resolvePath(__dirname, './serve.js'), [], {
+    stdio: ['inherit', 'pipe', 'pipe', 'ipc']
+  });
+
+  childProc.stdout.on('data', onChildProcStdout);
+  childProc.stderr.on('data', async data => {
+    task.done();
+    const stderr = data.toString();
+    console.log('[EMULATOR][Error]', stderr);
+  });
+
+  childProc.on('exit', message => {
+    task.done();
+    process.exit();
+  });
+} catch (err) {
+  console.error(err);
+
+  if (typeof childProc !== 'undefined') {
+    childProc.kill('SIGINT');
+  }
 }

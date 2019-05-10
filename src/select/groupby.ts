@@ -1,4 +1,4 @@
-import { SQL_GroupBy } from 'node-sqlparser';
+import { SQL_GroupBy } from '../sql-parser';
 import { assert, safeGet, contains, DocumentData, ValueOf } from '../utils';
 
 export function applyGroupByLocally(

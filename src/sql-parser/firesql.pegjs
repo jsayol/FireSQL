@@ -1,20 +1,9 @@
-/*!
- *
- * (C) 2011~ Alibaba Group Holding Limited.
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- * Author:
- *    windyrobin <windyrobin@Gmail.com>
- *    fishbar <zhengxinlin@gmail.com>
- *
+ /*
+ * Adapted from:
+ * https://github.com/fishbar/node-sqlparser/blob/master/peg/sqlparser.pegjs
  */
 
 {
-  function debug(str) {
-    console.log(str);
-  }
-
   function createUnaryExpr(op, e) {
     return {
       type     : 'unary_expr',
@@ -46,13 +35,7 @@
     var ep;
     for (var i = 0; i < epList.length; i++) {
       ep = epList[i];
-      //the ep has already added to the global params
-      if (ep.type == 'param') {
-        ep.room = room;
-        ep.pos  = i;
-      } else {
-        exprList.push(ep);
-      }
+      exprList.push(ep);
     }
     return exprList;
   }
@@ -111,53 +94,10 @@
     'FALSE'   : true,
     'NULL'    : true
   }
-
-  var cmpPrefixMap = {
-    '+' : true,
-    '-' : true,
-    '*' : true,
-    '/' : true,
-    '>' : true,
-    '<' : true,
-    '!' : true,
-    '=' : true,
-
-    //between
-    'B' : true,
-    'b' : true,
-    //for is or in
-    'I' : true,
-    'i' : true,
-    //for like
-    'L' : true,
-    'l' : true,
-    //for not
-    'N' : true,
-    'n' : true,
-    //for contains
-    'C' : true,
-    'c' : true,
-  }
-
-  //used for store refered parmas
-  var params = [];
-
-  //used for dependency analysis
-  var varList = [];
 }
 
 start
-  = __ ast:(
-      union_stmt  /
-      update_stmt /
-      delete_stmt /
-      replace_insert_stmt /
-      create_table_stmt
-    ) {
-      ast.params = params;
-      return ast;
-    }
-    /ast:proc_stmts {
+  = __ ast:union_stmt {
       return ast;
     }
 
@@ -170,113 +110,6 @@ union_stmt
       }
       return head;
     }
-
-create_table_stmt
- = KW_CREATE __ KW_TABLE __ (KW_IF __ KW_NOT __ KW_EXISTS __) ?
-   tb: table_name __ '(' __
-    clist:columns_defs
-   __ ')' __ topt:table_options? __ popt:partition_options? __ ';'? __? {
-    return {
-      type: 'create_table',
-      name: tb,
-      columns: clist,
-      tableOptions: topt,
-      partitionOptions: popt
-    }
-  }
-
-columns_defs
-  = h:column_def t:(__ COMMA __ column_def)* {
-    return createList(h, t);
-  }
-
-column_def
-  = index_def /
-    (
-    n:column __
-    t:column_type
-    e:(__ (literal/ident_name))* {
-      let ext = [];
-      e.forEach((v) => {
-          ext.push(v[1]);
-      });
-      return {
-        name: n,
-        type: t,
-        ext: ext
-      }
-    }
-    )
-
-column_type
-  = ct: (func_call/ident) {
-    if (ct.type === 'function') {
-      let args = [];
-      ct.args.value.forEach((v) => {
-        args.push(v.value);
-      });
-      return {
-        type: ct.name,
-        args: args
-      }
-    } else {
-      return {type: ct}
-    }
-  }
-
- table_options
-  = h:table_option t:(__ table_option)* {
-    let res = h;
-    t.forEach((v) => {
-        let tmp = v[1];
-      let keys = Object.keys(tmp)
-        keys.forEach((k) => {
-          res[k] = tmp[k].column;
-        });
-    });
-    return res;
-  }
-
- table_option
-  = k:primary __ '='? __ v:primary {
-    let obj = {};
-    let key = k.type === 'column_ref' ? k.column : k.value;
-    let value = v.type === 'column_ref' ? v.column : v.value;
-    obj[key] = value;
-    return obj;
-  }
-
-partition_options
- = h:primary t:(__ primary)* {
-   let res = [h];
-   t.forEach((v) => {
-    res.push(v);
-   });
-   return res;
- }
-
-index_def
- = f:$(ident_name* __ ('KEY'i/'INDEX'i)) __ n:column __ '(' l: column_clause ')'{
-   let list = [];
-   l.forEach((v) => {
-     list.push(v.expr.column)
-   });
-   return {
-     type: f,
-     name: n,
-     columns: list
-   }
- }
-
-
-delete_stmt
-= KW_DELETE __ f:from_clause __ w:where_clause? {
-  return {
-    type: 'delete',
-    from: f,
-    where: w
-  }
-}
 
 select_stmt
   =  select_stmt_nake
@@ -292,7 +125,7 @@ select_stmt_nake
     w:where_clause?     __
     g:group_by_clause?  __
     o:order_by_clause?  __
-    l:limit_clause?  {
+    l:limit_clause?     __ {
       return {
         type      : 'select',
         distinct  : d,
@@ -313,10 +146,6 @@ column_clause "column_clause"
       return createList(head, tail);
     }
 
-/**
- * maybe you should use `expr` instead of `primary` or `additive_expr`
- * to support complicated expression in column clause
- */
 column_list_item
   = e:additive_expr __ alias:alias_clause? {
       return {
@@ -329,75 +158,24 @@ alias_clause
   = KW_AS? __ i:ident { return i; }
 
 from_clause
-  = KW_FROM __ l:table_ref_list { return l; }
+  = KW_FROM __ l:table_base { return l; }
 
-table_ref_list
-  = head:table_base
-    tail:table_ref*  {
-      tail.unshift(head);
-      return tail;
-    }
-
-table_ref
-  = __ COMMA __ t:table_base { return t; }
-  / __ t:table_join { return t; }
-
-
-table_join
-  = op:join_op __ t:table_base __ expr:on_clause? {
-    t.join = op;
-    t.on   = expr;
-    return t;
-    /*
-      return  {
-        db    : t.db,
-        table : t.table,
-        as    : t.as,
-        join  : op,
-        on    : expr
-      }
-    */
-    }
-
-//NOTE that ,the table assigned to `var` shouldn't write in `table_join`
 table_base
-  = t:table_name __ KW_AS? __ alias:ident? {
-      if (t.type == 'var') {
-        t.as = alias;
-        return t;
-      } else {
-        return  {
-          db    : t.db,
-          table : t.table,
-          as    : alias
-        }
+  = group:(KW_GROUP __)? t:(table_name / '`' table_name '`') __ KW_AS? __ alias:ident? {
+      return {
+        db: t.db,
+        parts: (Array.isArray(t) ? t[1] : t).parts,
+        as: alias,
+        group: group ? true : false
       }
     }
-
-join_op
-  = KW_LEFT __ KW_JOIN { return 'LEFT JOIN'; }
-  / (KW_INNER __)? KW_JOIN { return 'INNER JOIN'; }
 
 table_name
-  = '`'? dt:ident tail:(__ DOT __ ident_name)? '`'? {
-      var obj = {
-        db : '',
-        table : dt
+  = dt:('/'? ident_name)+ {
+      return {
+        parts: dt.map(function(parts) { return parts[1]; })
       }
-      if (tail) {
-        obj.db = dt;
-        obj.table = tail[3];
-      }
-      return obj;
     }
-    /v:var_decl {
-      v.db = '';
-      v.table = v.name;
-      return v;
-    }
-
-on_clause
-  = KW_ON __ e:expr { return e; }
 
 where_clause
   = KW_WHERE __ e:expr { return e; }
@@ -409,9 +187,6 @@ column_ref_list
   = head:column_ref tail:(__ COMMA __ column_ref)* {
       return createList(head, tail);
     }
-
-having_clause
-  = KW_HAVING e:expr { return e; }
 
 order_by_clause
   = KW_ORDER __ KW_BY __ l:order_by_list { return l; }
@@ -433,90 +208,9 @@ order_by_element
     return obj;
   }
 
-number_or_param
-  = literal_numeric
-  / param
-
-int_or_param
-  = literal_int / param
-
 limit_clause
-  = KW_LIMIT __ i1:(int_or_param) __ tail:(COMMA __ int_or_param)? {
-      var res = [i1];
-      if (!tail) {
-        res.unshift({
-          type  : 'number',
-          value : 0
-        });
-      } else {
-        res.push(tail[2]);
-      }
-      return res;
-    }
-
-update_stmt
-  = KW_UPDATE    __
-    t:table_name __
-    KW_SET       __
-    l:set_list   __
-    w:where_clause {
-      return {
-        type  : 'update',
-        db    : t.db,
-        table : t.table,
-        set   : l,
-        where : w
-      }
-    }
-
-set_list
-  = head:set_item tail:(__ COMMA __ set_item)*  {
-      return createList(head, tail);
-    }
-
-/**
- * here only use `additive_expr` to support 'col1 = col1+2'
- * if you want to use lower operator, please use '()' like below
- * 'col1 = (col2 > 3)'
- */
-set_item
-  = c:column_name __ '=' __ v:additive_expr {
-      return {
-        column: c,
-        value : v
-      }
-    }
-
-replace_insert_stmt
-  = ri:replace_insert       __
-    KW_INTO                 __
-    t:table_name  __ LPAREN __
-    c:column_list  __ RPAREN __
-    v:value_clause             {
-      return {
-        type      : ri,
-        db        : t.db,
-        table     : t.table,
-        columns   : c,
-        values    : v
-      }
-    }
-
-replace_insert
-  = KW_INSERT   { return 'insert'; }
-  / KW_REPLACE  { return 'replace' }
-
-value_clause
-  = KW_VALUES __ l:value_list  { return l; }
-
-value_list
-  = head:value_item tail:(__ COMMA __ value_item)* {
-      return createList(head, tail);
-    }
-
-value_item
-  = LPAREN __ l:expr_list  __ RPAREN {
-      return l;
+  = KW_LIMIT __ lim:(literal_int) {
+      return lim;
     }
 
 //for template auto fill
@@ -533,14 +227,14 @@ expr_list
       return el;
     }
 
-expr_list_or_empty
-  = l:expr_list
-  / (''{
-      return {
-        type  : 'expr_list',
-        value : []
-      }
-    })
+// expr_list_or_empty
+//   = l:expr_list
+//   / (''{
+//       return {
+//         type  : 'expr_list',
+//         value : []
+//       }
+//     })
 
 /**
  * Borrowed from PL/SQL ,the priority of below list IS ORDER BY DESC
@@ -567,7 +261,6 @@ and_expr
       return createBinaryExprChain(head, tail);
     }
 
-//here we should use `NOT` instead of `comparision_expr` to support chain-expr
 not_expr
   = (KW_NOT / "!" !"=") __ expr:not_expr {
       return createUnaryExpr('NOT', expr);
@@ -588,25 +281,6 @@ comparison_expr
         return res;
       }
     }
-
-/*
-//optimization for comparison judge, bug because we in use `additive` expr
-//in column clause now , it have little effect
-cmp_prefix_char
-  = c:char &{ debug(c); return cmpPrefixMap[c]; }
-
-comparison_op_right
-  = &cmp_prefix_char  body:(
-      arithmetic_op_right
-      / in_op_right
-      / between_op_right
-      / is_op_right
-      / like_op_right
-      / contains_op_right
-    ){
-      return body;
-    }
-*/
 
 comparison_op_right
   = arithmetic_op_right
@@ -673,24 +347,12 @@ in_op_right
         right : l
       }
     }
-  / op:in_op __ e:var_decl {
-      return {
-        op    : op,
-        right : e
-      }
-    }
 
 contains_op_right
-  = op:contains_op __ LPAREN  __ l:expr_list __ RPAREN {
+  = op:contains_op __ l:literal {
       return {
         op    : op,
         right : l
-      }
-    }
-  / op:contains_op __ e:var_decl {
-      return {
-        op    : op,
-        right : e
       }
     }
 
@@ -715,14 +377,11 @@ multiplicative_operator
 primary
   = literal
   / aggr_func
-  / func_call
   / column_ref
-  / param
   / LPAREN __ e:expr __ RPAREN {
       e.paren = true;
       return e;
     }
-  / var_decl
 
 column_ref
   = tbl:ident __ DOT __ col:column {
@@ -751,79 +410,33 @@ ident =
   }
 
 column =
-  name:column_name !{ return reservedMap[name.toUpperCase()] === true; } {
+  name:ident_name !{ return reservedMap[name.toUpperCase()] === true; } {
     return name;
   }
   /'`' chars:[^`]+ '`' {
     return chars.join('');
   }
 
-column_name
-  =  start:ident_start parts:column_part* { return start + parts.join(''); }
-
 ident_name
-  =  start:ident_start parts:ident_part* { return start + parts.join(''); }
+  =  parts:ident_part+ { return parts.join(''); }
 
 ident_start = [A-Za-z_]
 
 ident_part  = [A-Za-z0-9_]
 
-//to support column name like `cf1:name` in hbase
-column_part  = [A-Za-z0-9_:]
-
-
-param "PARAM[:param, ?]"
-  = l:(':' ident_name) / l:('?') {
-    var p = {
-      type : 'param',
-      value: l.length > 1 ? l[1] : l[0]
-    };
-    //var key = 'L' + line + 'C' + column;
-    //debug(key);
-    //params[key] = p;
-    params.push(p);
-    return p;
-  }
-
 aggr_func
-  = aggr_fun_count
-  / aggr_fun_smma
-
-aggr_fun_smma
-  = name:KW_SUM_MAX_MIN_AVG  __ LPAREN __ e:additive_expr __ RPAREN {
+  = name:KW_SUM_MAX_MIN_AVG __ LPAREN __ f:ident_name __ RPAREN {
       return {
         type : 'aggr_func',
         name : name,
-        args : {
-          expr : e
-        }
+        field: f
       }
     }
 
 KW_SUM_MAX_MIN_AVG
-  = w:[0-9a-zA-Z_]+{return w.join('');}
-
-aggr_fun_count
-  = name:KW_COUNT __ LPAREN __ arg:count_arg __ RPAREN {
-      return {
-        type : 'aggr_func',
-        name : name,
-        args : arg
-      }
-    }
-
-count_arg
-  = e:star_expr {
-      return {
-        expr  : e
-      }
-    }
-  / d:KW_DISTINCT? __ c:column_ref {
-      return {
-        distinct : d,
-        expr   : c
-      }
-    }
+  = w:(KW_SUM / KW_MAX / KW_MIN / KW_AVG) {
+    return w;
+  }
 
 star_expr
   = "*" {
@@ -833,17 +446,8 @@ star_expr
       }
     }
 
-func_call
-  = name:ident __ LPAREN __ l:expr_list_or_empty __ RPAREN {
-      return {
-        type : 'function',
-        name : name,
-        args : l
-      }
-    }
-
 literal
-  = literal_string / literal_numeric / literal_bool /literal_null
+  = literal_string / literal_numeric / literal_bool / literal_null
 
 literal_list
   = head:literal tail:(__ COMMA __ literal)* {
@@ -957,28 +561,14 @@ KW_TRUE     = "TRUE"i     !ident_start
 KW_FALSE    = "FALSE"i    !ident_start
 
 KW_SHOW     = "SHOW"i     !ident_start
-KW_DROP     = "DROP"i     !ident_start
 KW_SELECT   = "SELECT"i   !ident_start
-KW_UPDATE   = "UPDATE"i   !ident_start
-KW_CREATE   = "CREATE"i   !ident_start
-KW_DELETE   = "DELETE"i   !ident_start
-KW_INSERT   = "INSERT"i   !ident_start
-KW_REPLACE  = "REPLACE"i  !ident_start
-KW_EXPLAIN  = "EXPLAIN"i  !ident_start
 
-KW_INTO     = "INTO"i     !ident_start
 KW_FROM     = "FROM"i     !ident_start
-KW_SET      = "SET"i      !ident_start
 
 KW_AS       = "AS"i       !ident_start
 KW_TABLE    = "TABLE"i    !ident_start
 
-KW_ON       = "ON"i       !ident_start
-KW_LEFT     = "LEFT"i     !ident_start
-KW_INNER    = "INNER"i    !ident_start
-KW_JOIN     = "JOIN"i     !ident_start
 KW_UNION    = "UNION"i    !ident_start
-KW_VALUES   = "VALUES"i   !ident_start
 
 KW_IF       = "IF"i       !ident_start
 KW_EXISTS   = "EXISTS"i   !ident_start
@@ -988,7 +578,6 @@ KW_WHERE    = "WHERE"i    !ident_start
 KW_GROUP    = "GROUP"i    !ident_start
 KW_BY       = "BY"i       !ident_start
 KW_ORDER    = "ORDER"i    !ident_start
-KW_HAVING   = "HAVING"i   !ident_start
 
 KW_LIMIT    = "LIMIT"i    !ident_start
 
@@ -1021,141 +610,9 @@ STAR      = '*'
 LPAREN    = '('
 RPAREN    = ')'
 
-LBRAKE    = '['
-RBRAKE    = ']'
-
 __ =
   whitespace*
 
 char = .
 
 whitespace 'WHITE_SPACE' = [ \t\n\r]
-
-EOL "EOF"
-  = EOF
-  / [\n\r]+
-
-EOF = !.
-
-//begin procedure extension
-proc_stmts
-  = proc_stmt*
-
-proc_stmt
-  = &proc_init __ s:(assign_stmt / return_stmt) {
-      return {
-        stmt : s,
-        vars: varList
-      }
-    }
-
-proc_init  = '' { varList = []; return true; }
-
-assign_stmt
-  = va:var_decl __ KW_ASSIGN __ e:proc_expr {
-    return {
-      type : 'assign',
-      left : va,
-      right: e
-    }
-  }
-
-return_stmt
-  = KW_RETURN __ e:proc_expr {
-  return {
-    type : 'return',
-    expr: e
-  }
-}
-
-proc_expr
-  = select_stmt
-  / proc_join
-  / proc_additive_expr
-  / proc_array
-
-proc_additive_expr
-  = head:proc_multiplicative_expr
-    tail:(__ additive_operator  __ proc_multiplicative_expr)* {
-      return createBinaryExprChain(head, tail);
-    }
-
-proc_multiplicative_expr
-  = head:proc_primary
-    tail:(__ multiplicative_operator  __ proc_primary)* {
-      return createBinaryExprChain(head, tail);
-    }
-
-proc_join
-  = lt:var_decl __ op:join_op  __ rt:var_decl __ expr:on_clause {
-      return {
-        type    : 'join',
-        ltable  : lt,
-        rtable  : rt,
-        op      : op,
-        on      : expr
-      }
-    }
-
-proc_primary
-  = literal
-  / var_decl
-  / proc_func_call
-  / param
-  / LPAREN __ e:proc_additive_expr __ RPAREN {
-      e.paren = true;
-      return e;
-    }
-
-proc_func_call
-  = name:ident __ LPAREN __ l:proc_primary_list __ RPAREN {
-      //compatible with original func_call
-      return {
-        type : 'function',
-        name : name,
-        args : {
-          type  : 'expr_list',
-          value : l
-        }
-      }
-    }
-
-proc_primary_list
-  = head:proc_primary tail:(__ COMMA __ proc_primary)* {
-      return createList(head, tail);
-    }
-
-proc_array =
-  LBRAKE __ l:proc_primary_list __ RBRAKE {
-    return {
-      type : 'array',
-      value : l
-    }
-  }
-
-
-var_decl
-  = KW_VAR_PRE name:ident_name m:mem_chain {
-    //push for analysis
-    varList.push(name);
-    return {
-      type : 'var',
-      name : name,
-      members : m
-    }
-  }
-
-mem_chain
-  = l:('.' ident_name)* {
-    var s = [];
-    for (var i = 0; i < l.length; i++) {
-      s.push(l[i][1]);
-    }
-    return s;
-  }
-
- KW_VAR_PRE = '$'
-
- KW_RETURN = 'return'i
-
- KW_ASSIGN = ':='

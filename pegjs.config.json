@@ -1,4 +1,6 @@
 {
-  "tspegjs": {
-  }
+  "input": "src/sql-parser/firesql.pegjs",
+  "output": "src/sql-parser/index.js",
+  "format": "commonjs",
+  "cache": false
 }

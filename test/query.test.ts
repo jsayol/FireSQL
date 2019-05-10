@@ -6,12 +6,13 @@ let fireSQL: FireSQL;
 
 beforeAll(() => {
   firestore = initFirestore();
-  fireSQL = new FireSQL();
+  fireSQL = new FireSQL(firestore);
 });
 
 describe('Method query()', () => {
   it('returns a Promise', () => {
     const returnValue = fireSQL.query('SELECT * FROM nonExistantCollection');
+    // tslint:disable-next-line: no-floating-promises
     expect(returnValue).toBeInstanceOf(Promise);
   });
 
@@ -44,6 +45,7 @@ describe('Method query()', () => {
       includeId: true
     });
 
+    // tslint:disable-next-line: no-floating-promises
     expect(returnValue).toBeInstanceOf(Promise);
 
     try {

@@ -8,7 +8,7 @@ let fireSQL: FireSQL;
 
 beforeAll(() => {
   firestore = initFirestore();
-  fireSQL = new FireSQL();
+  fireSQL = new FireSQL(firestore);
 });
 
 afterAll(async () => {
@@ -18,7 +18,7 @@ afterAll(async () => {
     .doc('rxQueryTest')
     .delete()
     .catch(() => void 0); // We don't want any failure here to affect the tests
-  firestore.app.delete();
+  await firestore.app.delete();
 });
 
 describe('Method rxQuery()', () => {
@@ -96,11 +96,12 @@ describe('Method rxQuery()', () => {
 
     let emits = 0;
 
-    const query$ = new FireSQL('shops/p0H5osOFWCPlT1QthpXUnnzI').rxQuery(`
-      SELECT *
-      FROM products
-      WHERE __name__ = "rxQueryTest"
-    `);
+    const query$ = new FireSQL(firestore.doc('shops/p0H5osOFWCPlT1QthpXUnnzI'))
+      .rxQuery(`
+        SELECT *
+        FROM products
+        WHERE __name__ = "rxQueryTest"
+      `);
 
     const subsctiprion = query$.subscribe(docs => {
       if (emits++ === 0) {

@@ -166,6 +166,27 @@ WHERE __name__ LIKE 'Hello%'
 
 > **Note**: You will need to specify the `includeId` option if you want to obtain the document IDs when doing a `SELECT *` query.
 
+## Collection group queries
+You can easily do collection group queries with FireSQL!
+
+This query will get all documents from any collection or subcollection named "landmarks":
+```sql
+SELECT *
+FROM GROUP landmarks
+```
+
+You can [read more about collection group queries](https://firebase.google.com/docs/firestore/query-data/queries#collection-group-query) in the official Firestore documentation.
+
+## Array membership queries
+It's as simple as using the `CONTAINS` condition:
+```sql
+SELECT *
+FROM posts
+WHERE tags CONTAINS 'interesting'
+```
+
+You can [read more about array membership queries](https://firebase.google.com/docs/firestore/query-data/queries#array_membership) in the official Firestore documentation.
+
 ## How does FireSQL work?
 
 FireSQL transforms your SQL query into one or more queries to Firestore. Once all the necessary data has been retrieved, it does some internal processing in order to give you exactly what you asked for.

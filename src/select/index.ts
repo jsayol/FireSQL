@@ -1,16 +1,18 @@
+import { QueryOptions } from '../shared';
 import {
   SQL_SelectColumn,
   SQL_ColumnRef,
   SQL_AggrFunction,
   SQL_Select
-} from 'node-sqlparser';
+} from '../sql-parser';
 import {
   assert,
   contains,
   deepGet,
   DocumentData,
   safeGet,
-  nameOrAlias
+  nameOrAlias,
+  DOCUMENT_KEY_NAME
 } from '../utils';
 import {
   applyGroupByLocally,
@@ -21,7 +23,6 @@ import {
 import { applyOrderBy, applyOrderByLocally } from './orderby';
 import { applyLimit, applyLimitLocally } from './limit';
 import { applyWhere } from './where';
-import { QueryOptions, DOCUMENT_KEY_NAME } from '../firesql';
 
 const VALID_AGGR_FUNCTIONS = ['MIN', 'MAX', 'SUM', 'AVG'];
 
@@ -69,25 +70,43 @@ export class SelectOperation {
     ast = ast || this._ast;
 
     assert(
-      ast.from.length === 1,
-      'Only one collection at a time (no JOINs yet).'
+      ast.from.parts.length % 2 === 1,
+      '"FROM" needs a path to a collection (odd number of parts).'
     );
 
-    const colName = ast.from[0].table;
-    let collection = this._ref.collection(colName);
-    let queries: firebase.firestore.Query[] = [collection];
+    const path = ast.from.parts.join('/');
+    let queries: firebase.firestore.Query[] = [];
+
+    if (ast.from.group) {
+      assert(
+        this._ref.path === '',
+        'Collection group queries are only allowed from the root of the database.'
+      );
+
+      const firestore = contains(this._ref, 'firestore')
+        ? this._ref.firestore
+        : ((this._ref as any) as firebase.firestore.Firestore);
+
+      assert(
+        typeof (firestore as any).collectionGroup === 'function',
+        `Your version of the Firebase SDK doesn't support collection group queries.`
+      );
+      queries.push((firestore as any).collectionGroup(path));
+    } else {
+      queries.push(this._ref.collection(path));
+    }
 
     /*
-   * We'd need this if we end up implementing JOINs, but for now
-   * it's unnecessary since we're only querying a single collection
-   
-    // Keep track of aliased "tables" (collections)
-    const aliasedCollections: { [k: string]: string } = {};
-    if (ast.from[0].as.length > 0) {
-      aliasedCollections[ast.from[0].as] = colName;
-    } else {
-      aliasedCollections[colName] = colName;
-    }
+     * We'd need this if we end up implementing JOINs, but for now
+     * it's unnecessary since we're only querying a single collection
+    
+      // Keep track of aliased "tables" (collections)
+      const aliasedCollections: { [k: string]: string } = {};
+      if (ast.from[0].as.length > 0) {
+        aliasedCollections[ast.from[0].as] = colName;
+      } else {
+        aliasedCollections[colName] = colName;
+      }
    */
 
     if (ast.where) {
@@ -331,7 +350,7 @@ export class SelectOperation {
 
           case 'aggr_func':
             vaidateAggrFunction(column.expr);
-            fieldName = (column.expr.args.expr as SQL_ColumnRef).column;
+            fieldName = column.expr.field;
             fieldAlias = nameOrAlias(fieldName, column.as, column.expr);
             entries.push(
               new AliasedField(
@@ -390,73 +409,80 @@ function aggregateDocuments(
     const skipSum: { [field: string]: true } = {};
 
     functions.forEach(fn => {
-      const column = (fn.args.expr as SQL_ColumnRef).column;
-      let value = safeGet(doc, column);
+      let value = safeGet(doc, fn.field);
       const isNumber = !Number.isNaN(value);
 
       switch (fn.name) {
         case 'AVG':
           // Lets put a value so that later we know we have to compute this avg
-          docsGroup.aggr.avg[column] = 0;
+          docsGroup.aggr.avg[fn.field] = 0;
         // tslint:disable-next-line:no-switch-case-fall-through
         case 'SUM':
-          if (safeGet(skipSum, column) !== true) {
-            skipSum[column] = true;
-            if (!contains(docsGroup.aggr.total, column)) {
-              docsGroup.aggr.total[column] = 0;
-              docsGroup.aggr.sum[column] = 0;
+          if (safeGet(skipSum, fn.field) !== true) {
+            skipSum[fn.field] = true;
+            if (!contains(docsGroup.aggr.total, fn.field)) {
+              docsGroup.aggr.total[fn.field] = 0;
+              docsGroup.aggr.sum[fn.field] = 0;
             }
             value = Number(value);
             assert(
               !Number.isNaN(value),
-              `Can't compute aggregate function ${
-                fn.name
-              }(${column}) because some values are not numbers.`
+              `Can't compute aggregate function ${fn.name}(${
+                fn.field
+              }) because some values are not numbers.`
             );
-            docsGroup.aggr.total[column] += 1;
-            docsGroup.aggr.sum[column] += value;
+            docsGroup.aggr.total[fn.field] += 1;
+            docsGroup.aggr.sum[fn.field] += value;
             // FIXME: if the numbers are big we could easily go out of bounds in this sum
           }
           break;
         case 'MIN':
           assert(
             isNumber || typeof value === 'string',
-            `Aggregate function MIN(${column}) can only be performed on numbers or strings`
+            `Aggregate function MIN(${
+              fn.field
+            }) can only be performed on numbers or strings`
           );
-          if (!contains(docsGroup.aggr.min, column)) {
-            docsGroup.aggr.min[column] = value;
+          if (!contains(docsGroup.aggr.min, fn.field)) {
+            docsGroup.aggr.min[fn.field] = value;
           } else {
-            if (!Number.isNaN(docsGroup.aggr.min[column] as any)) {
+            if (!Number.isNaN(docsGroup.aggr.min[fn.field] as any)) {
               // The current minimum is a number
               assert(
                 isNumber,
-                `Can't compute aggregate function MIN(${column}) because some values are not numbers.`
+                `Can't compute aggregate function MIN(${
+                  fn.field
+                }) because some values are not numbers.`
               );
               value = Number(value);
             }
-            if (value < docsGroup.aggr.min[column]) {
-              docsGroup.aggr.min[column] = value;
+            if (value < docsGroup.aggr.min[fn.field]) {
+              docsGroup.aggr.min[fn.field] = value;
             }
           }
           break;
         case 'MAX':
           assert(
             isNumber || typeof value === 'string',
-            `Aggregate function MAX(${column}) can only be performed on numbers or strings`
+            `Aggregate function MAX(${
+              fn.field
+            }) can only be performed on numbers or strings`
           );
-          if (!contains(docsGroup.aggr.max, column)) {
-            docsGroup.aggr.max[column] = value;
+          if (!contains(docsGroup.aggr.max, fn.field)) {
+            docsGroup.aggr.max[fn.field] = value;
           } else {
-            if (!Number.isNaN(docsGroup.aggr.max[column] as any)) {
+            if (!Number.isNaN(docsGroup.aggr.max[fn.field] as any)) {
               // The current maximum is a number
               assert(
                 isNumber,
-                `Can't compute aggregate function MAX(${column}) because some values are not numbers.`
+                `Can't compute aggregate function MAX(${
+                  fn.field
+                }) because some values are not numbers.`
               );
               value = Number(value);
             }
-            if (value > docsGroup.aggr.max[column]) {
-              docsGroup.aggr.max[column] = value;
+            if (value > docsGroup.aggr.max[fn.field]) {
+              docsGroup.aggr.max[fn.field] = value;
             }
           }
           break;
@@ -506,7 +532,8 @@ function vaidateAggrFunction(aggrFn: SQL_AggrFunction) {
   );
 
   assert(
-    aggrFn.args.expr.type === 'column_ref',
+    // tslint:disable-next-line: strict-type-predicates
+    typeof aggrFn.field === 'string',
     `Unsupported type in aggregate function '${aggrFn.name}'.`
   );
 }

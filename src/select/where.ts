@@ -1,4 +1,4 @@
-import { SQL_Value, SQL_ValueString, SQL_ValueBool } from 'node-sqlparser';
+import { SQL_Value, SQL_ValueString, SQL_ValueBool } from '../sql-parser';
 import { assert, prefixSuccessor, astValueToNative } from '../utils';
 
 export function applyWhere(
@@ -92,6 +92,22 @@ export function applyWhere(
         '<=',
         astWhere.right.value[1]
       );
+    } else if (astWhere.operator === 'CONTAINS') {
+      assert(
+        astWhere.left.type === 'column_ref',
+        'Unsupported WHERE type on left side.'
+      );
+      assert(
+        ['string', 'number', 'bool', 'null'].includes(astWhere.right.type),
+        'Only strings, numbers, booleans, and null are supported with CONTAINS in WHERE clause.'
+      );
+
+      queries = applyCondition(
+        queries,
+        astWhere.left.column,
+        astWhere.operator,
+        astWhere.right
+      );
     } else {
       assert(
         astWhere.left.type === 'column_ref',
@@ -184,8 +200,7 @@ function whereFilterOp(op: string): firebase.firestore.WhereFilterOp {
       newOp = op;
       break;
     case 'CONTAINS':
-      // array-contains
-      throw new Error('"CONTAINS" WHERE operator unsupported');
+      newOp = 'array-contains';
       break;
     case 'NOT':
     case 'NOT CONTAINS':
