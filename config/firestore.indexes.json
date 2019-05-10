@@ -1,28 +1,54 @@
 {
   "indexes": [
     {
-      "collectionId": "shops",
+      "collectionGroup": "shops",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "category",
-          "mode": "ASCENDING"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "rating",
-          "mode": "ASCENDING"
+          "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionId": "shops",
+      "collectionGroup": "shops",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "contact.state",
-          "mode": "ASCENDING"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "rating",
-          "mode": "ASCENDING"
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "products",
+      "fieldPath": "price",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
         }
       ]
     }
