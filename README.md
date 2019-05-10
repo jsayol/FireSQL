@@ -111,7 +111,7 @@ cities$.subscribe(results => {
 - No support for `JOIN`s.
 - `LIMIT` doesn't accept an `OFFSET`, only a single number.
 - No support for aggregate function `COUNT`.
-- - If using `GROUP BY`, it cannot be combined with `ORDER BY` nor `LIMIT`.
+- If using `GROUP BY`, it cannot be combined with `ORDER BY` nor `LIMIT`.
 - No support for negating conditions with `NOT`.
 - Limited `LIKE`. Allows for searches in the form of `WHERE field LIKE 'value%'`, to look for fields that begin with the given value; and `WHERE field LIKE 'value'`, which is functionally equivalent to `WHERE field = 'value'`.
 
