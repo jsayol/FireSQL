@@ -5,10 +5,6 @@ import { parse } from './sql-parser';
 import { DocumentData, assert } from './utils';
 import { select_ } from './select';
 
-// Polyfills
-import 'core-js/features/array/includes';
-import 'core-js/features/number/is-nan';
-
 export class FireSQL {
   private _ref: firebase.firestore.DocumentReference;
 
