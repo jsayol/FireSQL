@@ -106,21 +106,3 @@ interface AdminDocumentReference {
   collection(collectionPath: string): any;
   get(options?: any): Promise<any>;
 }
-
-/**
- * @deprecated Class FirestoreSQL has been renamed FireSQL
- */
-export class FirestoreSQL extends FireSQL {
-  constructor(
-    ref?:
-      | string
-      | firebase.firestore.Firestore
-      | firebase.firestore.DocumentReference
-  ) {
-    console.warn(
-      'DEPRECATED: Class FirestoreSQL has been renamed FireSQL.\n' +
-        'Using "FirestoreSQL" will stop working in future releases, update your code accordingly.'
-    );
-    super(ref as any);
-  }
-}

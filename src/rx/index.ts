@@ -12,14 +12,6 @@ declare module '../firesql' {
     rxQuery(sql: string, options?: QueryOptions): Observable<DocumentData[]>;
     rxQuery<T>(sql: string, options?: QueryOptions): Observable<T[]>;
   }
-
-  /**
-   * @deprecated
-   */
-  interface FirestoreSQL {
-    rxQuery(sql: string, options?: QueryOptions): Observable<DocumentData[]>;
-    rxQuery<T>(sql: string, options?: QueryOptions): Observable<T[]>;
-  }
 }
 
 FireSQL.prototype.rxQuery = function<T>(
